@@ -51,9 +51,7 @@ class BubbleVu(Vu):
         self.image[0].blit(graphics.x, graphics.y, graphics.z)
 
         scissor = graphics.project(graphics.x + self.margin_left, graphics.y)
-        #scissorX = GLint(int(scissor[0].value))
         scissorX = GLint(int(scissor[0])) #only way!!!
-        #scissorY = GLint(int(scissor[1].value))
         scissorY = GLint(int(scissor[1]))
 
         scissorW = self.width - (self.margin_left + self.margin_right) + 1

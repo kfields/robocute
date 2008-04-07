@@ -54,16 +54,18 @@ class Reader():
         
     def read_rows(self, sheet):
         rows = sheet.getElementsByTagNameNS(OD_TABLE_NS, 'table-row')
+        self.scene.row_count = len(rows)
         rowNdx = 0
         for row in rows:
             self.read_row(row, rowNdx)
             rowNdx += 1
-        self.scene.row_count = len(self.scene.rows)
-        #self.scene.col_count = len(self.scene.rows[0])
+        #self.scene.row_count = len(self.scene.rows)
         firstRow = self.scene.rows[0]
         colCount = len(firstRow)
         self.scene.col_count = colCount
-            
+        #
+        self.scene.rows.reverse() #need to reverse to match OpenGL coordinate system.
+
     def read_row(self, row, rowNdx):
         #new
         repCountStr = row.getAttributeNS(OD_TABLE_NS, 'number-rows-repeated')
@@ -81,20 +83,20 @@ class Reader():
         cells = row.getElementsByTagNameNS(OD_TABLE_NS, 'table-cell')
         colNdx = 0        
         for cell in cells:
-            self.read_cell(cell, tileRow, [rowNdx, colNdx])
+            self.read_cell(cell, tileRow, rowNdx, colNdx)
             colNdx += 1            
         return tileRow
         
-    def read_cell(self, cell, tileRow, coord):
+    def read_cell(self, cell, tileRow, rowNdx, colNdx):
         repCountStr = cell.getAttributeNS(OD_TABLE_NS, 'number-columns-repeated')
         if(repCountStr == ''):
             repCount = 1
         else:
             repCount = int(repCountStr)
         cellTxt = get_text(cell)
-        #node = builder.builder.produce(cellTxt)
         nodes = []
-        self.builder.produce(cellTxt, coord, nodes)
+        #self.builder.produce(cellTxt, (colNdx, rowNdx), nodes)
+        self.builder.produce(cellTxt, (colNdx, (self.scene.row_count-1) - rowNdx), nodes)
                 
         while(repCount > 0):
             tileRow.append(nodes)
@@ -118,13 +120,11 @@ class Scene(object):
         rdr = Reader(self, filename)
         rdr.read()
         #
-        #self.bubbles = []
         self.bubbles = BubbleLayer(self)
         #
         self.dash = Dash(self)
-        #self.mice = []
         self.mice = MouseLayer(self)
-        #This has to come last!!!
+        #User creation has to come last!!!
         self.user = User(self)        
         
     def get_window(self):
@@ -142,10 +142,15 @@ class Scene(object):
     def get_row_at(self, y):
         return self.rows[y]
     
-    def get_nodes_at(self, coord):
+    def valid_coord(self, coord):
         if(coord[0] < 0 or coord[0] > self.col_count - 1):
-            return None
+            return False
         if(coord[1] < 0 or coord[1] > self.row_count - 1):
+            return False
+        return True        
+        
+    def get_nodes_at(self, coord):
+        if(not self.valid_coord(coord)):
             return None        
         row = self.get_row_at(coord[1])
         nodes = row[coord[0]]
@@ -175,12 +180,9 @@ class Scene(object):
 
     def can_transfer(self, node, srcCoord, dstCoord):
         #boundary check
-        if(dstCoord[0] < 0 or dstCoord[0] > self.col_count - 1):
-            return False
-        if(dstCoord[1] < 0 or dstCoord[1] > self.row_count - 1):
+        if(not self.valid_coord(dstCoord)):
             return False
         #destination check
-        #top = self.get_top_at(dstCoord)
         top = self.get_top_block_at(dstCoord)
         if(not top.has_vacancy()):
            return False
@@ -191,49 +193,49 @@ class Scene(object):
        if(not self.can_transfer(node, srcCoord, dstCoord)):
            return False
        #else
-       #
        srcNodes = self.get_nodes_at(srcCoord)
-       #srcNodes.remove(node)
        pop_node(srcNodes, node)
        #
        dstNodes = self.get_nodes_at(dstCoord)
-       #top = dstNodes[len(dstNodes)-1]
        push_node(dstNodes, node)
        #
        brain = node.get_brain()
        if(brain != None):
            brain.set_coord(dstCoord)
-        
+    
+    '''
+    Avatar Support
+    fixme:this may need to go into User
+    '''
     def create_avatar(self, name):
-        text = "[" + name + "()]"
-        coord = [0, self.row_count - 1] #maybe the grid should use Y up also. :(
-        nodes = self.get_nodes_at(coord)
-        node = self.builder.produce(text, coord, nodes)
+        #text = "[" + name + "()]"
+        #coord = [0, 0]
+        #nodes = self.get_nodes_at(coord)
+        #node = self.builder.produce(text, coord, nodes)
+        node = Avatar()
         brain = node.get_brain()
         if(brain == None):
            raise Exception("This node has no brain!")
-        #nodes = self.get_nodes_at(0,0)
-        #nodes.append(node)
+        #
         return brain
-    
+    '''
+    Rendering
+    '''
     def draw(self, graphics):
         self.draw_background(graphics)
         #
         glPushMatrix()
         #
-        glTranslatef(graphics.x, graphics.y, graphics.z)
+        glTranslatef(-graphics.x, -graphics.y, graphics.z)
         #
         self.draw_rows(graphics)
         #
-        #self.draw_bubbles(graphics)        
         self.bubbles.draw(graphics)
-        #
         #
         glPopMatrix()
         #
-        #self.draw_foreground(graphics) #not yet ...
         self.dash.draw(graphics)
-        #self.draw_mice(graphics)
+        #
         self.mice.draw(graphics)
 
     def draw_background(self, graphics):
@@ -241,35 +243,63 @@ class Scene(object):
         bgHeight = self.bgImg.height
         
         blitY = 0
-        #while(blitY < graphics.get_height()):
         while(blitY < self.window.height):
             blitX = 0
-            #while(blitX < graphics.get_width()):    
             while(blitX < self.window.width):
                 self.bgImg.blit(blitX, blitY, 0)
                 blitX = blitX + bgWidth
             blitY = blitY + bgHeight
-                    
+    
     def draw_rows(self, graphics):
         g = graphics.copy()
-        blitY = ( (self.row_count-1) * BLOCK_ROW_HEIGHT)
-        for row in self.rows:
-            blitX = 0
-            for nodes in row:
-                blitUp = 0                                    
+        #
+        bottom = g.y        
+        top = bottom + g.height
+        left = g.x        
+        right = left + g.width
+        #
+        r1 = int(top * INV_BLOCK_ROW_HEIGHT)
+        if(r1 < 0):
+            r1 = 0
+        if(r1 > self.row_count-1):
+            r1 = self.row_count-1
+        #  
+        r2 = int(bottom * INV_BLOCK_ROW_HEIGHT)
+        if(r2 < 0):
+            r2 = 0
+        if(r2 > self.row_count-1):
+            r2 = self.row_count-1  
+        #
+        c1 = int(left * INV_BLOCK_WIDTH)
+        if(c1 < 0):
+            c1 = 0
+        if(c1 > self.col_count-1):
+            c1 = self.col_count-1          
+        #  
+        c2 = int(right * INV_BLOCK_WIDTH)
+        if(c2 < 0):
+            c2 = 0
+        if(c2 > self.col_count-1):
+            c2 = self.col_count-1                          
+        #
+        r = r1
+        while(r > r2-2): #rows in sheet
+            c = c1
+            blitY = r * BLOCK_ROW_HEIGHT
+            row = self.rows[r]
+            while(c < c2+1): #cells in row
+                blitX = c * BLOCK_WIDTH                
+                blitUp = 0
+                nodes = row[c]                         
                 for node in nodes:
                     vu = node.get_vu()
-                    if(vu != None):
-                        #vu.draw([blitX, blitY + blitUp, 0])
+                    if(vu != None):                        
                         g.translate(blitX, blitY + blitUp)
                         vu.draw(g) 
                         blitUp = blitUp + vu.get_stack_height()
-                        
-                blitX = blitX + BLOCK_WIDTH
-            blitY = blitY - BLOCK_ROW_HEIGHT
-    '''
-    Bubbles:  short term hack?
-    '''
+
+                c += 1
+            r -= 1            
     '''
     This will get the transform of a group member
     '''
@@ -283,7 +313,7 @@ class Scene(object):
             if(node == targetNode):
                 break
                         
-        blitY = ((self.row_count - 1) * BLOCK_ROW_HEIGHT) -  (coord[1] * BLOCK_ROW_HEIGHT)
+        blitY = (coord[1] * BLOCK_ROW_HEIGHT)
         t = [coord[0] * BLOCK_WIDTH, blitY + blitUp, 0]
         return t
     '''
@@ -298,7 +328,7 @@ class Scene(object):
             vu = node.get_vu()
             if(vu != None):
                 blitUp = blitUp + vu.get_stack_height()        
-        blitY = ((self.row_count - 1) * BLOCK_ROW_HEIGHT) -  (coord[1] * BLOCK_ROW_HEIGHT)
+        blitY = (coord[1] * BLOCK_ROW_HEIGHT)
         t = [coord[0] * BLOCK_WIDTH, blitY + blitUp, 0]
         return t
     '''
@@ -315,48 +345,20 @@ class Scene(object):
         t = [coord[0] * BLOCK_WIDTH, blitY + blitUp, 0]
         return t
     '''
-    def add_bubble(self, bubble):
-        brain = bubble.brain
-        coord = brain.get_coord()
-        t = self.coord_to_transform(coord)
-        t[0] += brain.node.vu.width
-        bubble.set_transform(t)
-        self.bubbles.append(bubble)
+    Bubbles:
     '''
     def add_bubble(self, bubble):
-        #self.bubbles.append(bubble)
         self.bubbles.add_node(bubble)
     
     def remove_bubble(self, bubble):
-        #self.bubbles.remove(bubble)
         self.bubbles.remove_node(bubble)
-    '''    
-    def draw_bubbles(self, graphics):
-        g = graphics.copy()
-        for bubble in self.bubbles:
-            vu = bubble.vu
-            if(vu != None):
-                t = bubble.get_transform()
-                g.translate(t[0], t[1])
-                #vu.draw([t[0], t[1], 0])
-                vu.draw(g)
-    '''
+
     '''
     Mouse Support
     '''
     def add_mouse(self, mouse):
-        #self.mice.append(mouse)
         self.mice.add_node(mouse)
         
     def remove_mouse(self, mouse):
-        #self.mice.remove(mouse)
         self.mice.remove_node(mouse)
-    '''
-    def draw_mice(self, graphics):
-        g = graphics.copy() #fixme:necessary?
-        for mouse in self.mice:                
-            vu = mouse.vu
-            g.x = mouse.x
-            g.y = mouse.y - vu.height #fixme:mouse.hotx & hoty!!!
-            vu.draw(g)
-    '''
+

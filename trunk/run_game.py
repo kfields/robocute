@@ -3,7 +3,6 @@
 import sys
 import os
 
-
 try:
     __file__
 except NameError:

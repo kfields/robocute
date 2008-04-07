@@ -12,6 +12,12 @@ class Graphics(object):
         self.z = 0
         self.width = 640
         self.height = 480
+        #
+        self.clipX = 0
+        self.clipY = 0
+        self.clipWidth = 640
+        self.clipHeight = 480
+        #
         self.color=(255.,255.,255.,1.)
         #
         #self.events = None
@@ -30,7 +36,53 @@ class Graphics(object):
         
     def set_color(self,c):
         self.color = c
-    
+    '''
+    def cull_vu(self, vu):
+        cull = self.unproject(0, 0) #looks the same as the previous method.
+        #r1 = clip
+        #r1_right = self.clipX + self.clipWidth
+        r1_right = cull[0] + self.clipWidth
+        #r1_left = self.clipX
+        r1_left = cull[0]
+        #r1_bottom = self.clipY
+        r1_bottom = cull[1]
+        #r1_top = self.clipY + self.clipHeight
+        r1_top = cull[1] + self.clipHeight
+        #r2 = graphics        
+        r2_left = self.x
+        r2_right = self.x + vu.width
+        r2_top = self.y + vu.height
+        r2_bottom = self.y
+                
+        return not (r2_left > r1_right or r2_right < r1_left or r2_top > r1_bottom or r2_bottom < r1_top)
+    '''
+    def cull_vu(self, vu):
+        cull = self.project(self.x, self.y) #looks the same as the previous method.
+        #r1 = clip
+        #r1_right = self.clipX + self.clipWidth
+        r1_right = self.clipWidth
+        #r1_left = self.clipX
+        r1_left = 0
+        #r1_bottom = self.clipY
+        r1_bottom = 0
+        #r1_top = self.clipY + self.clipHeight
+        r1_top = self.clipHeight
+        #r2 = graphics        
+        r2_left = self.x
+        r2_right = self.x + vu.width
+        r2_top = self.y + vu.height
+        r2_bottom = self.y
+                
+        return not (r2_left > r1_right or r2_right < r1_left or r2_top > r1_bottom or r2_bottom < r1_top)
+            
+        '''
+          return ! ( r2->left > r1->right 
+                || r2->right < r1->left 
+                || r2->top > r1->bottom 
+                || r2->bottom < r1->top 
+                );        
+        '''
+
     #model to screen
     '''
     C SPECIFICATION

@@ -22,7 +22,8 @@ class AbstractNode(object):
         if(self.fn):
             self.fn()
         print self, event
-
+        
+#probably a dumb idea
 NilNode_singleton = None
 
 class NilNode(AbstractNode):

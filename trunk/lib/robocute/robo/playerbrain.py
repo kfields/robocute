@@ -133,6 +133,7 @@ class PlayerBrain(brain.Brain):
         self.die = 0
         self.worth = 0 #heh ... total treasure value
         self.dash_bubble = None
+        self.dash_worth = Text(str(self.worth))
         
     def start(self):    
         self.state()
@@ -191,16 +192,16 @@ class PlayerBrain(brain.Brain):
             return False
         #else
         #filter north west
-        if( coord[0] == self.coord[0] - 1 and coord[1] == self.coord[1] - 1):
+        if( coord[0] == self.coord[0] - 1 and coord[1] == self.coord[1] + 1):
             return False
         #filter north east
-        if( coord[0] == self.coord[0] - 1 and coord[1] == self.coord[1] + 1):
-            return False
-        #filter south east
         if( coord[0] == self.coord[0] + 1 and coord[1] == self.coord[1] + 1):
             return False
+        #filter south east
+        if( coord[0] == self.coord[0] + 1 and coord[1] == self.coord[1] - 1):
+            return False
         #filter south west
-        if( coord[0] == self.coord[0] - 1 and coord[1] == self.coord[1] + 1):
+        if( coord[0] == self.coord[0] - 1 and coord[1] == self.coord[1] - 1):
             return False
         #else
         return True
@@ -229,7 +230,11 @@ class PlayerBrain(brain.Brain):
             nodes.remove(item)
         
     def update_dash(self):
-        if(self.dash_bubble):
-            self.scene.dash.remove_node(self.brain.dash_bubble) #ugh,ugh
-        self.dash_bubble = self.scene.dash.add_node(DashBubble([Image('Mini Chest.png'), Text(str(self.worth))]))
+        #if(self.dash_bubble):
+        #    self.scene.dash.remove_node(self.brain.dash_bubble) #ugh,ugh
+        #self.dash_bubble = self.scene.dash.add_node(DashBubble([Image('Mini Chest.png'), Text(str(self.worth))]))
+        if(not self.dash_bubble):
+            self.dash_bubble = self.scene.dash.add_node(DashBubble([Image('Mini Chest.png'), self.dash_worth]))
+        
+        self.dash_worth.vu.text.text = str(self.worth)
         

@@ -5,7 +5,7 @@ from brain import Brain
 from playerbrain import PlayerBrain
 
 #was going to name it bot ... robo goes with the theme
-
+    
 class RoboVu(ImageVu):
     def __init__(self, node, imgSrc):
         super(RoboVu, self).__init__(node, imgSrc)
@@ -16,44 +16,43 @@ class Robo(Node):
     def __init__(self):
         super(Robo, self).__init__()
         self.brain = None
+'''
+'''
+Avatar_singleton = None
+class Avatar(Robo):
+    def __new__(cls, *args, **kargs):
+        global Avatar_singleton
+        if not Avatar_singleton:
+            #obj = object.__new__(cls)
+            obj = RoboBoy()
+            Avatar_singleton = obj
+            obj.__init__(*args, **kargs)
+        return Avatar_singleton
+    def __init__(self):
+        super(Avatar, self).__init__()
         
 class RoboBoy(Robo):
-    def factory(cls, *args):
-        return RoboBoy()
-    
     def __init__(self):
         super(RoboBoy, self).__init__()
         self.brain = PlayerBrain(self)
         self.vu = RoboVu(self, 'Character Boy.png')
         
 class RoboCatGirl(Robo):
-    def factory(cls, *args):
-        return RoboCatGirl()
-    
     def __init__(self):
         super(RoboCatGirl, self).__init__()
         self.vu = RoboVu(self, 'Character Cat Girl.png')
         
 class RoboHornGirl(Robo):
-    def factory(cls, *args):
-        return RoboHornGirl()
-    
     def __init__(self):
         super(RoboHornGirl, self).__init__()
         self.vu = RoboVu(self, 'Character Horn Girl.png')
         
 class RoboPinkGirl(Robo):
-    def factory(cls, *args):
-        return RoboPinkGirl()
-    
     def __init__(self):
         super(RoboPinkGirl, self).__init__()
         self.vu = RoboVu(self, 'Character Pink Girl.png')
         
 class RoboPrincessGirl(Robo):
-    def factory(cls, *args):
-        return RoboPrincessGirl()
-    
     def __init__(self):
         super(RoboPrincessGirl, self).__init__()
         self.vu = RoboVu(self, 'Character Princess Girl.png')

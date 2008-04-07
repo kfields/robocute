@@ -11,7 +11,6 @@ class Brain(robocute.brain.Brain):
     
     def say(self, items):
         self.del_bubble()
-        #self.bubble = SpeechBubble(self, items)        
         self.bubble = SpeechBubble(items)
         self.add_bubble(self.bubble)
 
@@ -31,11 +30,11 @@ class Brain(robocute.brain.Brain):
         self.del_bubble()
         #
         if(isinstance(msg, GoNorth)):
-           self.scene.transfer(self.node, self.coord, [self.coord[0], self.coord[1] - 1])
+           self.scene.transfer(self.node, self.coord, [self.coord[0], self.coord[1] + 1])
         elif(isinstance(msg, GoEast)):
              self.scene.transfer(self.node, self.coord, [self.coord[0] + 1, self.coord[1]])
         elif(isinstance(msg, GoSouth)):
-             self.scene.transfer(self.node, self.coord, [self.coord[0], self.coord[1] + 1])
+             self.scene.transfer(self.node, self.coord, [self.coord[0], self.coord[1] - 1])
         elif(isinstance(msg, GoWest)):
              self.scene.transfer(self.node, self.coord, [self.coord[0] - 1, self.coord[1]])
         self.on_move()

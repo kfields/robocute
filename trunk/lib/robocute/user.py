@@ -9,14 +9,12 @@ import sys
 from robo.message import *
 from node import *
 
-#fudge = (50, -50) #fixme:hack for camera
 fudge = (50, 50) #fixme:hack for camera
 
 class User():
     def __init__(self, scene):
         self.scene = scene
         self.avatar = scene.create_avatar("RoboBoy") #avatar is the brain!!!
-        #self.avatar.do(Phase('init'))
         self.avatar.start()
         #
         self.camera = Camera(scene)
@@ -25,9 +23,10 @@ class User():
         #
         self.camera.width = win.width
         self.camera.height = win.height
+        self.camera.clipWidth = win.width
+        self.camera.clipHeight = win.height        
         #
-        #t = self.scene.coord_to_transform(self.avatar.coord)
-        #better to just focus on the ground?
+        #better to just focus on the ground
         block = self.scene.get_top_block_at(self.avatar.coord)
         t = self.scene.get_block_transform(block, self.avatar.coord)
         self.camera.look_at(t[0] + fudge[0], t[1] + fudge[1])
@@ -38,8 +37,6 @@ class User():
         self.events = []
         #
         def on_avatar_move():
-            #t = self.scene.coord_to_transform(self.avatar.coord)
-            #self.camera.look_at(t[0] + fudge[0], t[1] + fudge[1])
             block = self.scene.get_top_block_at(self.avatar.coord)
             t = self.scene.get_block_transform(block, self.avatar.coord)
             self.camera.look_at(t[0] + fudge[0], t[1] + fudge[1])
@@ -51,8 +48,8 @@ class User():
             if symbol == key.ESCAPE:
                 sys.exit()
             elif symbol == key.R:
-                #self.avatar.do(Say([Text('I '), Image('Heart.png'), Text(' PyWeek!!! ') ]))
-                self.avatar.do(Transition('start'))
+                #self.avatar.do(Transition('start'))
+                self.avatar.do(Transition('main'))
             #
             elif symbol == key.W:
                 self.avatar.do(GoNorth())
@@ -62,10 +59,6 @@ class User():
                 self.avatar.do(GoSouth())
             elif symbol == key.A:
                 self.avatar.do(GoWest())
-            #
-            #t = self.scene.coord_to_transform(self.avatar.coord)
-            #self.camera.look_at(t[0], t[1])
-            #self.camera.look_at(t[0] + fudge[0], t[1] + fudge[1])
             
         win.on_key_press = on_key_press
 

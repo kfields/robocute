@@ -13,6 +13,8 @@ def load_image(filename):
 class Vu(object):    
     def __init__(self, node):
         self.node = node
+        self.width = 0
+        self.height = 0
         self.clickable = True #better name?
     def draw(self, graphics):
         pass
@@ -28,6 +30,7 @@ class Vu(object):
         pass
         
 class TextVu(Vu):
+    '''
     def __init__(self, node):
         super(TextVu, self).__init__(node)
         self.label = pyglet.text.Label(self.node.text,
@@ -37,18 +40,29 @@ class TextVu(Vu):
                           color=(0,0,0, 255),
                           valign='center')
         self.validate()
+    '''
+    def __init__(self, node):
+        super(TextVu, self).__init__(node)
+        ft = pyglet.font.load('Verdana', 14)
+        #self.text = pyglet.font.Text(ft, self.node.text, color=(0,0,0, 255), valign='center')
+        self.text = pyglet.font.Text(ft, self.node.text)
+        #self.text.color=(0,0,0, 255)
+        #self.text.color=(1,0,0,1)#red
+        self.text.color=(0,0,0,1)#red
+        self.text.valign='center'
+        self.validate()
         
     def validate(self):
-        self.width = self.label.content_width
-        self.height = self.label.content_height
+        self.width = self.text.width
+        self.height = self.text.height
 
     def draw(self, graphics):
         #either way works...
         #glPushMatrix()
         #glTranslatef(graphics.x, graphics.y, graphics.z)
-        self.label.x = graphics.x
-        self.label.y = graphics.y
-        self.label.draw()
+        self.text.x = graphics.x
+        self.text.y = graphics.y
+        self.text.draw()
         if(graphics.query):
             graphics.visit(self)
         #glPopMatrix()
@@ -70,6 +84,7 @@ class ImageVu(Vu):
         if(self.image != None):
             self.image.blit(graphics.x, graphics.y, graphics.z)
         graphics.visit(self) #needs to be in Vu?
+
         
     def get_height(self):
         return self.image.height

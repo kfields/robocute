@@ -7,7 +7,15 @@ BLOCK_WIDTH = 101
 BLOCK_HEIGHT = 171
 BLOCK_STACK_HEIGHT = 40
 BLOCK_ROW_HEIGHT = 85
+#
+#decimals behind 1 important!!! else you get zero!!!???
+INV_BLOCK_WIDTH = 1. / BLOCK_WIDTH
+INV_BLOCK_HEIGHT = 1. / BLOCK_HEIGHT
+INV_BLOCK_STACK_HEIGHT = 1. / BLOCK_STACK_HEIGHT
+INV_BLOCK_ROW_HEIGHT = 1. / BLOCK_ROW_HEIGHT
 
+'''
+'''
 class BlockVu(ImageVu):
     def __init__(self, node, imgSrc):
         super(BlockVu, self).__init__(node, imgSrc)

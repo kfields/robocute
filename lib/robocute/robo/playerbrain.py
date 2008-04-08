@@ -238,13 +238,21 @@ class PlayerBrain(brain.Brain):
         #    nodes.remove(item)
         for item in items:
             block.remove_node(item)
-        
     def update_dash(self):
-        #if(self.dash_bubble):
-        #    self.scene.dash.remove_node(self.brain.dash_bubble) #ugh,ugh
-        #self.dash_bubble = self.scene.dash.add_node(DashBubble([Image('Mini Chest.png'), Text(str(self.worth))]))
         if(not self.dash_bubble):
-            self.dash_bubble = self.scene.dash.add_node(DashBubble([Image('Mini Chest.png'), self.dash_worth]))
-        
+            self.dash_bubble = DashBubble([Image('Mini Chest.png'), self.dash_worth])
+            self.scene.dash.add_node(self.dash_bubble)
+        #
         self.dash_worth.vu.text.text = str(self.worth)
+        self.dash_bubble.vu.validate()
+    '''
+    def update_dash(self):
+        if(self.dash_bubble):
+            self.scene.dash.remove_node(self.dash_bubble)
+            del self.dash_bubble
+        #else:
+        self.dash_bubble = DashBubble([Image('Mini Chest.png'), self.dash_worth])
+        self.scene.dash.add_node(self.dash_bubble)
         
+        self.dash_worth.vu.text.text = str(self.worth) 
+    '''

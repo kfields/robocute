@@ -1,5 +1,5 @@
 
-#import copy
+import copy
 
 from vu import *
 from brain import Brain
@@ -9,6 +9,12 @@ class AbstractNode(object):
         self.name = 'Unknown'
         self.vu = None
         self.fn = fn #not sure about this...
+    #
+    def copy(self):
+        return copy.copy(self)
+    def deep_copy(self):
+        return copy.deepcopy(self)
+    #   
     def set_vu(self, vu):
         self.vu = vu
     def get_vu(self):
@@ -41,12 +47,18 @@ class NilNode(AbstractNode):
 class Node(AbstractNode):
     def __init__(self, fn = None):
         super(Node, self).__init__(fn)
-        self.transform = (0, 0, 0) #just use tuples for now.
+        #self.transform = (0, 0, 0) #just use tuples for now.
+        self.x = 0
+        self.y = 0
+        self.z = 0
         self.brain = None
     def set_transform(self, transform):
-        self.transform = transform
+        #self.transform = transform
+        self.x = transform[0]
+        self.y = transform[1]
     def get_transform(self):
-        return self.transform
+        #return self.transform
+        return (self.x, self.y)
     def get_brain(self):
         return self.brain
     def register(self, scene, coord):

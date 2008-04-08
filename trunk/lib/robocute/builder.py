@@ -1,11 +1,5 @@
 import node
 
-#note:These imports are necessary for the dynamic loading to work via eval.
-from block.block import *
-from prop.prop import *
-from item.item import *
-from robo.robo import *
-
 def pop_node(nodes, node):
     top = nodes[len(nodes) - 1]
     if(isinstance(top, GroupBlock)):
@@ -21,7 +15,7 @@ def push_node(nodes, node):
     top = nodes[len(nodes) - 1]
 
     #top is group ... add to group
-    if(isinstance(top, GroupBlock)):  
+    if(isinstance(top, GroupBlock)):
         top.add_node(node)
     elif(isinstance(top, Block)):
         #top is block ... push on stack        
@@ -34,6 +28,13 @@ def push_node(nodes, node):
         top.add_node(oldTop)
         top.add_node(node)
         nodes.append(top)
+
+#note:These imports are necessary for the dynamic loading to work via eval.
+from block.block import *
+from prop.prop import *
+from item.item import *
+from robo.robo import *
+from bot.spreader import *
     
 '''
 basically a factory of factories.

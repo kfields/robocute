@@ -30,24 +30,10 @@ class Vu(object):
         pass
         
 class TextVu(Vu):
-    '''
-    def __init__(self, node):
-        super(TextVu, self).__init__(node)
-        self.label = pyglet.text.Label(self.node.text,
-                          font_name='Verdana',
-                          #font_size=16,
-                          font_size=14,
-                          color=(0,0,0, 255),
-                          valign='center')
-        self.validate()
-    '''
     def __init__(self, node):
         super(TextVu, self).__init__(node)
         ft = pyglet.font.load('Verdana', 14)
-        #self.text = pyglet.font.Text(ft, self.node.text, color=(0,0,0, 255), valign='center')
         self.text = pyglet.font.Text(ft, self.node.text)
-        #self.text.color=(0,0,0, 255)
-        #self.text.color=(1,0,0,1)#red
         self.text.color=(0,0,0,1)#red
         self.text.valign='center'
         self.validate()
@@ -79,6 +65,8 @@ class ImageVu(Vu):
     def validate(self):
         self.width = self.image.width
         self.height = self.image.height
+        #hack?
+        self.node.z = self.width
         
     def draw(self, graphics):
         if(self.image != None):

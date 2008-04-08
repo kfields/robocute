@@ -1,8 +1,11 @@
 import data
+import operator #needed for sorting
+
+from pyglet import clock
 
 from robocute.node import *
 from robocute.vu import *
-
+#
 BLOCK_WIDTH = 101
 BLOCK_HEIGHT = 171
 BLOCK_STACK_HEIGHT = 40
@@ -61,7 +64,15 @@ class GroupBlock(Node):
         return self.nodes
         
     def add_node(self, node):
+        #okay, large items need to go in the rear. otherwise artifacts
+        #hacky, but ..
+        #vu = node.vu
+        #if(vu.width == BLOCK_WIDTH):
+        #    self.nodes.insert(0,node)
+        #else:
+        #    self.nodes.append(node)
         self.nodes.append(node)
+        self.nodes.sort(key=operator.attrgetter('z'))
         
     def remove_node(self, node):
         self.nodes.remove(node)
@@ -78,9 +89,11 @@ class SpawnBlock(GroupBlock):
     def remove_node(self, node):
         super(SpawnBlock, self).remove_node(node)
         if(node == self.spawn):
-            spawn = self.spawn.copy()
-            del self.spawn
-            clock.schedule_once(lambda dt, *args, **kwargs : self.respawn(), 3.)
+            self.spawn = self.spawn.copy()
+            #del self.spawn #del removes property entirely???
+            def respawn():
+                self.respawn()
+            clock.schedule_once(lambda dt, *args, **kwargs : respawn(), 3.)
             
     def respawn(self):
         self.add_node(self.spawn)

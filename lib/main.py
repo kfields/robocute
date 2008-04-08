@@ -25,11 +25,12 @@ def main():
     win = window.Window(WINDOW_WIDTH, WINDOW_HEIGHT, caption='RoboCute')
     #
     #scene = Scene(win, "RoboCute.ods")
-    scene = Scene(win, "RoboCuteFountain.ods")
+    #scene = Scene(win, "RoboCuteFountain.ods")
     #scene = Scene(win, "RoboCuteHuge.ods")
     #scene = Scene(win, "RoboCuteDebug.ods")
     #scene = Scene(win, "RoboCuteSpawnDebug.ods")
     #scene = Scene(win, "RoboCuteTreasureDebug.ods")
+    scene = Scene(win, "RoboCuteSpreaderDebug.ods")
     #
     user = scene.get_user()
     camera = user.get_camera()

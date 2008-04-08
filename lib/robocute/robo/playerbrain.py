@@ -89,7 +89,9 @@ class MoveState(State):
         if(not vacancies):#Dead End!!!
             vacancy = self.brain.old_coord
         else:
-            vacancy = vacancies[len(vacancies)-1]
+            #vacancy = vacancies[len(vacancies)-1]
+            vacancy = vacancies[int(random() * (len(vacancies)-1))]
+            
         self.brain.move_to(vacancy)
         # 
         self.brain.do(Say([Text(str(self.count)) ]))
@@ -162,6 +164,7 @@ class PlayerBrain(brain.Brain):
         
     def find_vacancies(self):
         vacancies = []
+        block = None
         coord = self.coord
         blockY = coord[1] - 1
         #scan bottom up
@@ -169,7 +172,8 @@ class PlayerBrain(brain.Brain):
             blockX = coord[0] - 1
             while(blockX < coord[0] + 2):
                 vacant = self.filter_coord( (blockX, blockY) )
-                block = self.scene.get_top_block_at((blockX, blockY))
+                if(vacant):
+                    block = self.scene.get_top_block_at((blockX, blockY))
                 if(not block):
                     vacant = False
                 elif(not block.has_vacancy()):
@@ -184,6 +188,9 @@ class PlayerBrain(brain.Brain):
         return vacancies 
         
     def filter_coord(self, coord):
+        #filter invalid coord
+        if(not self.scene.valid_coord(coord)):
+            return False
         #filter out current coord
         if( coord[0] == self.coord[0] and coord[1] == self.coord[1]):
             return False        
@@ -224,10 +231,13 @@ class PlayerBrain(brain.Brain):
         
     def take_items(self, items):
         #if we are here then it's automatically a group block. No need to check.
+        #wrong, you were supposed to call remove!!!
         block = self.scene.get_top_block_at(self.coord)
-        nodes = block.nodes
+        #nodes = block.nodes
+        #for item in items:
+        #    nodes.remove(item)
         for item in items:
-            nodes.remove(item)
+            block.remove_node(item)
         
     def update_dash(self):
         #if(self.dash_bubble):

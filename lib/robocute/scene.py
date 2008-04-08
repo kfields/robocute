@@ -110,6 +110,8 @@ class Scene(object):
         super(Scene, self).__init__()
         self.window = win
         #
+        self.bots = []        
+        #
         self.builder = Builder(self)
         #
         self.bgImg = image.load(data.filepath('image/clouds.jpg'))
@@ -119,6 +121,9 @@ class Scene(object):
         self.col_count = 0
         rdr = Reader(self, filename)
         rdr.read()
+        #
+        for bot in self.bots:
+            bot.brain.start()
         #
         self.bubbles = BubbleLayer(self)
         #
@@ -147,17 +152,18 @@ class Scene(object):
             return False
         if(coord[1] < 0 or coord[1] > self.row_count - 1):
             return False
-        return True        
+        return True
         
     def get_nodes_at(self, coord):
         if(not self.valid_coord(coord)):
-            return None        
-        row = self.get_row_at(coord[1])
-        nodes = row[coord[0]]
-        return nodes
+            raise Exception('Invalid Coordinates: x: ', coord[0], ' y: ', coord[1])
+        #else
+        return self.rows[coord[1]][coord[0]]
 
     def get_top_at(self, coord):
         nodes = self.get_nodes_at(coord)
+        if(not nodes):
+            return None
         length = len(nodes)
         if(length == 0):
             raise Exception()
@@ -202,7 +208,14 @@ class Scene(object):
        brain = node.get_brain()
        if(brain != None):
            brain.set_coord(dstCoord)
-    
+    '''
+    Bots
+        fixme:this class is getting too fat!!!
+    '''
+    def add_bot(self, bot):
+        self.bots.append(bot)
+    def remove_bot(self, bot):
+        self.bots.remove(bot)
     '''
     Avatar Support
     fixme:this may need to go into User
@@ -213,6 +226,8 @@ class Scene(object):
         #nodes = self.get_nodes_at(coord)
         #node = self.builder.produce(text, coord, nodes)
         node = Avatar()
+        if(not node):
+            raise Exception('No Avatar found in scene!!!')
         brain = node.get_brain()
         if(brain == None):
            raise Exception("This node has no brain!")
@@ -253,10 +268,14 @@ class Scene(object):
     def draw_rows(self, graphics):
         g = graphics.copy()
         #
-        bottom = g.y        
-        top = bottom + g.height
-        left = g.x        
-        right = left + g.width
+        #better to expand the view I think.
+        #
+        width = g.width + BLOCK_WIDTH
+        height = g.height + BLOCK_ROW_HEIGHT
+        bottom = g.y - BLOCK_ROW_HEIGHT
+        top = bottom + height
+        left = g.x - BLOCK_WIDTH
+        right = left + width
         #
         r1 = int(top * INV_BLOCK_ROW_HEIGHT)
         if(r1 < 0):
@@ -268,7 +287,7 @@ class Scene(object):
         if(r2 < 0):
             r2 = 0
         if(r2 > self.row_count-1):
-            r2 = self.row_count-1  
+            r2 = self.row_count-1
         #
         c1 = int(left * INV_BLOCK_WIDTH)
         if(c1 < 0):
@@ -280,14 +299,14 @@ class Scene(object):
         if(c2 < 0):
             c2 = 0
         if(c2 > self.col_count-1):
-            c2 = self.col_count-1                          
+            c2 = self.col_count-1
         #
         r = r1
-        while(r > r2-2): #rows in sheet
+        while(r >= r2): #rows in sheet
             c = c1
             blitY = r * BLOCK_ROW_HEIGHT
             row = self.rows[r]
-            while(c < c2+1): #cells in row
+            while(c <= c2): #cells in row
                 blitX = c * BLOCK_WIDTH                
                 blitUp = 0
                 nodes = row[c]                         

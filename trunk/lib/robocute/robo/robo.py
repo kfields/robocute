@@ -25,11 +25,18 @@ class Avatar(Robo):
         if not Avatar_singleton:
             #obj = object.__new__(cls)
             obj = RoboBoy()
+            #obj = RoboCute()
             Avatar_singleton = obj
             obj.__init__(*args, **kargs)
         return Avatar_singleton
     def __init__(self):
         super(Avatar, self).__init__()
+
+class RoboCute(Robo):
+    def __init__(self):
+        super(RoboCute, self).__init__()
+        self.brain = PlayerBrain(self)
+        self.vu = RoboVu(self, 'robocute.png')
         
 class RoboBoy(Robo):
     def __init__(self):

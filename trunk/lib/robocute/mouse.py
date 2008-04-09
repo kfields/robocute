@@ -3,7 +3,7 @@ from node import Node
 from vu import ImageVu
 from message import *
 
-class MouseQuery():
+class MouseQuery(object):
     def __init__(self, events):
         self.events = events
         self.result = []
@@ -22,7 +22,7 @@ class MouseQuery():
         
 class Mouse(Node):
     def __init__(self):
-        super(Node, self).__init__()
+        super(Mouse, self).__init__()
         self.vu = ImageVu(self, 'Pointer-Standard.png')
         self.vu.clickable = False
         

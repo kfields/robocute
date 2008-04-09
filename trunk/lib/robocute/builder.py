@@ -39,7 +39,7 @@ from bot.spreader import *
 '''
 basically a factory of factories.
 '''
-class Builder():
+class Builder(object):
     
     def __init__(self, scene):
         self.scene = scene

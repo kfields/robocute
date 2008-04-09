@@ -59,8 +59,6 @@ class MainState(State):
     def roll(self):
         die = int(random() * 12) + 1
         self.brain.die = die
-        #fn = lambda : self.brain.schedule(Transition('move'), 1.0)        
-        #self.brain.do(Say([Text('You rolled a ' + str(die) + '!'), Image('icon/lc_browseforward.png', fn)]))
         self.brain.do(Say([Text('You rolled a ' + str(die) + '!')]))
         self.brain.schedule(Transition('move'), 2.0)
 
@@ -230,14 +228,10 @@ class PlayerBrain(brain.Brain):
         return result
         
     def take_items(self, items):
-        #if we are here then it's automatically a group block. No need to check.
-        #wrong, you were supposed to call remove!!!
         block = self.scene.get_top_block_at(self.coord)
-        #nodes = block.nodes
-        #for item in items:
-        #    nodes.remove(item)
         for item in items:
             block.remove_node(item)
+            
     def update_dash(self):
         if(not self.dash_bubble):
             self.dash_bubble = DashBubble([Image('Mini Chest.png'), self.dash_worth])
@@ -245,14 +239,3 @@ class PlayerBrain(brain.Brain):
         #
         self.dash_worth.vu.text.text = str(self.worth)
         self.dash_bubble.vu.validate()
-    '''
-    def update_dash(self):
-        if(self.dash_bubble):
-            self.scene.dash.remove_node(self.dash_bubble)
-            del self.dash_bubble
-        #else:
-        self.dash_bubble = DashBubble([Image('Mini Chest.png'), self.dash_worth])
-        self.scene.dash.add_node(self.dash_bubble)
-        
-        self.dash_worth.vu.text.text = str(self.worth) 
-    '''

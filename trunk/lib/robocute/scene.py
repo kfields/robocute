@@ -22,7 +22,7 @@ def get_text(node):
 
     return text
 
-class Reader():
+class Reader(object):
 
     def __init__(self, scene, filename):
         self.scene = scene

@@ -1,9 +1,9 @@
-class Cell():
+class Cell(object):
     def __init__(self):
         self.explored = True
         self.vacancy = False
         
-class Map():
+class Map(object):
     def __init__(self, width, height):
         self.width = width  
         self.height = height
@@ -13,7 +13,7 @@ class Map():
         #print 'x: ', x, 'y: ', y
         return self.rows[y][x]
     
-class Explorer():
+class Explorer(object):
     def __init__(self, map, callback):
         self.map = map
         self.callback = callback

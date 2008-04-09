@@ -11,7 +11,7 @@ from node import *
 
 fudge = (50, 50) #fixme:hack for camera
 
-class User():
+class User(object):
     def __init__(self, scene):
         self.scene = scene
         self.avatar = scene.create_avatar("RoboBoy") #avatar is the brain!!!

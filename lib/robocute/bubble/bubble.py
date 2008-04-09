@@ -14,7 +14,6 @@ class BubbleVu(Vu):
         self.image = [None] * 3
         self.width = 0
         self.height = 0
-        #self.widths = None
         self.margin_left = 0
         self.margin_right = 0
         
@@ -101,13 +100,11 @@ class Bubble(Node):
 class DashBubble(Bubble):
     def __init__(self, items):
         super(DashBubble, self).__init__(items)
-        #self.brain = brain
         self.vu = BubbleVu(self, 'DashBubble')
 
 class SpeechBubble(Bubble):
     def __init__(self, items):
         super(SpeechBubble, self).__init__(items)
-        #self.brain = brain
         self.vu = BubbleVu(self, 'SpeechBubble')
 
 

@@ -6,7 +6,7 @@ class Brain(object):
         super(Brain, self).__init__()
         self.node = node
         self.scene = None #get's set during registration of node.
-        self.coord = [0,0] #brain knows where node is at roughly
+        self.coord = Coord(0,0) #brain knows where node is at roughly
         self.old_coord = self.coord
         #
         self.on_move = None #need callback for camera!!!

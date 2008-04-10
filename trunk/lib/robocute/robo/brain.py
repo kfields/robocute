@@ -16,8 +16,8 @@ class Brain(robocute.brain.Brain):
 
     def add_bubble(self, bubble):
         coord = self.get_coord()
-        t = self.scene.get_member_transform(self.node, coord)
-        t[0] += self.node.vu.width
+        t = self.scene.get_node_transform(self.node, coord)
+        t.x += self.node.vu.width
         bubble.set_transform(t)
         self.scene.add_bubble(bubble)
 
@@ -30,13 +30,13 @@ class Brain(robocute.brain.Brain):
         self.del_bubble()
         #
         if(isinstance(msg, GoNorth)):
-           self.scene.transfer(self.node, self.coord, [self.coord[0], self.coord[1] + 1])
+           self.scene.transfer(self.node, self.coord, Coord(self.coord.x, self.coord.y + 1))
         elif(isinstance(msg, GoEast)):
-             self.scene.transfer(self.node, self.coord, [self.coord[0] + 1, self.coord[1]])
+             self.scene.transfer(self.node, self.coord, Coord(self.coord.x + 1, self.coord.y))
         elif(isinstance(msg, GoSouth)):
-             self.scene.transfer(self.node, self.coord, [self.coord[0], self.coord[1] - 1])
+             self.scene.transfer(self.node, self.coord, Coord(self.coord.x, self.coord.y - 1))
         elif(isinstance(msg, GoWest)):
-             self.scene.transfer(self.node, self.coord, [self.coord[0] - 1, self.coord[1]])
+             self.scene.transfer(self.node, self.coord, Coord(self.coord.x - 1, self.coord.y))
         self.on_move()
                      
     def do(self, msg):

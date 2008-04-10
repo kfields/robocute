@@ -26,7 +26,7 @@ def main():
     #
     #scene = Scene(win, "RoboCute.ods")
     #scene = Scene(win, "RoboCuteFountain.ods")
-    #scene = Scene(win, "RoboCuteHuge.ods")
+    #scene = Scene(win, "RoboCuteHuge.ods") #fixme:takes forever to load and bombs.
     #scene = Scene(win, "RoboCuteDebug.ods")
     #scene = Scene(win, "RoboCuteSpawnDebug.ods")
     #scene = Scene(win, "RoboCuteTreasureDebug.ods")
@@ -39,6 +39,8 @@ def main():
     ft = font.load('Verdana', 28)
     #
     fps_text = font.Text(ft, y=10, x=WINDOW_WIDTH - 200)
+    #
+    scene.start()
     #
     while not win.has_exit:
         query = user.dispatch_events()

@@ -28,12 +28,11 @@ class Mouse(Node):
         
 class MouseMessage(Message):
     def __init__(self, x, y, button, modifiers):
+        super(MouseMessage, self).__init__()
         self.x = x
         self.y = y
         self.button = button
         self.modifiers = modifiers
-        #super(Node, self).__init__()
-        #self.mouse = mouse
     
 class MousePressed(MouseMessage):
     def __init__(self,  x, y, button, modifiers):

@@ -38,11 +38,13 @@ class GroupBlockVu(Vu):
         super(GroupBlockVu, self).__init__(node)
 
     def get_stack_height(self):
+        '''
         if(len(self.node.nodes) != 0):
             vu = self.node.nodes[0].get_vu()
             if(vu != None):
                 return vu.get_stack_height() #fixme:temporary hack.  calc tallest node!
         #else
+        '''
         return 0
         
     def draw(self, graphics):
@@ -53,7 +55,19 @@ class GroupBlockVu(Vu):
                 vu.draw(g)
                 g.x += 10
                 g.y -= 10
-                
+    
+    def get_member_transform(self, transform, memberNode):
+        t = transform.copy()
+        for node in self.node.nodes:
+            vu = node.get_vu()
+            if(vu != None):
+                t.x += 10
+                t.y -= 10
+            if(node == memberNode):
+                break
+        t.y += vu.get_stack_height()
+        return t
+        
 class GroupBlock(Node):
     def __init__(self):
         super(GroupBlock, self).__init__()
@@ -64,13 +78,6 @@ class GroupBlock(Node):
         return self.nodes
         
     def add_node(self, node):
-        #okay, large items need to go in the rear. otherwise artifacts
-        #hacky, but ..
-        #vu = node.vu
-        #if(vu.width == BLOCK_WIDTH):
-        #    self.nodes.insert(0,node)
-        #else:
-        #    self.nodes.append(node)
         self.nodes.append(node)
         self.nodes.sort(key=operator.attrgetter('z'))
         
@@ -86,17 +93,22 @@ class SpawnBlock(GroupBlock):
         self.spawn = spawn
         self.add_node(spawn)
 
+    def schedule_respawn(self, delay):
+            def respawn():
+                self.respawn()
+            clock.schedule_once(lambda dt, *args, **kwargs : respawn(), delay)
+        
     def remove_node(self, node):
         super(SpawnBlock, self).remove_node(node)
         if(node == self.spawn):
             self.spawn = self.spawn.copy()
-            #del self.spawn #del removes property entirely???
-            def respawn():
-                self.respawn()
-            clock.schedule_once(lambda dt, *args, **kwargs : respawn(), 3.)
+            self.schedule_respawn(3.)
             
     def respawn(self):
-        self.add_node(self.spawn)
+        if(len(self.nodes) == 0):
+            self.add_node(self.spawn)
+        else:
+            self.schedule_respawn(3.)           
 
 DirtBlock_singleton = None
 

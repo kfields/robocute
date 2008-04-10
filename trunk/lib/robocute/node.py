@@ -1,9 +1,38 @@
 
 import copy
 
+'''
+This file is the bottom of the import heirarchy so I'm gonna stick fundamentals in here for now.
+'''
+
+'''
+Block Coordinates
+'''
+class Coord:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+'''
+2D position and rotation
+'''
+class Transform:
+    def __init__(self, x, y, r=0):
+        self.x = x
+        self.y = y
+        self.r = r
+        
+    def copy(self):
+        return copy.copy(self)
+
 from vu import *
 from brain import Brain
 
+    
+class AbstractCell(list):
+    def __init__(self):
+        pass
+        
 class AbstractNode(object):
     def __init__(self, fn = None):
         self.name = 'Unknown'
@@ -52,10 +81,10 @@ class Node(AbstractNode):
         self.z = 0
         self.brain = None
     def set_transform(self, transform):
-        self.x = transform[0]
-        self.y = transform[1]
+        self.x = transform.x
+        self.y = transform.y
     def get_transform(self):
-        return (self.x, self.y)
+        return Transform(self.x, self.y)
     def get_brain(self):
         return self.brain
     def register(self, scene, coord):

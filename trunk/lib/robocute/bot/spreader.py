@@ -29,21 +29,18 @@ class TreasureSpreaderBrain(bot.Brain):
         super(TreasureSpreaderBrain, self).__init__(node)
         
     def start(self):
-        #map = Map(self.scene.width, self.scene.height)
         map = Map(self.scene.col_count, self.scene.row_count)
-        #fn = lambda (coord): self.explore(coord[0], coord[1])
-        def callback(x, y):
-            return self.explore(x, y)
+        def callback(coord):
+            return self.explore(coord)
         explorer = Explorer(map, callback)
         coord = self.coord
-        nodes = self.scene.get_nodes_at( coord )
-        pop_node(nodes, self.node)
-        explorer.explore(coord[0], coord[1])
+        cell = self.scene.get_cell_at( coord )
+        cell.remove_node(self.node)
+        explorer.explore(coord.x, coord.y)
         
-    def explore(self, x, y):
-        #block = self.scene.get_top_block_at( (x, y) )
+    def explore(self, coord):
         cell = Cell()
-        node = self.scene.get_top_at( (x, y) )
+        node = self.scene.get_top_at(coord)
         if(not node):#how is this happening?
             return cell
         if(isinstance(node, NilNode)):
@@ -53,7 +50,7 @@ class TreasureSpreaderBrain(bot.Brain):
         if(not node.has_vacancy()):
             return cell
         #else
-        dstNodes = self.scene.get_nodes_at( (x, y) )
+        dstNodes = self.scene.get_cell_at(coord)
         if(not dstNodes):#how is this happening?
             return cell
         treasure = {
@@ -62,8 +59,7 @@ class TreasureSpreaderBrain(bot.Brain):
           2 :'GemOrange()',
         }[int(random() * 3)]
 
-        #push_node(dstNodes, node)
-        self.scene.builder.produce(treasure, (x, y), dstNodes)
+        self.scene.builder.produce(treasure, coord, dstNodes)
         #
         cell.vacancy = True
         return cell

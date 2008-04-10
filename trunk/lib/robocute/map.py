@@ -1,3 +1,6 @@
+
+from node import Coord
+
 class Cell(object):
     def __init__(self):
         self.explored = True
@@ -21,7 +24,7 @@ class Explorer(object):
     def explore(self, x, y):
         map = self.map
         #
-        cell = self.callback(x, y)
+        cell = self.callback(Coord(x, y))
         #
         if(not cell.vacancy):
             return

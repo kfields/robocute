@@ -1,5 +1,5 @@
 
-from robocute.node import *
+from robocute.bot.bot import *
 from robocute.vu import *
 from brain import Brain
 from playerbrain import PlayerBrain
@@ -12,10 +12,9 @@ class RoboVu(ImageVu):
     def get_stack_height(self):
         return 100 #necessary for SpeechBubble!
         
-class Robo(Node):
+class Robo(Bot):
     def __init__(self):
         super(Robo, self).__init__()
-        self.brain = None
 '''
 '''
 Avatar_singleton = None

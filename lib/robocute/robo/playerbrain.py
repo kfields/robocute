@@ -87,8 +87,8 @@ class MoveState(State):
         if(not vacancies):#Dead End!!!
             vacancy = self.brain.old_coord
         else:
-            #vacancy = vacancies[len(vacancies)-1]
-            vacancy = vacancies[int(random() * (len(vacancies)-1))]
+            vacNdx = int(random() * len(vacancies))
+            vacancy = vacancies[vacNdx]
             
         self.brain.move_to(vacancy)
         # 
@@ -164,20 +164,20 @@ class PlayerBrain(brain.Brain):
         vacancies = []
         block = None
         coord = self.coord
-        blockY = coord[1] - 1
+        blockY = coord.y - 1
         #scan bottom up
-        while(blockY < coord[1] + 2):
-            blockX = coord[0] - 1
-            while(blockX < coord[0] + 2):
-                vacant = self.filter_coord( (blockX, blockY) )
+        while(blockY < coord.y + 2):
+            blockX = coord.x - 1
+            while(blockX < coord.x + 2):
+                vacant = self.filter_coord(Coord(blockX, blockY))
                 if(vacant):
-                    block = self.scene.get_top_block_at((blockX, blockY))
+                    block = self.scene.get_top_block_at(Coord(blockX, blockY))
                 if(not block):
                     vacant = False
                 elif(not block.has_vacancy()):
                     vacant = False
                 if(vacant):
-                    vacancies.append( (blockX, blockY) )
+                    vacancies.append(Coord(blockX, blockY))
                 #
                 blockX += 1                    
             #
@@ -190,34 +190,35 @@ class PlayerBrain(brain.Brain):
         if(not self.scene.valid_coord(coord)):
             return False
         #filter out current coord
-        if( coord[0] == self.coord[0] and coord[1] == self.coord[1]):
+        #if( coord[0] == self.coord[0] and coord[1] == self.coord[1]):
+        if( coord.x == self.coord.x and coord.y == self.coord.y):
             return False        
         #filter out previous coord
-        if( coord[0] == self.old_coord[0] and coord[1] == self.old_coord[1]):
+        if( coord.x == self.old_coord.x and coord.y == self.old_coord.y):
             return False
         #else
         #filter north west
-        if( coord[0] == self.coord[0] - 1 and coord[1] == self.coord[1] + 1):
+        if( coord.x == self.coord.x - 1 and coord.y == self.coord.y + 1):
             return False
         #filter north east
-        if( coord[0] == self.coord[0] + 1 and coord[1] == self.coord[1] + 1):
+        if( coord.x == self.coord.x + 1 and coord.y == self.coord.y + 1):
             return False
         #filter south east
-        if( coord[0] == self.coord[0] + 1 and coord[1] == self.coord[1] - 1):
+        if( coord.x == self.coord.x + 1 and coord.y == self.coord.y - 1):
             return False
         #filter south west
-        if( coord[0] == self.coord[0] - 1 and coord[1] == self.coord[1] - 1):
+        if( coord.x == self.coord.x - 1 and coord.y == self.coord.y - 1):
             return False
         #else
         return True
         
     def move_to(self, newCoord):
        self.del_bubble()
-       self.scene.transfer(self.node, self.coord, [newCoord[0], newCoord[1]]) #hmmm...
+       self.scene.transfer(self.node, self.coord, newCoord)
        self.on_move()
        
     def search_for_items(self):
-        block = self.scene.get_top_block_at(self.coord) #f6:shorten this?
+        block = self.scene.get_top_block_at(self.coord)
         if(not isinstance(block, GroupBlock)):
             return None
         nodes = block.nodes

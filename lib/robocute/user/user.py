@@ -1,13 +1,13 @@
 #lib
-from camera import *
-from mouse import *
+from robocute.camera import *
+from robocute.mouse import *
 #pyglet
 from pyglet.window import key
 #system
 import sys
 
-from robo.message import *
-from node import *
+from robocute.robo.message import *
+from robocute.node import *
 
 fudge = (50, 50) #fixme:hack for camera
 
@@ -15,7 +15,6 @@ class User(object):
     def __init__(self, scene):
         self.scene = scene
         self.avatar = scene.create_avatar("RoboBoy") #avatar is the brain!!!
-        self.avatar.start()
         #
         self.camera = Camera(scene)
         win = scene.window
@@ -29,7 +28,7 @@ class User(object):
         #better to just focus on the ground
         block = self.scene.get_top_block_at(self.avatar.coord)
         t = self.scene.get_block_transform(block, self.avatar.coord)
-        self.camera.look_at(t[0] + fudge[0], t[1] + fudge[1])
+        self.camera.look_at(t.x + fudge[0], t.y + fudge[1])
         #
         win.set_mouse_visible(False)
         self.mouse = Mouse()
@@ -39,7 +38,7 @@ class User(object):
         def on_avatar_move():
             block = self.scene.get_top_block_at(self.avatar.coord)
             t = self.scene.get_block_transform(block, self.avatar.coord)
-            self.camera.look_at(t[0] + fudge[0], t[1] + fudge[1])
+            self.camera.look_at(t.x + fudge[0], t.y + fudge[1])
             
             
         self.avatar.on_move = on_avatar_move

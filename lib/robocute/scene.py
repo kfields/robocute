@@ -3,10 +3,11 @@ import zipfile
 import xml.dom.minidom
 
 import data
+from grid import *
 from layer import *
 from builder import *
-from user import User
 from mouse import Mouse
+from user.user import *
 
 from pyglet.gl import *
 
@@ -26,6 +27,7 @@ class Reader(object):
 
     def __init__(self, scene, filename):
         self.scene = scene
+        self.grid = scene.grid
         self.builder = scene.get_builder()
         self.filename = filename
         #self.m_odf = zipfile.ZipFile(filename)
@@ -59,12 +61,12 @@ class Reader(object):
         for row in rows:
             self.read_row(row, rowNdx)
             rowNdx += 1
-        #self.scene.row_count = len(self.scene.rows)
-        firstRow = self.scene.rows[0]
+        #
+        firstRow = self.grid[0]
         colCount = len(firstRow)
         self.scene.col_count = colCount
         #
-        self.scene.rows.reverse() #need to reverse to match OpenGL coordinate system.
+        self.grid.reverse() #need to reverse to match OpenGL coordinate system.
 
     def read_row(self, row, rowNdx):
         #new
@@ -74,32 +76,33 @@ class Reader(object):
         else:
             repCount = int(repCountStr)
         while(repCount > 0):
-            tileRow = self.read_cells(row, rowNdx)
-            self.scene.rows.append(tileRow)
+            gridRow = self.read_cells(row, rowNdx)
+            self.grid.append(gridRow)
             repCount = repCount - 1
                     
     def read_cells(self, row, rowNdx):
-        tileRow = []
+        gridRow = Row()
         cells = row.getElementsByTagNameNS(OD_TABLE_NS, 'table-cell')
         colNdx = 0        
         for cell in cells:
-            self.read_cell(cell, tileRow, rowNdx, colNdx)
+            #self.read_cell(cell, gridRow, Coord(colNdx, rowNdx))
+            self.read_cell(cell, gridRow, Coord(colNdx, (self.scene.row_count-1) - rowNdx))
             colNdx += 1            
-        return tileRow
+        return gridRow
         
-    def read_cell(self, cell, tileRow, rowNdx, colNdx):
+    def read_cell(self, cell, gridRow, coord):
         repCountStr = cell.getAttributeNS(OD_TABLE_NS, 'number-columns-repeated')
         if(repCountStr == ''):
             repCount = 1
         else:
             repCount = int(repCountStr)
         cellTxt = get_text(cell)
-        nodes = []
-        #self.builder.produce(cellTxt, (colNdx, rowNdx), nodes)
-        self.builder.produce(cellTxt, (colNdx, (self.scene.row_count-1) - rowNdx), nodes)
+        cell = Cell()
+        #self.builder.produce(cellTxt, (colNdx, (self.scene.row_count-1) - rowNdx), cell)
+        self.builder.produce(cellTxt, coord, cell)
                 
         while(repCount > 0):
-            tileRow.append(nodes)
+            gridRow.append(cell)
             repCount = repCount - 1
 '''
 '''
@@ -108,6 +111,7 @@ class Scene(object):
     
     def __init__(self, win, filename):
         super(Scene, self).__init__()
+        #
         self.window = win
         #
         self.bots = []        
@@ -116,14 +120,12 @@ class Scene(object):
         #
         self.bgImg = image.load(data.filepath('image/clouds.jpg'))
         #
-        self.rows = [] # List of lists of lists.  3 dimensions.
+        self.grid = Grid() # List of lists of lists.  3 dimensions.
         self.row_count = 0
         self.col_count = 0
+        #
         rdr = Reader(self, filename)
         rdr.read()
-        #
-        for bot in self.bots:
-            bot.brain.start()
         #
         self.bubbles = BubbleLayer(self)
         #
@@ -131,6 +133,12 @@ class Scene(object):
         self.mice = MouseLayer(self)
         #User creation has to come last!!!
         self.user = User(self)        
+    
+    def start(self):
+        for bot in self.bots:
+            brain = bot.brain
+            if(brain):
+                brain.start()
         
     def get_window(self):
         return self.window
@@ -140,44 +148,38 @@ class Scene(object):
     
     def get_user(self):
         return self.user
-    
-    def get_rows(self):
-        return self.rows
-
-    def get_row_at(self, y):
-        return self.rows[y]
-    
+        
     def valid_coord(self, coord):
-        if(coord[0] < 0 or coord[0] > self.col_count - 1):
+        if(coord.x < 0 or coord.x > self.col_count - 1):
             return False
-        if(coord[1] < 0 or coord[1] > self.row_count - 1):
+        if(coord.y < 0 or coord.y > self.row_count - 1):
             return False
         return True
-        
-    def get_nodes_at(self, coord):
-        if(not self.valid_coord(coord)):
-            raise Exception('Invalid Coordinates: x: ', coord[0], ' y: ', coord[1])
-        #else
-        return self.rows[coord[1]][coord[0]]
 
+    def get_cell_at(self, coord):
+        if(not self.valid_coord(coord)):
+            raise Exception('Invalid Coordinates: x: ', coord.x, ' y: ', coord.y)
+        #else
+        return self.grid[coord.y][coord.x]
+    
     def get_top_at(self, coord):
-        nodes = self.get_nodes_at(coord)
-        if(not nodes):
+        cell = self.get_cell_at(coord)
+        if(not cell):
             return None
-        length = len(nodes)
+        length = len(cell)
         if(length == 0):
             raise Exception()
-        top = nodes[length-1]
+        top = cell[length-1]
         return top
 
     def get_top_block_at(self, coord):
-        nodes = self.get_nodes_at(coord)
-        if(not nodes):
+        cell = self.get_cell_at(coord)
+        if(not cell):
             return None
-        length = len(nodes)
+        length = len(cell)
         if(length == 0):
             raise Exception()
-        for top in reversed(nodes):
+        for top in reversed(cell):
             if(isinstance(top, GroupBlock)): #cripes!  It is shallow testing! Good in a way.
                 break            
             if(isinstance(top, Block)):
@@ -199,11 +201,11 @@ class Scene(object):
        if(not self.can_transfer(node, srcCoord, dstCoord)):
            return False
        #else
-       srcNodes = self.get_nodes_at(srcCoord)
-       pop_node(srcNodes, node)
+       srcCell = self.get_cell_at(srcCoord)
+       srcCell.remove_node(node)
        #
-       dstNodes = self.get_nodes_at(dstCoord)
-       push_node(dstNodes, node)
+       dstCell = self.get_cell_at(dstCoord)
+       dstCell.push_node(node)
        #
        brain = node.get_brain()
        if(brain != None):
@@ -221,10 +223,6 @@ class Scene(object):
     fixme:this may need to go into User
     '''
     def create_avatar(self, name):
-        #text = "[" + name + "()]"
-        #coord = [0, 0]
-        #nodes = self.get_nodes_at(coord)
-        #node = self.builder.produce(text, coord, nodes)
         node = Avatar()
         if(not node):
             raise Exception('No Avatar found in scene!!!')
@@ -305,7 +303,7 @@ class Scene(object):
         while(r >= r2): #rows in sheet
             c = c1
             blitY = r * BLOCK_ROW_HEIGHT
-            row = self.rows[r]
+            row = self.grid[r]
             while(c <= c2): #cells in row
                 blitX = c * BLOCK_WIDTH                
                 blitUp = 0
@@ -322,47 +320,36 @@ class Scene(object):
     '''
     This will get the transform of a group member
     '''
-    def get_member_transform(self, targetNode, coord):
-        nodes = self.get_nodes_at(coord)
+    def get_node_transform(self, targetNode, coord):
+        if(isinstance(targetNode, Block)):
+           return get_block_transform(targetNode, coord)
+        #else        
+        cell = self.get_cell_at(coord)
         blitUp = 0                                    
-        for node in nodes:
+        for node in cell:
             vu = node.get_vu()
-            if(vu != None):
-                blitUp = blitUp + vu.get_stack_height()
-            if(node == targetNode):
-                break
-                        
-        blitY = (coord[1] * BLOCK_ROW_HEIGHT)
-        t = [coord[0] * BLOCK_WIDTH, blitY + blitUp, 0]
+            blitUp = blitUp + vu.get_stack_height()
+            if(isinstance(node, GroupBlock)):
+                return vu.get_member_transform(Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT + blitUp), targetNode)
+        blitY = (coord.y * BLOCK_ROW_HEIGHT)
+        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
         return t
     '''
     This will get the transform of any block.
     '''    
     def get_block_transform(self, block, coord):
-        nodes = self.get_nodes_at(coord)
-        blitUp = 0                                    
-        for node in nodes:
+        cell = self.get_cell_at(coord)
+        blitUp = 0
+        for node in cell:
             if(node == block):
                 break
             vu = node.get_vu()
             if(vu != None):
                 blitUp = blitUp + vu.get_stack_height()        
-        blitY = (coord[1] * BLOCK_ROW_HEIGHT)
-        t = [coord[0] * BLOCK_WIDTH, blitY + blitUp, 0]
+        blitY = (coord.y * BLOCK_ROW_HEIGHT)
+        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
         return t
-    '''
-    Oh the pain ...
-    '''
-    def coord_to_transform(self,coord):
-        nodes = self.get_nodes_at(coord)
-        blitUp = 0                                    
-        for node in nodes:
-            vu = node.get_vu()
-            if(vu != None):
-                blitUp = blitUp + vu.get_stack_height()        
-        blitY = ((self.row_count - 1) * BLOCK_ROW_HEIGHT) -  (coord[1] * BLOCK_ROW_HEIGHT)
-        t = [coord[0] * BLOCK_WIDTH, blitY + blitUp, 0]
-        return t
+
     '''
     Bubbles:
     '''

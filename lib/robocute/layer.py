@@ -22,7 +22,7 @@ class BubbleLayer(Layer):
             vu = node.vu
             if(vu != None):
                 t = node.get_transform()
-                g.translate(t[0], t[1])
+                g.translate(t.x, t.y)
                 vu.draw(g)
 
 class Dash(Layer):
@@ -35,7 +35,7 @@ class Dash(Layer):
             vu = node.vu
             if(vu != None):
                 t = node.get_transform()
-                g.translate(t[0], t[1])
+                g.translate(t.x, t.y)
                 vu.draw(g)
 
 class MouseLayer(Layer):

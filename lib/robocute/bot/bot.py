@@ -21,8 +21,6 @@ class Bot(Node):
     '''
     def register(self, scene, coord):
         super(Bot, self).register(scene, coord)
-        #self.coord = coord
-        #self.scene = scene
         scene.add_bot(self)
         
     def start(self):

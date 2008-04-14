@@ -2,7 +2,8 @@
 from robocute.bot.bot import *
 from robocute.vu import *
 from brain import Brain
-from playerbrain import PlayerBrain
+from player import *
+from designer import *
 
 #was going to name it bot ... robo goes with the theme
     
@@ -23,42 +24,62 @@ class Avatar(Robo):
         global Avatar_singleton
         if not Avatar_singleton:
             #obj = object.__new__(cls)
-            obj = RoboBoy()
+            #obj = CharacterBoy()
             #obj = RoboCute()
+            obj = Designer()
             Avatar_singleton = obj
             obj.__init__(*args, **kargs)
         return Avatar_singleton
     def __init__(self):
         super(Avatar, self).__init__()
 
+class AbstractDesigner(Robo):
+    def __init__(self):
+        super(AbstractDesigner, self).__init__()
+        self.vu = RoboVu(self, 'Selector.png')
+        self.vu.hotspots = [] #clear the list
+
+class DesignerClone(AbstractDesigner):
+    def __init__(self):
+        super(DesignerClone, self).__init__()
+        self.brain = DesignerCloneBrain(self)
+        
+class Designer(AbstractDesigner):
+    def __init__(self):
+        super(Designer, self).__init__()
+        self.brain = DesignerBrain(self)
+        
+    def clone(self):
+        return DesignerClone()
+    
 class RoboCute(Robo):
     def __init__(self):
         super(RoboCute, self).__init__()
         self.brain = PlayerBrain(self)
         self.vu = RoboVu(self, 'robocute.png')
         
-class RoboBoy(Robo):
+class CharacterBoy(Robo):
     def __init__(self):
-        super(RoboBoy, self).__init__()
+        super(CharacterBoy, self).__init__()
         self.brain = PlayerBrain(self)
         self.vu = RoboVu(self, 'Character Boy.png')
         
-class RoboCatGirl(Robo):
+class CharacterCatGirl(Robo):
     def __init__(self):
-        super(RoboCatGirl, self).__init__()
+        super(CharacterCatGirl, self).__init__()
         self.vu = RoboVu(self, 'Character Cat Girl.png')
         
-class RoboHornGirl(Robo):
+class CharacterHornGirl(Robo):
     def __init__(self):
-        super(RoboHornGirl, self).__init__()
+        super(CharacterHornGirl, self).__init__()
         self.vu = RoboVu(self, 'Character Horn Girl.png')
         
-class RoboPinkGirl(Robo):
+class CharacterPinkGirl(Robo):
     def __init__(self):
-        super(RoboPinkGirl, self).__init__()
+        super(CharacterPinkGirl, self).__init__()
         self.vu = RoboVu(self, 'Character Pink Girl.png')
         
-class RoboPrincessGirl(Robo):
+class CharacterPrincessGirl(Robo):
     def __init__(self):
-        super(RoboPrincessGirl, self).__init__()
+        super(CharacterPrincessGirl, self).__init__()
         self.vu = RoboVu(self, 'Character Princess Girl.png')

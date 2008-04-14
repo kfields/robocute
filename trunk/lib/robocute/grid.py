@@ -22,8 +22,8 @@ class Cell(AbstractCell):
         if(len(self) ==0):
             self.append(node)
             return
+        #else
         top = self[len(self) - 1]
-    
         #top is group ... add to group
         if(isinstance(top, GroupBlock)):
             top.add_node(node)

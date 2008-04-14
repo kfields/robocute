@@ -1,6 +1,6 @@
 
 import brain
-from robocute.bubble.bubble import *
+from robocute.widget.bubble import *
 from robocute.item.item import *
 from robocute.block.block import *
 
@@ -55,7 +55,7 @@ class MainState(State):
         }[phase.key]()
     def enter(self):
         self.brain.update_dash()
-        self.brain.do(Say([Text('Roll!'), Image('icon/d12_128x128.png', lambda : self.brain.do(Phase('roll'))) ]))
+        self.brain.do(Say([Text('Roll!'), Image('icon/d12_128x128.png', lambda x: self.brain.do(Phase('roll'))) ]))
     def roll(self):
         die = int(random() * 12) + 1
         self.brain.die = die
@@ -190,7 +190,6 @@ class PlayerBrain(brain.Brain):
         if(not self.scene.valid_coord(coord)):
             return False
         #filter out current coord
-        #if( coord[0] == self.coord[0] and coord[1] == self.coord[1]):
         if( coord.x == self.coord.x and coord.y == self.coord.y):
             return False        
         #filter out previous coord
@@ -214,7 +213,8 @@ class PlayerBrain(brain.Brain):
         
     def move_to(self, newCoord):
        self.del_bubble()
-       self.scene.transfer(self.node, self.coord, newCoord)
+       #self.scene.transfer(self.node, self.coord, newCoord)
+       self.transfer(self.node, self.coord, newCoord)
        self.on_move()
        
     def search_for_items(self):

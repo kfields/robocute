@@ -36,3 +36,11 @@ class GoSouth(GoMessage):
 class GoWest(GoMessage):
     def __init__(self):
         pass
+#
+class DoBuild(Message):
+    def __init__(self, item):
+        self.item = item
+
+class DoDelete(Message):
+    def __init__(self):
+        pass

@@ -5,9 +5,12 @@ import xml.dom.minidom
 import data
 from grid import *
 from layer import *
+from dash import *
 from builder import *
 from mouse import Mouse
-from user.user import *
+#from user.user import *
+from user.player import *
+from user.designer import *
 
 from pyglet.gl import *
 
@@ -36,9 +39,6 @@ class Reader(object):
         #
         ostr = self.m_odf.read('content.xml')
         self.content = xml.dom.minidom.parseString(ostr)
-        #
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
             
     def read(self):
         tileRow = []
@@ -85,7 +85,6 @@ class Reader(object):
         cells = row.getElementsByTagNameNS(OD_TABLE_NS, 'table-cell')
         colNdx = 0        
         for cell in cells:
-            #self.read_cell(cell, gridRow, Coord(colNdx, rowNdx))
             self.read_cell(cell, gridRow, Coord(colNdx, (self.scene.row_count-1) - rowNdx))
             colNdx += 1            
         return gridRow
@@ -97,11 +96,14 @@ class Reader(object):
         else:
             repCount = int(repCountStr)
         cellTxt = get_text(cell)
-        cell = Cell()
-        #self.builder.produce(cellTxt, (colNdx, (self.scene.row_count-1) - rowNdx), cell)
-        self.builder.produce(cellTxt, coord, cell)
+        #cell = Cell()
+
+        #self.builder.produce(cellTxt, coord, cell)
                 
         while(repCount > 0):
+            cell = Cell()
+            self.builder.produce(cellTxt, coord, cell)
+            
             gridRow.append(cell)
             repCount = repCount - 1
 '''
@@ -130,9 +132,13 @@ class Scene(object):
         self.bubbles = BubbleLayer(self)
         #
         self.dash = Dash(self)
+        #
+        self.widgets = WidgetLayer(self)
+        #
         self.mice = MouseLayer(self)
         #User creation has to come last!!!
-        self.user = User(self)        
+        #self.user = Player(self)
+        self.user = Designer(self)
     
     def start(self):
         for bot in self.bots:
@@ -185,31 +191,7 @@ class Scene(object):
             if(isinstance(top, Block)):
                 break
         return top
-
-    def can_transfer(self, node, srcCoord, dstCoord):
-        #boundary check
-        if(not self.valid_coord(dstCoord)):
-            return False
-        #destination check
-        top = self.get_top_block_at(dstCoord)
-        if(not top.has_vacancy()):
-           return False
-       #good to go
-        return True
         
-    def transfer(self, node, srcCoord, dstCoord):
-       if(not self.can_transfer(node, srcCoord, dstCoord)):
-           return False
-       #else
-       srcCell = self.get_cell_at(srcCoord)
-       srcCell.remove_node(node)
-       #
-       dstCell = self.get_cell_at(dstCoord)
-       dstCell.push_node(node)
-       #
-       brain = node.get_brain()
-       if(brain != None):
-           brain.set_coord(dstCoord)
     '''
     Bots
         fixme:this class is getting too fat!!!
@@ -234,20 +216,17 @@ class Scene(object):
     '''
     Rendering
     '''
-    def draw(self, graphics):
+    def draw(self, graphics, camera):
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        #        
         self.draw_background(graphics)
         #
-        glPushMatrix()
-        #
-        glTranslatef(-graphics.x, -graphics.y, graphics.z)
-        #
-        self.draw_rows(graphics)
-        #
-        self.bubbles.draw(graphics)
-        #
-        glPopMatrix()
+        self.draw_world(camera)
         #
         self.dash.draw(graphics)
+        #
+        self.widgets.draw(graphics)        
         #
         self.mice.draw(graphics)
 
@@ -263,37 +242,60 @@ class Scene(object):
                 blitX = blitX + bgWidth
             blitY = blitY + bgHeight
     
+    def draw_world(self, graphics):
+        glPushMatrix()
+        #
+        glTranslatef(-graphics.x, -graphics.y, -graphics.z)
+        glScalef(graphics.scaleX, graphics.scaleY, graphics.scaleZ)        
+        #
+        self.draw_rows(graphics)
+        #
+        self.bubbles.draw(graphics)
+        #
+        glPopMatrix()
+        
     def draw_rows(self, graphics):
         g = graphics.copy()
+        query = g.query 
         #
-        #better to expand the view I think.
+        invScaleX = 1 / g.scaleX
+        invScaleY = 1 / g.scaleY
+        invScaleZ = 1 / g.scaleZ
         #
-        width = g.width + BLOCK_WIDTH
-        height = g.height + BLOCK_ROW_HEIGHT
-        bottom = g.y - BLOCK_ROW_HEIGHT
+        #width = g.width + BLOCK_WIDTH
+        width = int((g.width + BLOCK_WIDTH) * invScaleX)
+        #height = g.height + BLOCK_ROW_HEIGHT
+        height = int((g.height + BLOCK_ROW_HEIGHT) * invScaleY)
+        #bottom = g.y - BLOCK_ROW_HEIGHT
+        bottom = int((g.y - BLOCK_ROW_HEIGHT) * invScaleY)
         top = bottom + height
-        left = g.x - BLOCK_WIDTH
+        #left = g.x - BLOCK_WIDTH
+        left = int((g.x - BLOCK_WIDTH) * invScaleX)
         right = left + width
         #
         r1 = int(top * INV_BLOCK_ROW_HEIGHT)
+        #r1 = int(top * INV_BLOCK_ROW_HEIGHT * invScaleY)
         if(r1 < 0):
             r1 = 0
         if(r1 > self.row_count-1):
             r1 = self.row_count-1
         #  
         r2 = int(bottom * INV_BLOCK_ROW_HEIGHT)
+        #r2 = int(bottom * INV_BLOCK_ROW_HEIGHT * invScaleY)
         if(r2 < 0):
             r2 = 0
         if(r2 > self.row_count-1):
             r2 = self.row_count-1
         #
         c1 = int(left * INV_BLOCK_WIDTH)
+        #c1 = int(left * INV_BLOCK_WIDTH * invScaleX)
         if(c1 < 0):
             c1 = 0
         if(c1 > self.col_count-1):
             c1 = self.col_count-1          
         #  
         c2 = int(right * INV_BLOCK_WIDTH)
+        #c2 = int(right * INV_BLOCK_WIDTH * invScaleX)
         if(c2 < 0):
             c2 = 0
         if(c2 > self.col_count-1):
@@ -303,18 +305,19 @@ class Scene(object):
         while(r >= r2): #rows in sheet
             c = c1
             blitY = r * BLOCK_ROW_HEIGHT
-            row = self.grid[r]
             while(c <= c2): #cells in row
                 blitX = c * BLOCK_WIDTH                
                 blitUp = 0
-                nodes = row[c]                         
-                for node in nodes:
+                cell = self.grid[r][c]
+                if(query):
+                   query.cellX = c
+                   query.cellY = r
+                for node in cell:
                     vu = node.get_vu()
                     if(vu != None):                        
                         g.translate(blitX, blitY + blitUp)
                         vu.draw(g) 
                         blitUp = blitUp + vu.get_stack_height()
-
                 c += 1
             r -= 1            
     '''
@@ -358,7 +361,14 @@ class Scene(object):
     
     def remove_bubble(self, bubble):
         self.bubbles.remove_node(bubble)
-
+    '''
+    Widgets:
+    '''
+    def add_widget(self, widget):
+        self.widgets.add_node(widget)
+    
+    def remove_widget(self, widget):
+        self.widgets.remove_node(widget)
     '''
     Mouse Support
     '''

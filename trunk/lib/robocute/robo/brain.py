@@ -1,13 +1,16 @@
 
-import robocute.brain
-from robocute.bubble.bubble import *
+#import robocute.brain
+import robocute.bot.brain
+from robocute.widget.bubble import *
 
 from message import *
 
-class Brain(robocute.brain.Brain):
+#class Brain(robocute.brain.Brain):
+class Brain(robocute.bot.brain.Brain):
     def __init__(self, node):
         super(Brain, self).__init__(node)
         self.bubble = None
+        self.on_move = None
     
     def say(self, items):
         self.del_bubble()
@@ -30,14 +33,16 @@ class Brain(robocute.brain.Brain):
         self.del_bubble()
         #
         if(isinstance(msg, GoNorth)):
-           self.scene.transfer(self.node, self.coord, Coord(self.coord.x, self.coord.y + 1))
+           self.transfer_to(Coord(self.coord.x, self.coord.y + 1))
         elif(isinstance(msg, GoEast)):
-             self.scene.transfer(self.node, self.coord, Coord(self.coord.x + 1, self.coord.y))
+             self.transfer_to(Coord(self.coord.x + 1, self.coord.y))
         elif(isinstance(msg, GoSouth)):
-             self.scene.transfer(self.node, self.coord, Coord(self.coord.x, self.coord.y - 1))
+             self.transfer_to(Coord(self.coord.x, self.coord.y - 1))
         elif(isinstance(msg, GoWest)):
-             self.scene.transfer(self.node, self.coord, Coord(self.coord.x - 1, self.coord.y))
-        self.on_move()
+             self.transfer_to(Coord(self.coord.x - 1, self.coord.y))
+        #
+        if(self.on_move):
+            self.on_move()
                      
     def do(self, msg):
         success = True

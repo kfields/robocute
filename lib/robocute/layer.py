@@ -25,9 +25,9 @@ class BubbleLayer(Layer):
                 g.translate(t.x, t.y)
                 vu.draw(g)
 
-class Dash(Layer):
+class WidgetLayer(Layer):
     def __init__(self, scene):
-        super(Dash, self).__init__(scene)
+        super(WidgetLayer, self).__init__(scene)
         
     def draw(self, graphics):
         g = graphics.copy()

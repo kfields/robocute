@@ -41,9 +41,7 @@ class TreasureSpreaderBrain(bot.Brain):
     def explore(self, coord):
         cell = Cell()
         node = self.scene.get_top_at(coord)
-        if(not node):#how is this happening?
-            return cell
-        if(isinstance(node, NilNode)):
+        if(not node):
             return cell
         if(isinstance(node, GroupBlock)):
             return cell        
@@ -51,7 +49,7 @@ class TreasureSpreaderBrain(bot.Brain):
             return cell
         #else
         dstNodes = self.scene.get_cell_at(coord)
-        if(not dstNodes):#how is this happening?
+        if(not dstNodes):
             return cell
         treasure = {
           0 :'GemBlue()',

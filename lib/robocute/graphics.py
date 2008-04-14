@@ -13,6 +13,10 @@ class Graphics(object):
         self.width = 640
         self.height = 480
         #
+        self.scaleX = 1
+        self.scaleY = 1
+        self.scaleZ = 1
+        #
         self.clipX = 0
         self.clipY = 0
         self.clipWidth = 640
@@ -33,6 +37,11 @@ class Graphics(object):
         self.x = x
         self.y = y
         self.z = z
+    
+    def scale(self, scaleX, scaleY, scaleZ = 1.):
+        self.scaleX = scaleX
+        self.scaleY = scaleY
+        self.scaleZ = scaleZ
         
     def set_color(self,c):
         self.color = c
@@ -96,15 +105,31 @@ class Graphics(object):
     Reason being ... I don't like maintaining positions on the objects
     '''
 
-    
     def visit(self, vu):
-        if(not vu.clickable): #temporary hack
-            return
-        query = self.query
+        query = self.query        
         if(not query):
+            return        
+        if(not vu.has_hotspots()): #temporary hack
+            return
+        pos = self.unproject(query.x, query.y)
+        for hotspot in vu.hotspots:
+            hotX = self.x + hotspot.x
+            hotY = self.y + hotspot.y
+            hotWidth = hotspot.width
+            hotHeight = hotspot.height
+            if(pos[0] > hotX and pos[0] < hotX + hotWidth):
+                if(pos[1] > hotY and pos[1] < hotY + hotHeight):
+                    query.add_result(vu.node)
+                        
+    '''
+    def visit(self, vu):
+        query = self.query        
+        if(not query):
+            return        
+        if(not vu.clickable): #temporary hack
             return
         pos = self.unproject(query.x, query.y)
         if(pos[0] > self.x and pos[0] < self.x + vu.width):
             if(pos[1] > self.y and pos[1] < self.y + vu.height):
-                query.result.append(vu.node)
-                        
+                query.add_result(vu.node)
+    '''

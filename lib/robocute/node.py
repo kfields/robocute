@@ -55,24 +55,9 @@ class AbstractNode(object):
     #events
     def process(self, event):
         if(self.fn):
-            self.fn()
+            self.fn(self)
         print self, event
         
-#probably a dumb idea
-NilNode_singleton = None
-
-class NilNode(AbstractNode):
-    def __new__(cls, *args, **kargs):
-        global NilNode_singleton
-        if not NilNode_singleton:
-            obj = object.__new__(cls)
-            NilNode_singleton = obj
-            obj.__init__(*args, **kargs)
-        return NilNode_singleton
-    
-    def __init__(self):
-        super(NilNode, self).__init__()
-
 class Node(AbstractNode):
     def __init__(self, fn = None):
         super(Node, self).__init__(fn)
@@ -91,6 +76,9 @@ class Node(AbstractNode):
         if(self.brain != None):
             self.brain.set_scene(scene)
             self.brain.set_coord(coord)
+        if self.vu:
+            self.vu.validate() #fixme:ugh ...
+        
     
 '''
 Text Node

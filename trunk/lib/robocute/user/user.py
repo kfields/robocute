@@ -14,12 +14,15 @@ from robocute.block.block import *
 fudge = (BLOCK_WIDTH * .5, BLOCK_HEIGHT * .5) #fixme:hack for camera
 
 class User(object):
-    def __init__(self, scene):
-        self.scene = scene
-        self.avatar = scene.create_avatar("RoboBoy") #avatar is the brain!!!
+    def __init__(self, app):
+        self.app = app
+        self.scene = app.scene
+        self.world = app.world
+        self.avatar = self.create_avatar()
         #
-        self.camera = Camera(scene)
-        win = scene.window
+        #self.camera = Camera(self.scene)
+        self.camera = self.scene.create_camera()
+        win = app.window
         self.window = win
         #
         self.camera.width = win.width
@@ -28,8 +31,8 @@ class User(object):
         self.camera.clipHeight = win.height        
         #
         #better to just focus on the ground
-        block = self.scene.get_top_block_at(self.avatar.coord)
-        t = self.scene.get_block_transform(block, self.avatar.coord)
+        block = self.world.get_top_block_at(self.avatar.coord)
+        t = self.world.get_block_transform(block, self.avatar.coord)
         self.camera.look_at(t.x + fudge[0], t.y + fudge[1])
         #
         win.set_mouse_visible(False)
@@ -59,6 +62,10 @@ class User(object):
             self.on_mouse_drag(x, y, dx, dy, buttons, modifiers)
         win.on_mouse_drag = on_mouse_drag
 
+    def create_avatar(self):
+        avatar = self.app.create_avatar("RoboCute()") #avatar is the brain!!!
+        return avatar
+    
     def on_key_press(self, symbol, modifiers):
         if symbol == key.NUM_ADD:
             self.camera.zoom(self.camera.scaleX + .1, self.camera.scaleY + .1)
@@ -92,14 +99,11 @@ class User(object):
     
     def create_mousequery(self, events):
         return MouseQuery(events)
-    
-    def get_camera(self):
-        return self.camera
-    
+        
     def move_to(self, coord):
         self.coord = coord
-        block = self.scene.get_top_block_at(coord)        
-        t = self.scene.get_block_transform(block, coord) #fixme:this really needs to be fixed!
+        block = self.world.get_top_block_at(coord)        
+        t = self.world.get_block_transform(block, coord) #fixme:this really needs to be fixed!
         self.camera.look_at(t.x + fudge[0], t.y + fudge[1])
         
     

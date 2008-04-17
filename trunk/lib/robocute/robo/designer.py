@@ -1,18 +1,19 @@
 
 from player import *
 from robocute.catalog import *
+from robocute.ods.catalog import *
 
 class AbstractDesignerBrain(PlayerBrain):
     def __init__(self, node):
         super(AbstractDesignerBrain, self).__init__(node)
     def build(self, item):
-        cell = self.scene.get_cell_at(self.coord)
+        cell = self.grid.get_cell_at(self.coord)
         cell.remove_node(self.node)
-        self.scene.builder.produce(item.body, self.coord, cell, item)
+        self.app.build(item.body, self.coord, cell, item)
         cell.push_node(self.node)
         
     def delete(self):
-        cell = self.scene.get_cell_at(self.coord)
+        cell = self.grid.get_cell_at(self.coord)
         if(len(cell) == 1): #that's us!!
             return
         cell.remove_node(self.node)        
@@ -21,7 +22,7 @@ class AbstractDesignerBrain(PlayerBrain):
         
     def can_transfer(self, node, srcCoord, dstCoord):
         #boundary check
-        if(not self.scene.valid_coord(dstCoord)):
+        if(not self.grid.valid_coord(dstCoord)):
             return False
         return True
     
@@ -29,12 +30,12 @@ class AbstractDesignerBrain(PlayerBrain):
        if(not self.can_transfer(node, srcCoord, dstCoord)):
            return False
        #else
-       srcCell = self.scene.get_cell_at(srcCoord)
+       srcCell = self.grid.get_cell_at(srcCoord)
        srcCell.remove_node(node)
        #if(len(srcCell) == 0):
        #     print 'emptySrc'       
        #
-       dstCell = self.scene.get_cell_at(dstCoord)
+       dstCell = self.grid.get_cell_at(dstCoord)
        #if(len(dstCell) == 0):
        #     print 'emptyDst'
        # 
@@ -65,7 +66,7 @@ class DesignerBrain(AbstractDesignerBrain):
     
     def clear_clones(self):
         for clone in self.clones:
-            cell = self.scene.get_cell_at(clone.coord)
+            cell = self.grid.get_cell_at(clone.coord)
             cell.remove_node(clone.node)
         self.clones = []
                 
@@ -83,7 +84,10 @@ class DesignerBrain(AbstractDesignerBrain):
         
         def build(item):
             self.do(DoBuild(item))
-        self.catalog = Catalog('catalog/RoboCuteCatalog.ods', build, items)
+        self.catalog = Catalog(items)
+        rdr = Reader(self.catalog, 'catalog/Default.ods', build)
+        rdr.read()
+        
         self.drawer = self.scene.dash.create_drawer('Catalog', self.catalog)
         self.page = self.catalog.get_page('Terrain')
         self.drawer.add_node(self.page)
@@ -110,7 +114,7 @@ class DesignerBrain(AbstractDesignerBrain):
         
     def filter_coord(self, coord):
         #filter invalid coord
-        if(not self.scene.valid_coord(coord)):
+        if(not self.grid.valid_coord(coord)):
             return False
         #filter out current coord
         if( coord.x == self.coord.x and coord.y == self.coord.y):
@@ -122,13 +126,13 @@ class DesignerBrain(AbstractDesignerBrain):
         if(not self.filter_coord(coord)):
             return
         #else
-        clone = self.node.clone()
-        cell = self.scene.get_cell_at(coord)
+        clone = self.node.clone(self.app, coord)
+        cell = self.grid.get_cell_at(coord)
         cell.push_node(clone)
         #
         cloneBrain = clone.brain
-        cloneBrain.scene = self.scene
-        cloneBrain.coord = coord
+        #cloneBrain.scene = self.scene
+        #cloneBrain.coord = coord
         self.clones.append(cloneBrain)        
         
     def do(self, msg):

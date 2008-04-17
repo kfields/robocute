@@ -4,7 +4,10 @@ import copy
 '''
 This file is the bottom of the import heirarchy so I'm gonna stick fundamentals in here for now.
 '''
-
+WORLD_GRID_ROW_MAX = 64
+WORLD_GRID_COL_MAX = 64
+WORLD_GRID_CACHE_ROW_COUNT= 64
+WORLD_GRID_CACHE_COL_COUNT = 64
 '''
 Block Coordinates
 '''
@@ -44,11 +47,7 @@ class AbstractNode(object):
     def deep_copy(self):
         return copy.deepcopy(self)
     #   
-    def set_vu(self, vu):
-        self.vu = vu
-    def get_vu(self):
-        return self.vu
-    def register(self, scene, coord):
+    def register(self, app, coord):
         pass
     def has_vacancy(self):
         return False
@@ -72,10 +71,9 @@ class Node(AbstractNode):
         return Transform(self.x, self.y)
     def get_brain(self):
         return self.brain
-    def register(self, scene, coord):
+    def register(self, app, coord):
         if(self.brain != None):
-            self.brain.set_scene(scene)
-            self.brain.set_coord(coord)
+            self.brain.register(app, coord)
         if self.vu:
             self.vu.validate() #fixme:ugh ...
         

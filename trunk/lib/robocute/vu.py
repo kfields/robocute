@@ -2,9 +2,10 @@
 
 import data
 
-from graphics import *
-
+import pyglet
 from pyglet import image
+
+from graphics import *
 
 
 '''

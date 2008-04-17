@@ -17,7 +17,6 @@ class Robo(Bot):
     def __init__(self):
         super(Robo, self).__init__()
 '''
-'''
 Avatar_singleton = None
 class Avatar(Robo):
     def __new__(cls, *args, **kargs):
@@ -32,7 +31,7 @@ class Avatar(Robo):
         return Avatar_singleton
     def __init__(self):
         super(Avatar, self).__init__()
-
+'''
 class AbstractDesigner(Robo):
     def __init__(self):
         super(AbstractDesigner, self).__init__()
@@ -49,9 +48,11 @@ class Designer(AbstractDesigner):
         super(Designer, self).__init__()
         self.brain = DesignerBrain(self)
         
-    def clone(self):
-        return DesignerClone()
-    
+    def clone(self, app, coord):
+        clone = DesignerClone()
+        clone.register(app, coord)
+        return clone
+        
 class RoboCute(Robo):
     def __init__(self):
         super(RoboCute, self).__init__()

@@ -33,13 +33,3 @@ class Camera(Graphics):
         #
         self.clipX = tX
         self.clipY = tY        
-    '''
-    def look_at(self, x, y):        
-        tX = x - ( self.width * .5)
-        tY = y - ( self.height * .5)
-        #
-        self.translate(tX, tY)
-        #
-        self.clipX = tX
-        self.clipY = tY
-    '''

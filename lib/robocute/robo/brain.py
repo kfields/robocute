@@ -19,14 +19,14 @@ class Brain(robocute.bot.brain.Brain):
 
     def add_bubble(self, bubble):
         coord = self.get_coord()
-        t = self.scene.get_node_transform(self.node, coord)
+        t = self.grid.get_node_transform(self.node, coord)
         t.x += self.node.vu.width
         bubble.set_transform(t)
-        self.scene.add_bubble(bubble)
+        self.app.scene.add_bubble(bubble)
 
     def del_bubble(self):
         if(self.bubble != None):
-            self.scene.remove_bubble(self.bubble)
+            self.app.scene.remove_bubble(self.bubble)
             self.bubble = None
         
     def go(self, msg):

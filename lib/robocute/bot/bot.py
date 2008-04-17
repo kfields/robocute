@@ -19,9 +19,14 @@ class Bot(Node):
     This is that post constructor we need.
     Idea is to add ourselves to Scene list of spreaders, fillers, mappers, etc.
     '''
-    def register(self, scene, coord):
-        super(Bot, self).register(scene, coord)
-        scene.add_bot(self)
-        
+    def register(self, app, coord):
+        super(Bot, self).register(app, coord)
+        def start():
+            brain = self.brain
+            if(brain):
+                brain.start()            
+        app.add_callback(start)
+    '''
     def start(self):
         pass
+    '''

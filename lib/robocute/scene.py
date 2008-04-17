@@ -1,133 +1,40 @@
+'''
 import os, sys
 import zipfile
 import xml.dom.minidom
 
 import data
-from grid import *
+'''
+import camera
+from node import *
+from world import *
 from layer import *
 from dash import *
-from builder import *
 from mouse import Mouse
-#from user.user import *
-from user.player import *
-from user.designer import *
 
 from pyglet.gl import *
 
-OD_TABLE_NS = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0'
-
-def get_text(node):
-    text = ''
-    for child in node.childNodes:
-        if child.nodeType == child.ELEMENT_NODE:
-            text = text+get_text(child)
-        elif child.nodeType == child.TEXT_NODE:
-            text = text+child.nodeValue
-
-    return text
-
-class Reader(object):
-
-    def __init__(self, scene, filename):
-        self.scene = scene
-        self.grid = scene.grid
-        self.builder = scene.get_builder()
-        self.filename = filename
-        #self.m_odf = zipfile.ZipFile(filename)
-        self.m_odf = data.load_zip(filename)
-        self.filelist = self.m_odf.infolist()
-        #
-        ostr = self.m_odf.read('content.xml')
-        self.content = xml.dom.minidom.parseString(ostr)
-            
-    def read(self):
-        tileRow = []
-        self.read_sheets()
+class Camera(camera.Camera):
+    def __init__(self, scene):
+        super(Camera, self).__init__(scene)
+        self.rowCount = 3
+        self.colCount = 3
+        #self.data = [[None] * self.colCount ] * self.rowCount
+        self.data = []
+        i = 0
+        while i < self.rowCount:
+            self.data.append([None] * self.colCount)
+            i += 1
         
-    def read_sheets(self):
-        doc = self.content
-        sheets = doc.getElementsByTagNameNS(OD_TABLE_NS, 'table')
-        for sheet in sheets:
-            self.read_sheet(sheet)
-            
-    def read_sheet(self, sheet):
-        sheet_name = sheet.getAttributeNS(OD_TABLE_NS, 'name')
-        self.read_rows(sheet)
-        
-    def read_rows(self, sheet):
-        rows = sheet.getElementsByTagNameNS(OD_TABLE_NS, 'table-row')
-        self.scene.row_count = len(rows)
-        rowNdx = 0
-        for row in rows:
-            self.read_row(row, rowNdx)
-            rowNdx += 1
-        #
-        firstRow = self.grid[0]
-        colCount = len(firstRow)
-        self.scene.col_count = colCount
-        #
-        self.grid.reverse() #need to reverse to match OpenGL coordinate system.
-
-    def read_row(self, row, rowNdx):
-        #new
-        repCountStr = row.getAttributeNS(OD_TABLE_NS, 'number-rows-repeated')
-        if(repCountStr == ''):
-            repCount = 1
-        else:
-            repCount = int(repCountStr)
-        while(repCount > 0):
-            gridRow = self.read_cells(row, rowNdx)
-            self.grid.append(gridRow)
-            repCount = repCount - 1
-                    
-    def read_cells(self, row, rowNdx):
-        gridRow = Row()
-        cells = row.getElementsByTagNameNS(OD_TABLE_NS, 'table-cell')
-        colNdx = 0        
-        for cell in cells:
-            self.read_cell(cell, gridRow, Coord(colNdx, (self.scene.row_count-1) - rowNdx))
-            colNdx += 1            
-        return gridRow
-        
-    def read_cell(self, cell, gridRow, coord):
-        repCountStr = cell.getAttributeNS(OD_TABLE_NS, 'number-columns-repeated')
-        if(repCountStr == ''):
-            repCount = 1
-        else:
-            repCount = int(repCountStr)
-        cellTxt = get_text(cell)
-        #cell = Cell()
-
-        #self.builder.produce(cellTxt, coord, cell)
-                
-        while(repCount > 0):
-            cell = Cell()
-            self.builder.produce(cellTxt, coord, cell)
-            
-            gridRow.append(cell)
-            repCount = repCount - 1
-'''
-'''
-
-class Scene(object):
+class Scene(Vu):
     
-    def __init__(self, win, filename):
-        super(Scene, self).__init__()
+    def __init__(self, world, app, win):
+        super(Scene, self).__init__(world)
         #
+        self.app = app
         self.window = win
         #
-        self.bots = []        
-        #
-        self.builder = Builder(self)
-        #
         self.bgImg = image.load(data.filepath('image/clouds.jpg'))
-        #
-        self.grid = Grid() # List of lists of lists.  3 dimensions.
-        self.row_count = 0
-        self.col_count = 0
-        #
-        rdr = Reader(self, filename)
-        rdr.read()
         #
         self.bubbles = BubbleLayer(self)
         #
@@ -136,83 +43,10 @@ class Scene(object):
         self.widgets = WidgetLayer(self)
         #
         self.mice = MouseLayer(self)
-        #User creation has to come last!!!
-        #self.user = Player(self)
-        self.user = Designer(self)
     
-    def start(self):
-        for bot in self.bots:
-            brain = bot.brain
-            if(brain):
-                brain.start()
-        
-    def get_window(self):
-        return self.window
-    
-    def get_builder(self):
-        return self.builder
-    
-    def get_user(self):
-        return self.user
-        
-    def valid_coord(self, coord):
-        if(coord.x < 0 or coord.x > self.col_count - 1):
-            return False
-        if(coord.y < 0 or coord.y > self.row_count - 1):
-            return False
-        return True
-
-    def get_cell_at(self, coord):
-        if(not self.valid_coord(coord)):
-            raise Exception('Invalid Coordinates: x: ', coord.x, ' y: ', coord.y)
-        #else
-        return self.grid[coord.y][coord.x]
-    
-    def get_top_at(self, coord):
-        cell = self.get_cell_at(coord)
-        if(not cell):
-            return None
-        length = len(cell)
-        if(length == 0):
-            raise Exception()
-        top = cell[length-1]
-        return top
-
-    def get_top_block_at(self, coord):
-        cell = self.get_cell_at(coord)
-        if(not cell):
-            return None
-        length = len(cell)
-        if(length == 0):
-            raise Exception()
-        for top in reversed(cell):
-            if(isinstance(top, GroupBlock)): #cripes!  It is shallow testing! Good in a way.
-                break            
-            if(isinstance(top, Block)):
-                break
-        return top
-        
-    '''
-    Bots
-        fixme:this class is getting too fat!!!
-    '''
-    def add_bot(self, bot):
-        self.bots.append(bot)
-    def remove_bot(self, bot):
-        self.bots.remove(bot)
-    '''
-    Avatar Support
-    fixme:this may need to go into User
-    '''
-    def create_avatar(self, name):
-        node = Avatar()
-        if(not node):
-            raise Exception('No Avatar found in scene!!!')
-        brain = node.get_brain()
-        if(brain == None):
-           raise Exception("This node has no brain!")
-        #
-        return brain
+    def create_camera(self):
+        camera = Camera(self)
+        return camera
     '''
     Rendering
     '''
@@ -242,117 +76,109 @@ class Scene(object):
                 blitX = blitX + bgWidth
             blitY = blitY + bgHeight
     
-    def draw_world(self, graphics):
+    def draw_world(self, camera):
         glPushMatrix()
         #
-        glTranslatef(-graphics.x, -graphics.y, -graphics.z)
-        glScalef(graphics.scaleX, graphics.scaleY, graphics.scaleZ)        
+        glTranslatef(-camera.x, -camera.y, -camera.z)
+        glScalef(camera.scaleX, camera.scaleY, camera.scaleZ)        
         #
-        self.draw_rows(graphics)
+        #self.node.grid.vu.draw(camera)
+        self.draw_grids(camera)
         #
-        self.bubbles.draw(graphics)
+        self.bubbles.draw(camera)
         #
         glPopMatrix()
-        
-    def draw_rows(self, graphics):
-        g = graphics.copy()
+
+    '''
+    WORLD_GRID_WIDTH = WORLD_GRID_COL_MAX * BLOCK_WIDTH
+    WORLD_GRID_HEIGHT = WORLD_GRID_ROW_MAX * BLOCK_ROW_HEIGHT
+    WORLD_GRID_CACHE_WIDTH = WORLD_GRID_CACHE_COL_COUNT * WORLD_GRID_WIDTH
+    WORLD_GRID_CACHE_HEIGHT = WORLD_GRID_CACHE_ROW_COUNT * WORLD_GRID_HEIGHT
+    '''
+
+    def draw_grids(self, camera):
+        #g = camera.copy()
+        g = camera
         query = g.query 
         #
-        invScaleX = 1 / g.scaleX
-        invScaleY = 1 / g.scaleY
-        invScaleZ = 1 / g.scaleZ
+        invScaleX = 1. / g.scaleX
+        invScaleY = 1. / g.scaleY
+        invScaleZ = 1. / g.scaleZ
         #
-        #width = g.width + BLOCK_WIDTH
+        gridWidth = self.node.gridColMax * BLOCK_WIDTH
+        invGridWidth = 1. / gridWidth 
+        gridHeight = self.node.gridRowMax * BLOCK_ROW_HEIGHT
+        invGridHeight = 1. / gridHeight
+        #
         width = int((g.width + BLOCK_WIDTH) * invScaleX)
-        #height = g.height + BLOCK_ROW_HEIGHT
         height = int((g.height + BLOCK_ROW_HEIGHT) * invScaleY)
-        #bottom = g.y - BLOCK_ROW_HEIGHT
         bottom = int((g.y - BLOCK_ROW_HEIGHT) * invScaleY)
         top = bottom + height
-        #left = g.x - BLOCK_WIDTH
         left = int((g.x - BLOCK_WIDTH) * invScaleX)
         right = left + width
         #
-        r1 = int(top * INV_BLOCK_ROW_HEIGHT)
-        #r1 = int(top * INV_BLOCK_ROW_HEIGHT * invScaleY)
+        rowCount = camera.rowCount
+        rowMax = rowCount - 1 
+        colCount = camera.colCount
+        colMax = colCount - 1         
+        #
+        r1 = int(top * invGridHeight)
         if(r1 < 0):
             r1 = 0
-        if(r1 > self.row_count-1):
-            r1 = self.row_count-1
+        if(r1 > rowMax):
+            r1 = rowMax
         #  
-        r2 = int(bottom * INV_BLOCK_ROW_HEIGHT)
-        #r2 = int(bottom * INV_BLOCK_ROW_HEIGHT * invScaleY)
+        r2 = int(bottom * invGridHeight)
         if(r2 < 0):
             r2 = 0
-        if(r2 > self.row_count-1):
-            r2 = self.row_count-1
+        if(r2 > rowMax):
+            r2 = rowMax
         #
-        c1 = int(left * INV_BLOCK_WIDTH)
-        #c1 = int(left * INV_BLOCK_WIDTH * invScaleX)
+        c1 = int(left * invGridWidth)
         if(c1 < 0):
             c1 = 0
-        if(c1 > self.col_count-1):
-            c1 = self.col_count-1          
+        if(c1 > colMax):
+            c1 = colMax          
         #  
-        c2 = int(right * INV_BLOCK_WIDTH)
-        #c2 = int(right * INV_BLOCK_WIDTH * invScaleX)
+        c2 = int(right * invGridWidth)
         if(c2 < 0):
             c2 = 0
-        if(c2 > self.col_count-1):
-            c2 = self.col_count-1
+        if(c2 > colMax):
+            c2 = colMax
         #
         r = r1
         while(r >= r2): #rows in sheet
+            row = camera.data[r]
+            if len(row) == 0:
+                c += 1
+                continue
             c = c1
-            blitY = r * BLOCK_ROW_HEIGHT
+            blitY = r * gridHeight
             while(c <= c2): #cells in row
-                blitX = c * BLOCK_WIDTH                
-                blitUp = 0
-                cell = self.grid[r][c]
-                if(query):
-                   query.cellX = c
-                   query.cellY = r
-                for node in cell:
-                    vu = node.get_vu()
-                    if(vu != None):                        
-                        g.translate(blitX, blitY + blitUp)
-                        vu.draw(g) 
-                        blitUp = blitUp + vu.get_stack_height()
+                blitX = c * gridWidth                
+                grid = row[c]
+                if not grid:
+                    #c += 1
+                    self.cache_miss(camera, r, c)
+                    continue
+                #else
+                self.draw_grid(grid, camera, blitX, blitY, camera.z)
                 c += 1
             r -= 1            
-    '''
-    This will get the transform of a group member
-    '''
-    def get_node_transform(self, targetNode, coord):
-        if(isinstance(targetNode, Block)):
-           return get_block_transform(targetNode, coord)
-        #else        
-        cell = self.get_cell_at(coord)
-        blitUp = 0                                    
-        for node in cell:
-            vu = node.get_vu()
-            blitUp = blitUp + vu.get_stack_height()
-            if(isinstance(node, GroupBlock)):
-                return vu.get_member_transform(Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT + blitUp), targetNode)
-        blitY = (coord.y * BLOCK_ROW_HEIGHT)
-        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
-        return t
-    '''
-    This will get the transform of any block.
-    '''    
-    def get_block_transform(self, block, coord):
-        cell = self.get_cell_at(coord)
-        blitUp = 0
-        for node in cell:
-            if(node == block):
-                break
-            vu = node.get_vu()
-            if(vu != None):
-                blitUp = blitUp + vu.get_stack_height()        
-        blitY = (coord.y * BLOCK_ROW_HEIGHT)
-        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
-        return t
-
+    
+    def cache_miss(self, camera, rowNdx, colNdx):
+        camera.data[rowNdx][colNdx] = self.node.get_grid(colNdx, rowNdx)
+        
+    def draw_grid(self, grid, camera, tX, tY, tZ = 1.):
+        g = camera
+        #
+        glPushMatrix()
+        glTranslatef(tX, tY, tZ)
+        #
+        grid.vu.draw(g)
+        #
+        glPopMatrix()
+        
     '''
     Bubbles:
     '''

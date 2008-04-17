@@ -16,7 +16,21 @@ INV_BLOCK_WIDTH = 1. / BLOCK_WIDTH
 INV_BLOCK_HEIGHT = 1. / BLOCK_HEIGHT
 INV_BLOCK_STACK_HEIGHT = 1. / BLOCK_STACK_HEIGHT
 INV_BLOCK_ROW_HEIGHT = 1. / BLOCK_ROW_HEIGHT
-
+#
+WORLD_GRID_ROW_MAX = 64
+WORLD_GRID_COL_MAX = 64
+WORLD_GRID_CACHE_ROW_COUNT= 64
+WORLD_GRID_CACHE_COL_COUNT = 64
+#
+WORLD_GRID_WIDTH = WORLD_GRID_COL_MAX * BLOCK_WIDTH
+WORLD_GRID_HEIGHT = WORLD_GRID_ROW_MAX * BLOCK_ROW_HEIGHT
+WORLD_GRID_CACHE_WIDTH = WORLD_GRID_CACHE_COL_COUNT * WORLD_GRID_WIDTH
+WORLD_GRID_CACHE_HEIGHT = WORLD_GRID_CACHE_ROW_COUNT * WORLD_GRID_HEIGHT
+#
+INV_WORLD_GRID_WIDTH = 1. / WORLD_GRID_WIDTH
+INV_WORLD_GRID_HEIGHT = 1. / WORLD_GRID_HEIGHT
+INV_WORLD_GRID_CACHE_WIDTH = 1. / WORLD_GRID_CACHE_WIDTH
+INV_WORLD_GRID_CACHE_HEIGHT = 1. / WORLD_GRID_CACHE_HEIGHT
 '''
 '''
 class BlockVu(ImageVu):
@@ -41,7 +55,7 @@ class GroupBlockVu(Vu):
     def get_stack_height(self):
         '''
         if(len(self.node.nodes) != 0):
-            vu = self.node.nodes[0].get_vu()
+            vu = self.node.nodes[0].vu
             if(vu != None):
                 return vu.get_stack_height() #fixme:temporary hack.  calc tallest node!
         #else
@@ -51,7 +65,7 @@ class GroupBlockVu(Vu):
     def draw(self, graphics):
         g = graphics.copy()
         for node in self.node.nodes:
-            vu = node.get_vu()
+            vu = node.vu
             if(vu != None):
                 vu.draw(g)
                 g.x += 10
@@ -60,7 +74,7 @@ class GroupBlockVu(Vu):
     def get_member_transform(self, transform, memberNode):
         t = transform.copy()
         for node in self.node.nodes:
-            vu = node.get_vu()
+            vu = node.vu
             if(vu != None):
                 t.x += 10
                 t.y -= 10
@@ -87,6 +101,12 @@ class GroupBlock(Node):
     
     def has_vacancy(self):
         return True
+
+class HomeBlock(GroupBlock):
+    def __init__(self):
+        super(HomeBlock, self).__init__()
+    def register(self, app, coord):
+        app.add_home(self, coord)
 
 class SpawnBlock(GroupBlock):
     def __init__(self, spawn):

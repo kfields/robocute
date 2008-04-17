@@ -35,10 +35,14 @@ class DesignerMouseQuery(MouseQuery):
         
 class Designer(User):
     
-    def __init__(self, scene):
-        super(Designer, self).__init__(scene)
+    def __init__(self, app):
+        super(Designer, self).__init__(app)
         #self.selector = self.avatar
         self.coord = self.avatar.coord
+
+    def create_avatar(self):
+        avatar = self.app.create_avatar("Designer()") #avatar is the brain!!!
+        return avatar
         
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:

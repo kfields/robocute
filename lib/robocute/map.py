@@ -1,5 +1,5 @@
 
-from node import Coord
+from node import *
 
 class Cell(object):
     def __init__(self):
@@ -7,10 +7,16 @@ class Cell(object):
         self.vacancy = False
         
 class Map(object):
-    def __init__(self, width, height):
-        self.width = width  
+    def __init__(self, coordX, coordY, width, height):
+        self.coordX = coordX
+        self.coordY = coordY
+        self.width = width
         self.height = height
-        self.rows = [ [ None ] * width ] * height #produces same instance!!! Bad.                
+        self.rows = []
+        i = 0
+        while i < self.height:
+            self.rows.append([None] * self.width)
+            i += 1
     
     def cell_at(self, x, y):
         #print 'x: ', x, 'y: ', y
@@ -24,7 +30,8 @@ class Explorer(object):
     def explore(self, x, y):
         map = self.map
         #
-        cell = self.callback(Coord(x, y))
+        #cell = self.callback(Coord(x, y))
+        cell = self.callback(Coord(map.coordX + x, map.coordY + y))
         #
         if(not cell.vacancy):
             return

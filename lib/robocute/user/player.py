@@ -3,7 +3,11 @@ from user import *
 class Player(User):
     def __init__(self, scene):
         super(Player, self).__init__(scene)
-        
+
+    def create_avatar(self):
+        avatar = self.app.create_avatar("CharacterBoy()") #avatar is the brain!!!
+        return avatar
+
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             sys.exit()        

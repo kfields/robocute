@@ -41,7 +41,9 @@ class StartState(State):
         self.brain.do(Say([Text('Click icons to do stuff!') ]))
         self.brain.schedule(Phase('play'), 3.0)
     def play(self):
-        fn = lambda : self.brain.schedule(Transition('main'), .5)
+        #fn = lambda : self.brain.schedule(Transition('main'), .5)
+        def fn(nada):
+            self.brain.schedule(Transition('main'), .5)
         self.brain.do(Say([Text("Let's play!"), Image('icon/lc_browseforward.png', fn) ]))
         
 class MainState(State):
@@ -171,7 +173,7 @@ class PlayerBrain(brain.Brain):
             while(blockX < coord.x + 2):
                 vacant = self.filter_coord(Coord(blockX, blockY))
                 if(vacant):
-                    block = self.scene.get_top_block_at(Coord(blockX, blockY))
+                    block = self.grid.get_top_block_at(Coord(blockX, blockY))
                 if(not block):
                     vacant = False
                 elif(not block.has_vacancy()):
@@ -187,7 +189,7 @@ class PlayerBrain(brain.Brain):
         
     def filter_coord(self, coord):
         #filter invalid coord
-        if(not self.scene.valid_coord(coord)):
+        if(not self.grid.valid_coord(coord)):
             return False
         #filter out current coord
         if( coord.x == self.coord.x and coord.y == self.coord.y):
@@ -218,7 +220,7 @@ class PlayerBrain(brain.Brain):
        self.on_move()
        
     def search_for_items(self):
-        block = self.scene.get_top_block_at(self.coord)
+        block = self.grid.get_top_block_at(self.coord)
         if(not isinstance(block, GroupBlock)):
             return None
         nodes = block.nodes
@@ -229,7 +231,7 @@ class PlayerBrain(brain.Brain):
         return result
         
     def take_items(self, items):
-        block = self.scene.get_top_block_at(self.coord)
+        block = self.grid.get_top_block_at(self.coord)
         for item in items:
             block.remove_node(item)
             

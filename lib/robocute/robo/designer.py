@@ -1,9 +1,10 @@
 
-from player import *
+import brain
 from robocute.catalog import *
 from robocute.ods.catalog import *
+from message import *
 
-class AbstractDesignerBrain(PlayerBrain):
+class AbstractDesignerBrain(brain.Brain):
     def __init__(self, node):
         super(AbstractDesignerBrain, self).__init__(node)
     def build(self, item):

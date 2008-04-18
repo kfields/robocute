@@ -1,12 +1,18 @@
 from graphics import *
 
-class Camera(Graphics):
+class Camera(Clip):
     
-    def __init__(self, scene):
-        super(Camera, self).__init__()
-        self.focalX = 0
-        self.focalY = 0
-        self.focalZ = 0
+    def __init__(self, x = 0, y = 0, z = 1., width = 640, height = 480):
+        super(Camera, self).__init__(x, y, z, width, height)
+        #
+        self.focalX = x
+        self.focalY = y
+        self.focalZ = z
+        #
+        self.deviceWidth = width
+        self.deviceHeight = height
+        #
+        self.graphics = Graphics()
     
     def look_at(self, x, y, z = 0):
         self.focalX = x
@@ -15,21 +21,32 @@ class Camera(Graphics):
         self.validate()
         
     def zoom(self, zoomX, zoomY, zoomZ = 1.):
-        self.scale(zoomX, zoomY, zoomZ)
+        g = self.graphics
+        g.scale(g.scaleX + zoomX, g.scaleY + zoomY, 1.)
         self.validate()
         
     def validate(self):
-        scaleX =  self.scaleX
-        scaleY =  self.scaleY        
+        g = self.graphics
+        clip = g.clip
+        scaleX = g.scaleX
+        scaleY = g.scaleY        
         invScaleX =  1 / scaleX
         invScaleY =  1 / scaleY
         #
-        #tX = (x - ( self.width * .5)) * invScaleX
-        tX = int((self.focalX - ( self.width * .5 * invScaleX)) * scaleX)
-        #tY = (y - ( self.height * .5)) * invScaleY
-        tY = int((self.focalY - ( self.height * .5 * invScaleY)) * scaleY)
+        self.width = int(self.deviceWidth * invScaleX)
+        self.height = int(self.deviceHeight * invScaleY)
         #
-        self.translate(tX, tY)
+        self.x = int(self.focalX - ( self.width * .5 ) )
+        self.y = int(self.focalY - ( self.height * .5 ) )
         #
-        self.clipX = tX
-        self.clipY = tY        
+        self.left = self.x
+        self.bottom = self.y
+        self.top = self.bottom + self.height
+        self.right = self.left + self.width               
+        #
+        clip.x = self.x
+        clip.left = self.left
+        clip.y = self.y
+        clip.bottom = self.bottom        
+        clip.top = self.top
+        clip.right = self.right        

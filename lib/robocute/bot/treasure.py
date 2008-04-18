@@ -26,7 +26,6 @@ class TreasureBotBrain(bot.Brain):
         coord = self.coord
         cell = self.grid.get_cell_at( coord )
         cell.remove_node(self.node)
-        #explorer.explore(coord.x, coord.y)
         explorer.explore(coord.x - map.coordX, coord.y - map.coordY)
         
     def explore(self, coord):
@@ -38,15 +37,16 @@ class TreasureBotBrain(bot.Brain):
             return cell        
         if not node.has_vacancy():
             return cell
-        '''
-        if int(random() * 20) > 0:
-            cell.vacancy = True
-            return cell
-        '''        
         #else
         dstNodes = self.grid.get_cell_at(coord)
         if(not dstNodes):
             return cell
+        #
+        die = int(random() * 3)
+        if die > 0:
+            cell.vacancy = True
+            return cell
+        
         treasure = {
           0 :'GemBlue()',
           1 :'GemGreen()',

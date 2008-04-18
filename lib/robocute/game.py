@@ -25,6 +25,6 @@ class Game(App):
     
     def create_user(self):
         #user = User(self)
-        user = Player(self)        
+        user = Player(self)
         #user = Designer(self)
         return user

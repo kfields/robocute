@@ -96,10 +96,10 @@ class App(object):
         seed()
         win = self.window
         scene = self.scene
-        self.start()        
-        user = self.user
-        camera = user.camera
-        graphics = Graphics()
+        self.start()
+        user = self.user        
+        worldGraphics = user.camera.graphics
+        layerGraphics = Graphics()
         #
         #Create a font for our FPS clock
         ft = font.load('Verdana', 28)
@@ -108,29 +108,23 @@ class App(object):
         #
         #
         while not win.has_exit:
-            #
-            '''
-            for callback in self.callbacks:
-                callback()
-            '''
-            #
             query = user.dispatch_events()
             #
             if(query):
-               camera.query = query
-               graphics.query = query
+               worldGraphics.query = query
+               layerGraphics.query = query
             #
             dt = clock.tick()
             #
             win.clear()
             #
-            scene.draw(graphics, camera)
+            scene.draw(layerGraphics, worldGraphics)
             #
             if(query):
                 query.process()
             #
-            camera.query = None
-            graphics.query = None
+            worldGraphics.query = None
+            layerGraphics.query = None
             #
             fps_text.text = ("fps: %d") % (clock.get_fps())
             fps_text.draw()        

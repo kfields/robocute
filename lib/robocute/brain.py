@@ -28,6 +28,9 @@ class Brain(object):
         return self.__coord
     
     coord = property(get_coord, set_coord)
-    
+
+    def start(self):
+        pass
+
     def do(self, msg):
         pass

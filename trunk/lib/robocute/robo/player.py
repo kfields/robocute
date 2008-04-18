@@ -137,7 +137,7 @@ class PlayerBrain(brain.Brain):
         self.dash_bubble = None
         self.dash_worth = Text(str(self.worth))
         
-    def start(self):    
+    def start(self):
         self.state()
     def schedule(self, msg, seconds = 0):
         if(seconds == 0):

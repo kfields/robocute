@@ -5,7 +5,7 @@ import data
 import pyglet
 from pyglet import image
 
-from graphics import *
+from graphics import Graphics
 
 
 '''

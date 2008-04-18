@@ -57,47 +57,54 @@ class GridVu(Vu):
         super(GridVu, self).__init__(node)
     
     def draw(self, graphics):
-        g = graphics.copy()
+        #g = graphics.copy()
+        g = graphics
+        clip = graphics.clip
         query = g.query 
         #
-        invScaleX = 1. / g.scaleX
-        invScaleY = 1. / g.scaleY
-        invScaleZ = 1. / g.scaleZ
+        posX = self.node.coordX * BLOCK_WIDTH
+        posY = self.node.coordY * BLOCK_ROW_HEIGHT
         #
-        coordX = self.node.coordX
-        coordY = self.node.coordY 
+        '''
+        topPadding = BLOCK_ROW_HEIGHT
+        bottomPadding = BLOCK_ROW_HEIGHT
+        leftPadding = BLOCK_WIDTH
+        rightPadding = BLOCK_WIDTH
+        '''
+        topPadding = 0
+        bottomPadding = 0
+        leftPadding = 0
+        rightPadding = 0        
         #
-        width = int((g.width + BLOCK_WIDTH) * invScaleX)
-        height = int((g.height + BLOCK_ROW_HEIGHT) * invScaleY)
-        bottom = int((g.y - BLOCK_ROW_HEIGHT) * invScaleY)
-        top = bottom + height
-        left = int((g.x - BLOCK_WIDTH) * invScaleX)
-        right = left + width
+        bottom = clip.bottom - posY
+        top = clip.top - posY
+        left = clip.left - posX
+        right = clip.right - posX
         #
         rowCount = self.node.rowCount
         rowMax = rowCount - 1 
         colCount = self.node.colCount
         colMax = colCount - 1         
         #
-        r1 = int(top * INV_BLOCK_ROW_HEIGHT) - coordY
+        r1 = int(top * INV_BLOCK_ROW_HEIGHT)
         if(r1 < 0):
             r1 = 0
         if(r1 > rowMax):
             r1 = rowMax
         #  
-        r2 = int(bottom * INV_BLOCK_ROW_HEIGHT) - coordY
+        r2 = int(bottom * INV_BLOCK_ROW_HEIGHT)
         if(r2 < 0):
             r2 = 0
         if(r2 > rowMax):
             r2 = rowMax
         #
-        c1 = int(left * INV_BLOCK_WIDTH) - coordX
+        c1 = int(left * INV_BLOCK_WIDTH)
         if(c1 < 0):
             c1 = 0
         if(c1 > colMax):
             c1 = colMax          
         #  
-        c2 = int(right * INV_BLOCK_WIDTH) - coordX
+        c2 = int(right * INV_BLOCK_WIDTH)
         if(c2 < 0):
             c2 = 0
         if(c2 > colMax):
@@ -131,9 +138,6 @@ class GridVu(Vu):
                         blitUp = blitUp + vu.get_stack_height()
                 c += 1
             r -= 1            
-
-#WORLD_GRID_ROW_MAX = 64
-#WORLD_GRID_COL_MAX = 64
 
 class Grid(Node):
     def __init__(self, world, x, y, colCount = WORLD_GRID_COL_MAX, rowCount = WORLD_GRID_ROW_MAX):

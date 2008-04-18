@@ -25,10 +25,10 @@ class User(object):
         win = app.window
         self.window = win
         #
-        self.camera.width = win.width
-        self.camera.height = win.height
-        self.camera.clipWidth = win.width
-        self.camera.clipHeight = win.height        
+        #self.camera.width = win.width
+        self.camera.deviceWidth = win.width
+        #self.camera.height = win.height
+        self.camera.deviceHeight = win.height
         #
         #better to just focus on the ground
         block = self.world.get_top_block_at(self.avatar.coord)
@@ -68,9 +68,11 @@ class User(object):
     
     def on_key_press(self, symbol, modifiers):
         if symbol == key.NUM_ADD:
-            self.camera.zoom(self.camera.scaleX + .1, self.camera.scaleY + .1)
+            #self.camera.zoom(self.camera.scaleX + .1, self.camera.scaleY + .1)
+            self.camera.zoom(.1, .1)
         elif symbol == key.NUM_SUBTRACT:
-            self.camera.zoom(self.camera.scaleX - .1, self.camera.scaleY - .1)
+            #self.camera.zoom(self.camera.scaleX - .1, self.camera.scaleY - .1)
+            self.camera.zoom(-.1, -.1)
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse.x = x

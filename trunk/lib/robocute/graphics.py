@@ -1,37 +1,30 @@
 
-import copy
-
 from pyglet.gl import *
 
-class Graphics(object):
-    def __init__(self):
-        super(Graphics, self).__init__()
+from shape import *
+
+class Clip(Rect):
+    def __init__(self, x = 0, y = 0, z=1., width = 0, height = 0):
+        super(Clip, self).__init__(x, y, z, width, height)
+        self.top = y + height
+        self.left = x
+        self.bottom = y
+        self.right = x + width
+
+class Graphics(Rect):
+    def __init__(self, x = 0, y = 0, z=1., width = 0, height = 0):
+        super(Graphics, self).__init__(x, y, z, width, height)
         #
-        self.x = 0
-        self.y = 0
-        self.z = 0
-        self.width = 640
-        self.height = 480
-        #
-        self.scaleX = 1
-        self.scaleY = 1
-        self.scaleZ = 1
-        #
-        self.clipX = 0
-        self.clipY = 0
-        self.clipWidth = 640
-        self.clipHeight = 480
+        self.scaleX = 1.
+        self.scaleY = 1.
+        self.scaleZ = 1.
         #
         self.color=(255.,255.,255.,1.)
         #
-        #self.events = None
         self.query = None
-
-    def copy(self):
-        return copy.copy(self)
-
-    def deep_copy(self):
-        return copy.deepcopy(self)
+        #
+        self.clip = Clip(self.x, self.y, self.width, self.height)
+        #self.camera = None
     
     def translate(self, x, y, z = 0):
         self.x = x

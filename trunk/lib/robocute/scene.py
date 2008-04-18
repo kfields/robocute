@@ -5,6 +5,7 @@ import xml.dom.minidom
 
 import data
 '''
+import graphics
 import camera
 from node import *
 from world import *
@@ -14,18 +15,65 @@ from mouse import Mouse
 
 from pyglet.gl import *
 
-class Camera(camera.Camera):
-    def __init__(self, scene):
-        super(Camera, self).__init__(scene)
-        self.rowCount = 3
-        self.colCount = 3
-        #self.data = [[None] * self.colCount ] * self.rowCount
+class Clip(graphics.Clip):
+    def __init__(self, world, rowCount = 3, colCount = 3):
+        super(Clip, self).__init__()
+        self.world = world
+        self.data = []
+        self.gridX = 0
+        self.gridY = 0        
+        self.rowCount = rowCount
+        self.colCount = colCount
+        #
+        self.clear_cache()
+
+    def clear_cache(self):
         self.data = []
         i = 0
         while i < self.rowCount:
             self.data.append([None] * self.colCount)
             i += 1
+
+    def cache_miss(self, colNdx, rowNdx):
+        #print 'gridX: ' + str(gridX),' gridY:  ' + str(gridY)
+        #print 'rowNdx: ' + str(rowNdx),' colNdx:  ' + str(colNdx)        
+        self.data[rowNdx][colNdx] = self.world.get_grid(self.gridX + colNdx, self.gridY + rowNdx)
+
+    def validate(self):
+        #super(Clip, self).validate()
+        gridColMax = self.world.gridColMax
+        gridRowMax = self.world.gridRowMax
+        gridWidth = gridColMax * BLOCK_WIDTH
+        invGridWidth = 1. / gridWidth 
+        gridHeight = gridRowMax * BLOCK_ROW_HEIGHT
+        invGridHeight = 1. / gridHeight        
+        #
+        gridX = int(self.x * invGridWidth)
+        if gridX < 0:
+            gridX = 0
+        gridY = int(self.y * invGridHeight)
+        if gridY < 0:
+            gridY = 0        
+        #
+        if self.gridX != gridX or self.gridY != gridY:
+            self.clear_cache()
+            self.gridX = gridX 
+            self.gridY = gridY
+
+class Camera(camera.Camera):
+    def __init__(self, scene, rowCount = 3, colCount = 3):
+        super(Camera, self).__init__()
+        #
+        self.world = scene.node
+        self.graphics.camera = self
+        clip = Clip(self.world, rowCount, colCount)
+        self.clip = clip
+        self.graphics.clip = clip 
         
+    def validate(self):
+        super(Camera, self).validate()
+        self.clip.validate()
+
 class Scene(Vu):
     
     def __init__(self, world, app, win):
@@ -50,19 +98,19 @@ class Scene(Vu):
     '''
     Rendering
     '''
-    def draw(self, graphics, camera):
+    def draw(self, layerGraphics, worldGraphics):
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         #        
-        self.draw_background(graphics)
+        self.draw_background(layerGraphics)
         #
-        self.draw_world(camera)
+        self.draw_world(worldGraphics)
         #
-        self.dash.draw(graphics)
+        self.dash.draw(layerGraphics)
         #
-        self.widgets.draw(graphics)        
+        self.widgets.draw(layerGraphics)        
         #
-        self.mice.draw(graphics)
+        self.mice.draw(layerGraphics)
 
     def draw_background(self, graphics):
         bgWidth = self.bgImg.width
@@ -76,51 +124,55 @@ class Scene(Vu):
                 blitX = blitX + bgWidth
             blitY = blitY + bgHeight
     
-    def draw_world(self, camera):
+    def draw_world(self, graphics):
         glPushMatrix()
         #
-        glTranslatef(-camera.x, -camera.y, -camera.z)
-        glScalef(camera.scaleX, camera.scaleY, camera.scaleZ)        
+        glScalef(graphics.scaleX, graphics.scaleY, graphics.scaleZ)
+        glTranslatef(-graphics.camera.x, -graphics.camera.y, -graphics.camera.z)        
         #
-        #self.node.grid.vu.draw(camera)
-        self.draw_grids(camera)
+        self.draw_grids(graphics)
         #
-        self.bubbles.draw(camera)
+        self.bubbles.draw(graphics)
         #
         glPopMatrix()
 
-    '''
-    WORLD_GRID_WIDTH = WORLD_GRID_COL_MAX * BLOCK_WIDTH
-    WORLD_GRID_HEIGHT = WORLD_GRID_ROW_MAX * BLOCK_ROW_HEIGHT
-    WORLD_GRID_CACHE_WIDTH = WORLD_GRID_CACHE_COL_COUNT * WORLD_GRID_WIDTH
-    WORLD_GRID_CACHE_HEIGHT = WORLD_GRID_CACHE_ROW_COUNT * WORLD_GRID_HEIGHT
-    '''
 
-    def draw_grids(self, camera):
-        #g = camera.copy()
-        g = camera
+    def draw_grids(self, graphics):
+        clip = graphics.clip
+        g = graphics
         query = g.query 
         #
-        invScaleX = 1. / g.scaleX
-        invScaleY = 1. / g.scaleY
-        invScaleZ = 1. / g.scaleZ
+        gridColMax = self.node.gridColMax
+        gridRowMax = self.node.gridRowMax
         #
-        gridWidth = self.node.gridColMax * BLOCK_WIDTH
+        gridWidth = gridColMax * BLOCK_WIDTH
         invGridWidth = 1. / gridWidth 
-        gridHeight = self.node.gridRowMax * BLOCK_ROW_HEIGHT
+        gridHeight = gridRowMax * BLOCK_ROW_HEIGHT
         invGridHeight = 1. / gridHeight
         #
-        width = int((g.width + BLOCK_WIDTH) * invScaleX)
-        height = int((g.height + BLOCK_ROW_HEIGHT) * invScaleY)
-        bottom = int((g.y - BLOCK_ROW_HEIGHT) * invScaleY)
-        top = bottom + height
-        left = int((g.x - BLOCK_WIDTH) * invScaleX)
-        right = left + width
+        '''
+        topPadding = gridHeight
+        bottomPadding = gridHeight
+        leftPadding = gridWidth
+        rightPadding = gridWidth
+        '''
+        topPadding = 0
+        bottomPadding = 0
+        leftPadding = 0
+        rightPadding = 0                
         #
-        rowCount = camera.rowCount
+        posX = clip.gridX * gridWidth
+        posY = clip.gridY * gridHeight
+        #
+        bottom = clip.bottom - posY
+        top = clip.top - posY
+        left = clip.left - posX
+        right = clip.right - posX
+        #
+        rowCount = clip.rowCount
         rowMax = rowCount - 1 
-        colCount = camera.colCount
-        colMax = colCount - 1         
+        colCount = clip.colCount
+        colMax = colCount - 1
         #
         r1 = int(top * invGridHeight)
         if(r1 < 0):
@@ -148,33 +200,33 @@ class Scene(Vu):
         #
         r = r1
         while(r >= r2): #rows in sheet
-            row = camera.data[r]
+            row = clip.data[r]
             if len(row) == 0:
                 c += 1
                 continue
             c = c1
-            blitY = r * gridHeight
+            blitY = posY + (r * gridHeight)
             while(c <= c2): #cells in row
-                blitX = c * gridWidth                
+                blitX = posX + (c * gridWidth)
                 grid = row[c]
                 if not grid:
                     #c += 1
-                    self.cache_miss(camera, r, c)
+                    clip.cache_miss(c, r)
                     continue
                 #else
-                self.draw_grid(grid, camera, blitX, blitY, camera.z)
+                self.draw_grid(grid, g, blitX, blitY, g.z)
                 c += 1
-            r -= 1            
+            r -= 1
+        #
+        #glPopMatrix()    
     
-    def cache_miss(self, camera, rowNdx, colNdx):
-        camera.data[rowNdx][colNdx] = self.node.get_grid(colNdx, rowNdx)
-        
-    def draw_grid(self, grid, camera, tX, tY, tZ = 1.):
-        g = camera
+    def draw_grid(self, grid, graphics, tX, tY, tZ = 1.):
+        g = graphics.copy()
         #
         glPushMatrix()
         glTranslatef(tX, tY, tZ)
         #
+        g.translate(tX, tY, tZ)
         grid.vu.draw(g)
         #
         glPopMatrix()

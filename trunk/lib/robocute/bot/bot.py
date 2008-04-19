@@ -7,8 +7,9 @@ from brain import Brain
 class BotVu(ImageVu):
     def __init__(self, node, imgSrc):
         super(BotVu, self).__init__(node, imgSrc)
-    def get_stack_height(self):
-        return 100 #necessary for SpeechBubble!
+        self.stack_height = 100
+    #def get_stack_height(self):
+    #    return 100 #necessary for SpeechBubble!
 
 class Bot(Node):
     def __init__(self):

@@ -2,7 +2,7 @@ from graphics import *
 
 class Camera(Clip):
     
-    def __init__(self, x = 0, y = 0, z = 1., width = 640, height = 480):
+    def __init__(self, x = 0, y = 0, z = 0, width = 640, height = 480):
         super(Camera, self).__init__(x, y, z, width, height)
         #
         self.focalX = x

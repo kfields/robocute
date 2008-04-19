@@ -1,15 +1,9 @@
-'''
-import os, sys
-import zipfile
-import xml.dom.minidom
 
-import data
-'''
 import graphics
 import camera
 from node import *
 from world import *
-from layer import *
+from pane import *
 from dash import *
 from mouse import Mouse
 
@@ -74,24 +68,83 @@ class Camera(camera.Camera):
         super(Camera, self).validate()
         self.clip.validate()
 
-class Scene(Vu):
+class BubbleLayer(Layer):
+    def __init__(self, name, order):
+        super(BubbleLayer, self).__init__(name, order)
+        
+    def draw(self, graphics):
+        g = graphics.copy()
+        for node in self.nodes:
+            vu = node.vu
+            if(vu != None):
+                t = node.get_transform()
+                g.translate(t.x, t.y)
+                vu.draw(g)
+
+class WidgetLayer(Layer):
+    def __init__(self, name, order):
+        super(WidgetLayer, self).__init__(name, order)
+        
+    def draw(self, graphics):
+        g = graphics.copy()
+        for node in self.nodes:
+            vu = node.vu
+            if(vu != None):
+                t = node.get_transform()
+                g.translate(t.x, t.y)
+                vu.draw(g)
+
+class MouseLayer(Layer):
+    def __init__(self, name, order):
+        super(MouseLayer, self).__init__(name, order)
+        
+    def draw(self, graphics):
+        g = graphics.copy() #fixme:necessary?
+        for node in self.nodes:                
+            vu = node.vu
+            g.x = node.x
+            g.y = node.y - vu.height #fixme:mouse.hotx & hoty!!!
+            vu.draw(g)
+
+class SceneLayer(Layer):
+    def __init__(self):
+        super(SceneLayer, self).__init__('scene')
+    def create_layer(self, name):
+        order = len(self.layers)
+        if name == 'bubbles' :
+            layer = BubbleLayer(name, order)
+        elif name == 'dash':
+            layer = Dash(name, order)            
+        elif name == 'widgets':
+            layer = WidgetLayer(name, order)
+        elif name == 'mice':
+            layer = MouseLayer(name, order)
+        self.layers.append(layer)
+        return layer
+
+class Scene(Pane):
     
     def __init__(self, world, app, win):
         super(Scene, self).__init__(world)
         #
+        self.layer = SceneLayer()
         self.app = app
         self.window = win
         #
         self.bgImg = image.load(data.filepath('image/clouds.jpg'))
         #
-        self.bubbles = BubbleLayer(self)
+        #self.bubbles = BubbleLayer(self)
+        self.bubbles = self.layer.create_layer('bubbles')
         #
-        self.dash = Dash(self)
+        #self.dash = Dash(self)
+        self.dash = self.layer.create_layer('dash')
         #
-        self.widgets = WidgetLayer(self)
+        #self.widgets = WidgetLayer(self)
+        self.widgets = self.layer.create_layer('widgets')
         #
-        self.mice = MouseLayer(self)
-    
+        #self.mice = MouseLayer(self)
+        self.mice = self.layer.create_layer('mice')
+            
     def create_camera(self):
         camera = Camera(self)
         return camera

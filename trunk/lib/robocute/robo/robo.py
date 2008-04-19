@@ -7,11 +7,9 @@ from designer import *
 
 #was going to name it bot ... robo goes with the theme
     
-class RoboVu(ImageVu):
+class RoboVu(BotVu):
     def __init__(self, node, imgSrc):
         super(RoboVu, self).__init__(node, imgSrc)
-    def get_stack_height(self):
-        return 100 #necessary for SpeechBubble!
         
 class Robo(Bot):
     def __init__(self):

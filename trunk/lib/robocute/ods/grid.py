@@ -95,8 +95,7 @@ class Reader(object):
         cellTxt = get_text(cell)
                 
         while(repCount > 0):
-            cell = grid.create_cell()
-            #coord = Coord(colNdx, (self.rowCount-1) - rowNdx)
+            cell = gridRow.create_cell()
             coord = Coord(grid.coordX + colNdx, grid.coordY + ((self.rowCount-1) - rowNdx))
             self.app.build(cellTxt, coord, cell)
             

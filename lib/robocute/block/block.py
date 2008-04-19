@@ -33,13 +33,17 @@ INV_WORLD_GRID_CACHE_WIDTH = 1. / WORLD_GRID_CACHE_WIDTH
 INV_WORLD_GRID_CACHE_HEIGHT = 1. / WORLD_GRID_CACHE_HEIGHT
 '''
 '''
-class BlockVu(ImageVu):
+#class BlockVu(ImageVu):
+class BlockVu(MeshImageVu):
     def __init__(self, node, imgSrc):
         super(BlockVu, self).__init__(node, imgSrc)
+        self.stack_height = self.node.height * BLOCK_STACK_HEIGHT
         #self.add_hotspot(HotSpot(0,0,self.width,BLOCK_ROW_HEIGHT))
     #fixme:Hmmm...could we move this into the base?  Eliminate this class?
+    '''
     def get_stack_height(self):
         return self.node.height * BLOCK_STACK_HEIGHT
+    '''
     
 class Block(AbstractNode):
     def __init__(self):
@@ -51,8 +55,8 @@ class Block(AbstractNode):
 class GroupBlockVu(Vu):
     def __init__(self, node):
         super(GroupBlockVu, self).__init__(node)
-
-    def get_stack_height(self):
+        self.stack_height = 0
+    #def get_stack_height(self):
         '''
         if(len(self.node.nodes) != 0):
             vu = self.node.nodes[0].vu
@@ -60,7 +64,7 @@ class GroupBlockVu(Vu):
                 return vu.get_stack_height() #fixme:temporary hack.  calc tallest node!
         #else
         '''
-        return 0
+       # return 0
         
     def draw(self, graphics):
         g = graphics.copy()
@@ -80,7 +84,8 @@ class GroupBlockVu(Vu):
                 t.y -= 10
             if(node == memberNode):
                 break
-        t.y += vu.get_stack_height()
+        #t.y += vu.get_stack_height()
+        t.y += vu.stack_height
         return t
         
 class GroupBlock(Node):

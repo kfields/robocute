@@ -4,7 +4,7 @@ from pyglet.gl import *
 from shape import *
 
 class Clip(Rect):
-    def __init__(self, x = 0, y = 0, z=1., width = 0, height = 0):
+    def __init__(self, x = 0, y = 0, z = 0, width = 0, height = 0):
         super(Clip, self).__init__(x, y, z, width, height)
         self.top = y + height
         self.left = x
@@ -12,7 +12,7 @@ class Clip(Rect):
         self.right = x + width
 
 class Graphics(Rect):
-    def __init__(self, x = 0, y = 0, z=1., width = 0, height = 0):
+    def __init__(self, x = 0, y = 0, z = 0, width = 0, height = 0):
         super(Graphics, self).__init__(x, y, z, width, height)
         #
         self.scaleX = 1.
@@ -24,7 +24,9 @@ class Graphics(Rect):
         self.query = None
         #
         self.clip = Clip(self.x, self.y, self.width, self.height)
-        #self.camera = None
+        #
+        self.batch = None
+        self.layer = None
     
     def translate(self, x, y, z = 0):
         self.x = x
@@ -52,7 +54,7 @@ class Graphics(Rect):
                 GLdouble* winY,
                 GLdouble* winZ )    
     '''
-    def project(self, x, y, z=0):
+    def project(self, x, y, z = 0):
         viewport = (GLint * 4)()
         mvmatrix = (GLdouble * 16)()
         projmatrix = (GLdouble * 16)()
@@ -78,7 +80,7 @@ class Graphics(Rect):
                   GLdouble*    objY,
                   GLdouble*    objZ )    
     '''
-    def unproject(self, wx, wy, wz=0):
+    def unproject(self, wx, wy, wz = 0):
         viewport = (GLint * 4)()
         mvmatrix = (GLdouble * 16)()
         projmatrix = (GLdouble * 16)()

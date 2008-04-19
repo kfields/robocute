@@ -1,15 +1,27 @@
 from node import *
 from block.block import *
+from pane import *
 '''
 Warning:  Do not import this.  These are hidden implementation classes.
 Only scene.py and builder.py should need to import this file.
 '''
 
-class Cell(AbstractCell):
-    def __init__(self):
-        super(AbstractCell, self).__init__()
-
+class Cell(list):
+    def __init__(self, row):
+        super(Cell, self).__init__()
+        self.row = row
+        self.invalid = 0
+        
+    def invalidate(self, flag = 1):
+        if self.invalid == 0:
+            self.row.invalidate()
+        self.invalid |= flag
+    
+    def validate(self):
+        self.invalid = 0
+        
     def remove_node(self, node):
+        self.invalidate()
         top = self[len(self) - 1]
         if(isinstance(top, GroupBlock)):
             top.remove_node(node)
@@ -18,6 +30,7 @@ class Cell(AbstractCell):
         self.remove(node)
 
     def push_node(self, node):
+        self.invalidate()
         if(len(self) ==0):
             self.append(node)
             return
@@ -39,11 +52,19 @@ class Cell(AbstractCell):
             self.append(top)
 
 class Row(list):
-    def __init__(self, colCount = WORLD_GRID_COL_MAX):
+    def __init__(self, grid, colCount = WORLD_GRID_COL_MAX):
         super(Row, self).__init__()
+        self.grid = grid
         self.colCount = colCount
-    
+        self.invalid = 0
+        
+    def invalidate(self, flag = 1):
+        if self.invalid == 0:
+            self.grid.invalidate()
+        self.invalid |= flag
+       
     def validate(self):
+        self.invalid = 0
         #prevent underage
         data = self
         if len(data) < self.colCount:
@@ -51,14 +72,27 @@ class Row(list):
             while i < self.colCount:
                 data.append(Cell())
                 i += 1
+        for cell in self:
+            cell.validate()
+
+    def create_cell(self):
+        cell = Cell(self)
+        return cell
+
+class GridLayer(Layer):
+    def __init__(self):
+        super(GridLayer, self).__init__('grid')
+        create_layers(RowLayer)
         
-class GridVu(Vu):
+class GridVu(Pane):
     def __init__(self, node):
         super(GridVu, self).__init__(node)
     
     def draw(self, graphics):
-        #g = graphics.copy()
-        g = graphics
+        g = graphics.copy()
+        if self.node.invalid != 0:
+            g.batch = self.batch
+        #g = graphics
         clip = graphics.clip
         query = g.query 
         #
@@ -128,14 +162,15 @@ class GridVu(Vu):
                     c += 1
                     continue
                 if(query):
-                   query.cellX = c
-                   query.cellY = r
+                   query.cellX = self.node.coordX + c
+                   query.cellY = self.node.coordY + r
                 for node in cell:
                     vu = node.vu
                     if(vu != None):                        
                         g.translate(blitX, blitY + blitUp)
                         vu.draw(g) 
-                        blitUp = blitUp + vu.get_stack_height()
+                        #blitUp = blitUp + vu.get_stack_height()
+                        blitUp = blitUp + vu.stack_height
                 c += 1
             r -= 1            
 
@@ -155,16 +190,16 @@ class Grid(Node):
         self.vu = GridVu(self)
         #do this last!!!
         world.add_grid(self)
-                
-    def create_row(self):
-        row = Row(self.colCount)
-        return row
-    
-    def create_cell(self):
-        cell = Cell()
-        return cell
-    
+        self.invalid = 0
+        
+    def invalidate(self, flag = 1):
+        #if not self.invalid:
+        #    self.world.invalidate() #???
+        self.invalid |= flag
+        print 'invalid'
+       
     def validate(self):
+        self.invalid = 0        
         #prevent underage
         data = self.data
         if len(data) < self.rowCount:
@@ -174,6 +209,12 @@ class Grid(Node):
                 row.validate()
                 data.append(row)
                 i += 1
+        for row in self.data:
+            row.validate()
+
+    def create_row(self):
+        row = Row(self, self.colCount)
+        return row
 
     def valid_coord(self, coord):
         '''
@@ -243,7 +284,8 @@ class Grid(Node):
         blitUp = 0                                    
         for node in cell:
             vu = node.vu
-            blitUp = blitUp + vu.get_stack_height()
+            #blitUp = blitUp + vu.get_stack_height()
+            blitUp = blitUp + vu.stack_height
             if(isinstance(node, GroupBlock)):
                 return vu.get_member_transform(Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT + blitUp), targetNode)
         blitY = (coord.y * BLOCK_ROW_HEIGHT)
@@ -260,7 +302,8 @@ class Grid(Node):
                 break
             vu = node.vu
             if(vu != None):
-                blitUp = blitUp + vu.get_stack_height()        
+                #blitUp = blitUp + vu.get_stack_height()      
+                blitUp = blitUp + vu.stack_height
         blitY = (coord.y * BLOCK_ROW_HEIGHT)
         t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
         return t

@@ -38,16 +38,10 @@ class BubbleVu(WidgetVu):
             g.y = gY + (g.height * .5) - (vu.height * .5) #just center everything for now
             vu.draw(g)
             g.x += vu.width + self.hspace
-            
-    def get_height(self):
-        return self.height
-    
-    def get_width(self):
-        return self.width
-    
+                
     #2.5D support
-    def get_stack_height(self):
-        return self.height
+    #def get_stack_height(self):
+    #    return self.height
 
 class Bubble(Node):
     def __init__(self, items):

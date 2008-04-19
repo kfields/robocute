@@ -31,11 +31,11 @@ class Transform:
 from vu import *
 from brain import Brain
 
-    
+'''
 class AbstractCell(list):
     def __init__(self):
         pass
-        
+'''     
 class AbstractNode(object):
     def __init__(self, fn = None):
         self.name = 'Unknown'

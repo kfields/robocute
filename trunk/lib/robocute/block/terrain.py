@@ -17,9 +17,7 @@ class BrownBlock(Block):
     def __init__(self):
         super(BrownBlock, self).__init__()
         self.vu = BlockVu(self, 'Brown Block.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 '''
 PlainBlock
@@ -38,9 +36,7 @@ class PlainBlock(Block):
     def __init__(self):
         super(PlainBlock, self).__init__()
         self.vu = BlockVu(self, 'Plain Block.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 '''
 RampNorth
@@ -59,9 +55,7 @@ class RampNorth(Block):
     def __init__(self):
         super(RampNorth, self).__init__()
         self.vu = BlockVu(self, 'Ramp North.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 '''
 RampSouth
@@ -80,9 +74,7 @@ class RampSouth(Block):
     def __init__(self):
         super(RampSouth, self).__init__()
         self.vu = BlockVu(self, 'Ramp South.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 '''
 WallBlockTall
@@ -101,9 +93,7 @@ class WallBlockTall(Block):
     def __init__(self):
         super(WallBlockTall, self).__init__()
         self.vu = BlockVu(self, 'Wall Block Tall.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 '''
 WallBlock
@@ -122,9 +112,7 @@ class WallBlock(Block):
     def __init__(self):
         super(WallBlock, self).__init__()
         self.vu = BlockVu(self, 'Wall Block.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 '''
 WoodBlock
@@ -143,9 +131,7 @@ class WoodBlock(Block):
     def __init__(self):
         super(WoodBlock, self).__init__()
         self.vu = BlockVu(self, 'Wood Block.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 '''
 DirtBlock
@@ -164,9 +150,7 @@ class DirtBlock(Block):
     def __init__(self):
         super(DirtBlock, self).__init__()
         self.vu = BlockVu(self, 'Dirt Block.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
         
 StoneBlock_singleton = None
 
@@ -182,9 +166,7 @@ class StoneBlock(Block):
     def __init__(self):
         super(StoneBlock, self).__init__()
         self.vu = BlockVu(self, 'Stone Block.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 StoneBlockTall_singleton = None
 
@@ -201,9 +183,7 @@ class StoneBlockTall(Block):
         super(StoneBlockTall, self).__init__()
         self.vu = BlockVu(self, 'Stone Block Tall.png')
         self.height = 2
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 RampWest_singleton = None
 
@@ -219,9 +199,7 @@ class RampWest(Block):
     def __init__(self):
         super(RampWest, self).__init__()
         self.vu = BlockVu(self, 'Ramp West.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 RampEast_singleton = None
 
@@ -237,9 +215,7 @@ class RampEast(Block):
     def __init__(self):
         super(RampEast, self).__init__()
         self.vu = BlockVu(self, 'Ramp East.png')
-
-    def has_vacancy(self):
-        return True
+        self.vacancy = True
 
 GrassBlock_singleton = None
     

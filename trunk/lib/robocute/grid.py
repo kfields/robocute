@@ -11,6 +11,7 @@ class Cell(list):
         super(Cell, self).__init__()
         self.row = row
         self.invalid = 0
+        self.height = 0
         
     def invalidate(self, flag = 1):
         if self.invalid == 0:
@@ -20,36 +21,125 @@ class Cell(list):
     def validate(self):
         self.invalid = 0
         
-    def remove_node(self, node):
-        self.invalidate()
-        top = self[len(self) - 1]
-        if(isinstance(top, GroupBlock)):
-            top.remove_node(node)
-            return
-        #else
-        self.remove(node)
-
+    def update(self):
+        height = 0
+        for node in self:
+            height += node.height
+        self.height = height
+                
+    #can't assume group is top any more. :(
+    def find_group(self):
+        for node in self:
+            if isinstance(node, GroupBlock):
+                return node
+        return None                
+                
     def push_node(self, node):
         self.invalidate()
-        if(len(self) ==0):
+        if len(self) ==0:
             self.append(node)
+            self.update()
             return
         #else
-        top = self[len(self) - 1]
-        #top is group ... add to group
-        if(isinstance(top, GroupBlock)):
-            top.add_node(node)
-        elif(isinstance(top, Block)):
-            #top is block ... push on stack        
-            self.append(node)
-        #top is person, place or thing
-        #pop top, push group, push old top and new node
+        top = self[-1]
+        if node.groupable:
+            group = self.find_group()        
+            if group:
+                group.push_node(node)
+            elif top.groupable:
+                oldTop = self.pop()
+                top = GroupBlock()
+                top.push_node(oldTop)
+                top.push_node(node)
+                self.append(top)
+            else:
+                self.append(node)
         else:
-            oldTop = self.pop()
-            top = GroupBlock()
-            top.add_node(oldTop)
-            top.add_node(node)
-            self.append(top)
+            self.append(node)
+        self.update() 
+
+    def pop_node(self):
+        node = self[-1]
+        self.remove(node)
+        self.update()        
+        return node
+        
+    def remove_node(self, node):
+        self.invalidate()
+        if node.groupable:
+            group = self.find_group()
+            if group:
+                group.remove_node(node)
+                self.update()
+                return
+        #else
+        self.remove(node)
+        self.update()
+    
+    def get_top(self):
+        length = len(self)
+        if(length == 0):
+            return None
+        top = self[-1]
+        return top
+
+    def get_top_block(self):
+        length = len(self)
+        if(length == 0):
+            return None
+        for top in reversed(self):
+            if(isinstance(top, GroupBlock)): #cripes!  It is shallow testing! Good in a way.
+                break            
+            if(isinstance(top, Block)):
+                break
+        return top
+
+    '''
+    Get transform at top of cell
+    '''    
+    def get_top_transform(self, coord):
+        t = Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT)
+        t.y += self.height * BLOCK_STACK_HEIGHT
+        return t
+
+    '''
+    Get transform at bottom of cell
+    '''    
+    def get_bottom_transform(self, coord):
+        t = Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT)
+        return t
+
+    '''
+    Get transform of node at coordinate
+    '''    
+    def get_node_transform(self, targetNode, coord):
+        if(isinstance(targetNode, Block)):
+           return get_block_transform(targetNode, coord)
+        #else
+        blitUp = 0                                    
+        for node in self:
+            vu = node.vu
+            blitUp = blitUp + node.height * BLOCK_STACK_HEIGHT
+            if(isinstance(node, GroupBlock)):
+                return vu.get_member_transform(Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT + blitUp), targetNode)
+        blitY = (coord.y * BLOCK_ROW_HEIGHT)
+        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
+        return t
+
+    '''
+    This will get the transform of any block.
+    '''    
+    def get_block_transform(self, block, coord):
+        blitUp = 0
+        for node in self:
+            if(node == block):
+                break
+            vu = node.vu
+            if(vu != None):
+                blitUp = blitUp + node.height * BLOCK_STACK_HEIGHT
+        blitY = (coord.y * BLOCK_ROW_HEIGHT)
+        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
+        return t
 
 class Row(list):
     def __init__(self, grid, colCount = WORLD_GRID_COL_MAX):
@@ -70,32 +160,123 @@ class Row(list):
         if len(data) < self.colCount:
             i = 0
             while i < self.colCount:
-                data.append(Cell())
+                data.append(self.create_cell())
                 i += 1
         for cell in self:
-            cell.validate()
+            if cell.invalid != 0:            
+                cell.validate()
 
     def create_cell(self):
         cell = Cell(self)
         return cell
 
-class GridLayer(Layer):
-    def __init__(self):
+class GridLayer(BatchLayer):
+    def __init__(self, grid):
         super(GridLayer, self).__init__('grid')
-        create_layers(RowLayer)
+        self.grid = grid
         
 class GridVu(Pane):
     def __init__(self, node):
         super(GridVu, self).__init__(node)
-    
-    def draw(self, graphics):
-        g = graphics.copy()
-        if self.node.invalid != 0:
-            g.batch = self.batch
-        #g = graphics
-        clip = graphics.clip
-        query = g.query 
+        self.layer = GridLayer(node)
+        self.tileLayer = self.layer.create_layer()
+        self.app = None #needed to register callbacks .. actually didn't work that well!
         #
+        self.batching = True
+        #self.batching = False
+        
+    def register(self, app, coord):
+        super(GridVu, self).register(app, coord)
+        self.app = app
+        
+    def validate(self):
+        super(GridVu, self).validate()
+        if not self.batching:
+            return
+        #
+        self.layer.validate()
+        #
+        g = Graphics()
+        g.clip = None
+        self.batch(g)
+
+    def draw(self, graphics):
+        if self.invalid:
+            self.node.validate() #seems to work the best here ...
+        
+        if self.batching:
+            self.layer.draw(graphics)
+            if graphics.query:
+                self.query(graphics)
+            return
+        #else        
+        def draw(vu, graphics):
+            vu.draw(graphics)
+        self.walk(graphics, draw)
+
+    def batch(self, graphics):
+        self.layer.reset()
+        def batch(vu, graphics):
+            graphics.layer = self.tileLayer
+            vu.batch(graphics)
+        self.walk(graphics, batch)
+        
+    def query(self, graphics):
+        def query(vu, graphics):
+            vu.query(graphics)
+        self.walk(graphics, query)
+        
+    '''
+    Might be better off with generators for row and column?
+    '''
+    def walk(self, graphics, callback):
+        g = graphics.copy()
+        query = g.query
+        #
+        r1, r2, c1, c2 = self.clip(g.clip)
+        r = r1
+        #
+        data = self.node.data
+        while(r >= r2): #rows in sheet
+            if len(data[r]) == 0:
+                r += 1
+                continue
+            #else
+            g.cellY = self.node.coordY + r
+            row = data[r]            
+            c = c1
+            blitY = r * BLOCK_ROW_HEIGHT
+            while(c <= c2): #cells in row
+                blitX = c * BLOCK_WIDTH                
+                blitUp = 0
+                cell = row[c]
+                if not cell:
+                    c += 1
+                    continue
+                g.cellX = self.node.coordX + c
+                o = 0
+                for node in cell:
+                    vu = node.vu
+                    if(vu != None):
+                        g.cellZ = o                        
+                        g.translate(blitX, blitY + blitUp)
+                        callback(vu, g)
+                        blitUp = blitUp +  node.height * BLOCK_STACK_HEIGHT
+                    #o += 1
+                    o += node.height #hmmm...
+                c += 1
+            r -= 1            
+
+    def clip(self, clip):
+        #
+        rowCount = self.node.rowCount
+        rowMax = rowCount - 1 
+        colCount = self.node.colCount
+        colMax = colCount - 1         
+        #
+        if not clip:
+            return rowMax, 0, 0, colMax
+        #else  
         posX = self.node.coordX * BLOCK_WIDTH
         posY = self.node.coordY * BLOCK_ROW_HEIGHT
         #
@@ -114,11 +295,6 @@ class GridVu(Pane):
         top = clip.top - posY
         left = clip.left - posX
         right = clip.right - posX
-        #
-        rowCount = self.node.rowCount
-        rowMax = rowCount - 1 
-        colCount = self.node.colCount
-        colMax = colCount - 1         
         #
         r1 = int(top * INV_BLOCK_ROW_HEIGHT)
         if(r1 < 0):
@@ -144,36 +320,9 @@ class GridVu(Pane):
         if(c2 > colMax):
             c2 = colMax
         #
-        r = r1
-        data = self.node.data
-        while(r >= r2): #rows in sheet
-            if len(data[r]) == 0:
-                r += 1
-                continue
-            #else
-            row = data[r]            
-            c = c1
-            blitY = r * BLOCK_ROW_HEIGHT
-            while(c <= c2): #cells in row
-                blitX = c * BLOCK_WIDTH                
-                blitUp = 0
-                cell = row[c]
-                if not cell:
-                    c += 1
-                    continue
-                if(query):
-                   query.cellX = self.node.coordX + c
-                   query.cellY = self.node.coordY + r
-                for node in cell:
-                    vu = node.vu
-                    if(vu != None):                        
-                        g.translate(blitX, blitY + blitUp)
-                        vu.draw(g) 
-                        #blitUp = blitUp + vu.get_stack_height()
-                        blitUp = blitUp + vu.stack_height
-                c += 1
-            r -= 1            
 
+        return r1, r2, c1, c2
+    
 class Grid(Node):
     def __init__(self, world, x, y, colCount = WORLD_GRID_COL_MAX, rowCount = WORLD_GRID_ROW_MAX):
         super(Grid, self).__init__()
@@ -190,27 +339,22 @@ class Grid(Node):
         self.vu = GridVu(self)
         #do this last!!!
         world.add_grid(self)
-        self.invalid = 0
         
-    def invalidate(self, flag = 1):
-        #if not self.invalid:
-        #    self.world.invalidate() #???
-        self.invalid |= flag
-        print 'invalid'
        
     def validate(self):
-        self.invalid = 0        
+        super(Grid, self).validate()
         #prevent underage
         data = self.data
         if len(data) < self.rowCount:
             i = 0
             while i < self.rowCount:
-                row = Row()
+                row = self.create_row()
                 row.validate()
                 data.append(row)
                 i += 1
         for row in self.data:
-            row.validate()
+            if row.invalid != 0:
+                row.validate()
 
     def create_row(self):
         row = Row(self, self.colCount)
@@ -249,61 +393,39 @@ class Grid(Node):
         #return self.data[coord.y][coord.x]
         return self.data[coord.y % self.rowCount][coord.x % self.colCount]
     
+    '''
+    Cell Access Helpers
+    '''
     def get_top_at(self, coord):
         cell = self.get_cell_at(coord)
-        if(not cell):
-            return None
-        length = len(cell)
-        if(length == 0):
-            raise Exception()
-        top = cell[length-1]
+        top = cell.get_top()
         return top
 
     def get_top_block_at(self, coord):
         cell = self.get_cell_at(coord)
-        if(not cell):
-            return None
-        length = len(cell)
-        if(length == 0):
-            raise Exception()
-        for top in reversed(cell):
-            if(isinstance(top, GroupBlock)): #cripes!  It is shallow testing! Good in a way.
-                break            
-            if(isinstance(top, Block)):
-                break
+        top = cell.get_top_block()
         return top
 
+    def get_top_transform_at(self, coord):
+        cell = self.get_cell_at(coord)
+        t = cell.get_top_transform(coord)
+        return t
+    
+    def get_bottom_transform_at(self, coord):
+        cell = self.get_cell_at(coord)
+        t = cell.get_bottom_transform(coord)
+        return t    
     '''
     This will get the transform of a group member
     '''
-    def get_node_transform(self, targetNode, coord):
-        if(isinstance(targetNode, Block)):
-           return get_block_transform(targetNode, coord)
-        #else        
+    def get_node_transform_at(self, targetNode, coord):
         cell = self.get_cell_at(coord)
-        blitUp = 0                                    
-        for node in cell:
-            vu = node.vu
-            #blitUp = blitUp + vu.get_stack_height()
-            blitUp = blitUp + vu.stack_height
-            if(isinstance(node, GroupBlock)):
-                return vu.get_member_transform(Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT + blitUp), targetNode)
-        blitY = (coord.y * BLOCK_ROW_HEIGHT)
-        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
+        t = cell.get_node_transform(targetNode, coord)
         return t
     '''
     This will get the transform of any block.
     '''    
-    def get_block_transform(self, block, coord):
+    def get_block_transform_at(self, block, coord):
         cell = self.get_cell_at(coord)
-        blitUp = 0
-        for node in cell:
-            if(node == block):
-                break
-            vu = node.vu
-            if(vu != None):
-                #blitUp = blitUp + vu.get_stack_height()      
-                blitUp = blitUp + vu.stack_height
-        blitY = (coord.y * BLOCK_ROW_HEIGHT)
-        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
+        t = cell.get_block_transform(block, coord)
         return t

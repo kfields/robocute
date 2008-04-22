@@ -1,34 +1,25 @@
 
-from node import *
+from base import *
 
-class Brain(object):
+class Brain(Base):
     def __init__(self, node):
         super(Brain, self).__init__()
         self.node = node
         self.app = None #get's set during registration of node.
-        self.grid = None
-        self.scene = None        
-        #
-        self.__coord = Coord(0,0) #brain knows where node is at roughly
-        self.old_coord = self.coord
-        #
-        self.on_move = None #need callback for camera!!!
+        self.scene = None
+        self.user = None
 
     def register(self, app, coord):
+        super(Brain, self).register(app, coord)
         self.app = app
-        self.grid = app.world.get_grid_at(coord)
         self.scene = app.scene
-        self.coord = coord
-            
-    def set_coord(self, coord):
-        self.old_coord = self.coord
-        self.__coord = coord
         
-    def get_coord(self):
-        return self.__coord
+    def bind(self, user):
+        self.user = user
     
-    coord = property(get_coord, set_coord)
-
+    def unbind(self):
+        self.user = None
+        
     def start(self):
         pass
 

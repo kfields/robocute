@@ -51,6 +51,4 @@ class BuildingBlock(Block):
     def __init__(self, item):
         super(BuildingBlock, self).__init__()
         self.vu = BlockVu(self, item.imgSrc)
-
-    def has_vacancy(self):
-        return False
+        self.vacancy = False

@@ -13,6 +13,7 @@ class World(world.World):
         grid = Grid(self, x, y, self.gridRowMax, self.gridColMax)
         rdr = Reader(self.filename, self.app, grid)
         rdr.read()
+        grid.register(self.app)        
         return grid
 
 class Game(App):
@@ -24,7 +25,7 @@ class Game(App):
         return world
     
     def create_user(self):
-        #user = User(self)
+        user = User(self)
         #user = Player(self)
-        user = Designer(self)
+        #user = Designer(self)
         return user

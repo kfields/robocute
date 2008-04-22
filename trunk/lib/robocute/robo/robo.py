@@ -14,25 +14,12 @@ class RoboVu(BotVu):
 class Robo(Bot):
     def __init__(self):
         super(Robo, self).__init__()
-'''
-Avatar_singleton = None
-class Avatar(Robo):
-    def __new__(cls, *args, **kargs):
-        global Avatar_singleton
-        if not Avatar_singleton:
-            #obj = object.__new__(cls)
-            #obj = CharacterBoy()
-            #obj = RoboCute()
-            obj = Designer()
-            Avatar_singleton = obj
-            obj.__init__(*args, **kargs)
-        return Avatar_singleton
-    def __init__(self):
-        super(Avatar, self).__init__()
-'''
+
 class AbstractDesigner(Robo):
+    groupable = False
     def __init__(self):
         super(AbstractDesigner, self).__init__()
+        self.height = 0
         self.vu = RoboVu(self, 'Selector.png')
         self.vu.hotspots = [] #clear the list
 

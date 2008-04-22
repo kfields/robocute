@@ -32,8 +32,9 @@ def build(app, text, coord, cell, item = None):
     if item and item.has_assignments():
         assign(nodes, item)
     for node in nodes:
-        node.register(app, coord)
-        cell.push_node(node)
+        cell.push_node(node)        
+        _coord = Coord(coord.x, coord.y, cell.height)
+        node.register(app, _coord)
     #return last
     return node
             

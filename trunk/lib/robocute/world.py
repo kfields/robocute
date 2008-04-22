@@ -10,6 +10,7 @@ class World(AbstractNode):
         
     def create_grid(self, x, y):
         grid = Grid(self, x, y, self.gridRowMax, self.gridColMax)
+        grid.register(self.app)
         return grid
         
     def add_grid(self, grid):
@@ -81,11 +82,14 @@ class World(AbstractNode):
         grid = self.get_grid_at(coord)
         return grid.get_top_block_at(coord)
 
-    def get_node_transform(self, targetNode, coord):
+    def get_top_transform_at(self, coord):
         grid = self.get_grid_at(coord)
-        return grid.get_node_transform(targetNode, coord)
-
-    def get_block_transform(self, block, coord):
-        grid = self.get_grid_at(coord)
-        return grid.get_block_transform(block, coord)
+        return grid.get_top_transform_at(coord)
     
+    def get_bottom_transform_at(self, coord):
+        grid = self.get_grid_at(coord)
+        return grid.get_bottom_transform_at(coord)
+
+    def get_node_transform_at(self, targetNode, coord):
+        grid = self.get_grid_at(coord)
+        return grid.get_node_transform_at(targetNode, coord)

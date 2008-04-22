@@ -1,20 +1,17 @@
-from robocute.node import *
-from robocute.vu import *
-from brain import Brain
+from robocute.entity import *
+from robocute.sprite import *
 
 #was going to name it bot ... robo goes with the theme
     
-class BotVu(ImageVu):
+class BotVu(SpriteVu):
     def __init__(self, node, imgSrc):
         super(BotVu, self).__init__(node, imgSrc)
-        self.stack_height = 100
-    #def get_stack_height(self):
-    #    return 100 #necessary for SpeechBubble!
+        self.hotHeight = 120 #fixme:use constant
 
-class Bot(Node):
+class Bot(Entity):
     def __init__(self):
         super(Bot, self).__init__()
-        self.brain = None
+        self.height = 2
         self.vu = BotVu(self, 'robocute.png')        
     '''
     This is that post constructor we need.

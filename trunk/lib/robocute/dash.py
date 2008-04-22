@@ -33,15 +33,15 @@ class Drawer(Node):
     def remove_node(self, node):
         self.nodes.remove(node)
 
-class Dash(Layer):
-    def __init__(self, name, order):
-        super(Dash, self).__init__(name, order)
-        self.drawers = {}
+class Dash(NodeLayer):
+    def __init__(self, parent, name, order):
+        super(Dash, self).__init__(parent, name, order)
+        #self.drawers = {}
     
     def create_drawer(self, drawerName, node = None):
         drawer = Drawer(node)
-        self.drawers = drawer
-        self.add_node(drawer)
+        #self.drawers = drawer
+        #self.add_node(drawer)
         return drawer
     
     def draw(self, graphics):

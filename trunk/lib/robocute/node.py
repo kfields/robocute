@@ -1,61 +1,39 @@
 
-import copy
-
-'''
-This file is the bottom of the import heirarchy so I'm gonna stick fundamentals in here for now.
-'''
-WORLD_GRID_ROW_MAX = 64
-WORLD_GRID_COL_MAX = 64
-WORLD_GRID_CACHE_ROW_COUNT= 64
-WORLD_GRID_CACHE_COL_COUNT = 64
-'''
-Block Coordinates
-'''
-class Coord:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-'''
-2D position and rotation
-'''
-class Transform:
-    def __init__(self, x, y, r=0):
-        self.x = x
-        self.y = y
-        self.r = r
-        
-    def copy(self):
-        return copy.copy(self)
-
+from base import *
 from vu import *
-from brain import Brain
+#import brain
 
-'''
-class AbstractCell(list):
-    def __init__(self):
-        pass
-'''     
-class AbstractNode(object):
+class AbstractNode(Base):
     def __init__(self, fn = None):
+        super(AbstractNode, self).__init__()
         self.name = 'Unknown'
         self.vu = None
         self.fn = fn #not sure about this...
-    #
-    def copy(self):
-        return copy.copy(self)
-    def deep_copy(self):
-        return copy.deepcopy(self)
-    #   
-    def register(self, app, coord):
-        pass
-    def has_vacancy(self):
-        return False
+
+    def delete(self):
+        if self.vu:
+            self.vu.delete()
+        super(AbstractNode, self).delete()
+                
+    def register(self, app, coord = None):
+        super(AbstractNode, self).register(app, coord)
+        if self.vu:
+            self.vu.register(app, coord)
+
+    def invalidate(self, flag = 1):
+        super(AbstractNode, self).invalidate(flag)
+        if self.vu:
+            self.vu.invalidate(flag)        
+                
+    def validate(self):
+        super(AbstractNode, self).validate()
+        if self.vu:
+            self.vu.validate()        
+    
     #events
     def process(self, event):
         if(self.fn):
             self.fn(self)
-        print self, event
         
 class Node(AbstractNode):
     def __init__(self, fn = None):
@@ -64,20 +42,26 @@ class Node(AbstractNode):
         self.y = 0
         self.z = 0
         self.brain = None
+
+    def delete(self):
+        if self.brain:
+            self.brain.delete()
+        super(Node, self).delete()
+
+    def register(self, app, coord = None):
+        super(Node, self).register(app, coord)
+        if self.brain:
+            self.brain.register(app, coord)
+        
+    def validate(self):
+        super(Node, self).validate()
+        
     def set_transform(self, transform):
         self.x = transform.x
         self.y = transform.y
+
     def get_transform(self):
-        return Transform(self.x, self.y)
-    def get_brain(self):
-        return self.brain
-    def register(self, app, coord):
-        if(self.brain != None):
-            self.brain.register(app, coord)
-        if self.vu:
-            self.vu.validate() #fixme:ugh ...
-        
-    
+        return Transform(self.x, self.y)        
 '''
 Text Node
 '''

@@ -39,10 +39,6 @@ class BubbleVu(WidgetVu):
             vu.draw(g)
             g.x += vu.width + self.hspace
                 
-    #2.5D support
-    #def get_stack_height(self):
-    #    return self.height
-
 class Bubble(Node):
     def __init__(self, items):
         super(Bubble, self).__init__()

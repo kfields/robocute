@@ -68,35 +68,17 @@ class Camera(camera.Camera):
         super(Camera, self).validate()
         self.clip.validate()
 
-class BubbleLayer(Layer):
-    def __init__(self, name, order):
-        super(BubbleLayer, self).__init__(name, order)
+class BubbleLayer(NodeLayer):
+    def __init__(self, parent, name, order):
+        super(BubbleLayer, self).__init__(parent, name, order)
         
-    def draw(self, graphics):
-        g = graphics.copy()
-        for node in self.nodes:
-            vu = node.vu
-            if(vu != None):
-                t = node.get_transform()
-                g.translate(t.x, t.y)
-                vu.draw(g)
-
-class WidgetLayer(Layer):
-    def __init__(self, name, order):
-        super(WidgetLayer, self).__init__(name, order)
+class WidgetLayer(NodeLayer):
+    def __init__(self, parent, name, order):
+        super(WidgetLayer, self).__init__(parent, name, order)
         
-    def draw(self, graphics):
-        g = graphics.copy()
-        for node in self.nodes:
-            vu = node.vu
-            if(vu != None):
-                t = node.get_transform()
-                g.translate(t.x, t.y)
-                vu.draw(g)
-
-class MouseLayer(Layer):
-    def __init__(self, name, order):
-        super(MouseLayer, self).__init__(name, order)
+class MouseLayer(NodeLayer):
+    def __init__(self, parent, name, order):
+        super(MouseLayer, self).__init__(parent, name, order)
         
     def draw(self, graphics):
         g = graphics.copy() #fixme:necessary?
@@ -106,19 +88,19 @@ class MouseLayer(Layer):
             g.y = node.y - vu.height #fixme:mouse.hotx & hoty!!!
             vu.draw(g)
 
-class SceneLayer(Layer):
+class SceneLayer(RootLayer):
     def __init__(self):
         super(SceneLayer, self).__init__('scene')
     def create_layer(self, name):
         order = len(self.layers)
         if name == 'bubbles' :
-            layer = BubbleLayer(name, order)
+            layer = BubbleLayer(self, name, order)
         elif name == 'dash':
-            layer = Dash(name, order)            
+            layer = Dash(self, name, order)            
         elif name == 'widgets':
-            layer = WidgetLayer(name, order)
+            layer = WidgetLayer(self, name, order)
         elif name == 'mice':
-            layer = MouseLayer(name, order)
+            layer = MouseLayer(self, name, order)
         self.layers.append(layer)
         return layer
 
@@ -133,18 +115,16 @@ class Scene(Pane):
         #
         self.bgImg = image.load(data.filepath('image/clouds.jpg'))
         #
-        #self.bubbles = BubbleLayer(self)
         self.bubbles = self.layer.create_layer('bubbles')
         #
-        #self.dash = Dash(self)
         self.dash = self.layer.create_layer('dash')
         #
-        #self.widgets = WidgetLayer(self)
         self.widgets = self.layer.create_layer('widgets')
         #
-        #self.mice = MouseLayer(self)
         self.mice = self.layer.create_layer('mice')
-            
+        #
+        self.query = None
+        
     def create_camera(self):
         camera = Camera(self)
         return camera
@@ -152,6 +132,12 @@ class Scene(Pane):
     Rendering
     '''
     def draw(self, layerGraphics, worldGraphics):
+        query = self.query
+        
+        if(query):
+           worldGraphics.query = query
+           layerGraphics.query = query
+        #
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         #        
@@ -164,7 +150,13 @@ class Scene(Pane):
         self.widgets.draw(layerGraphics)        
         #
         self.mice.draw(layerGraphics)
-
+        #
+        if query:
+            query.process()
+            self.query = None
+            worldGraphics.query = None
+            layerGraphics.query = None            
+        
     def draw_background(self, graphics):
         bgWidth = self.bgImg.width
         bgHeight = self.bgImg.height

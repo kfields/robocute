@@ -1,74 +1,101 @@
 import pyglet
 
-'''
-Copy and pasted from pyglet's SpriteGroup ...
-'''
+import sprite
 
-class Group(pyglet.graphics.Group):
-    def __init__(self, texture, blend_src, blend_dest, parent=None):
-        super(Group, self).__init__(parent)
-        self.texture = texture
-        self.blend_src = blend_src
-        self.blend_dest = blend_dest
+from base import *
 
-    def set_state(self):
-        glEnable(self.texture.target)
-        glBindTexture(self.texture.target, self.texture.id)
+LAYER_ANY = -1
+LAYER_DEFAULT = 0
 
-        glPushAttrib(GL_COLOR_BUFFER_BIT)
-        glEnable(GL_BLEND)
-        glBlendFunc(self.blend_src, self.blend_dest)
-
-    def unset_state(self):
-        glPopAttrib()
-        glDisable(self.texture.target)
-
-    def __eq__(self, other):
-        return (other.__class__ is self.__class__ and
-                self.parent is other.parent and
-                self.texture.target == other.texture.target and
-                self.texture.id == other.texture.id and
-                self.blend_src == other.blend_src and
-                self.blend_dest == other.blend_dest)
-
-    def __hash__(self):
-        return hash((id(self.parent),
-                     self.texture.id, self.texture.target,
-                     self.blend_src, self.blend_dest))
-
-
-class Layer(pyglet.graphics.OrderedGroup):
-    def __init__(self, name, order = 0):
-        super(Layer, self).__init__(order)
+class Layer(Base):
+    def __init__(self, parent, name = None, order = LAYER_ANY):
+        super(Layer, self).__init__()
+        self.parent = parent
         self.name = name
-        self.nodes = []
+        self.order = order
+        if parent:
+            self.root = parent.root
+        else:
+            self.root = self
+            
         self.layers = []
+        self.orderIncrement = 1        
+        self.orderCount = self.order + self.orderIncrement 
     
-    def create_layer(self, name):
-        order = len(self.layers)
-        layer = Layer(self, order)
+    def create_layer(self, name = None, order = LAYER_ANY):
+        if order == LAYER_ANY:
+            self.orderCount += self.orderIncrement
+            order = self.orderCount
+        layer = Layer(self, name, order)
         self.layers.append(layer)
         return layer
+        
+    def draw(self, graphics):
+        pass
     
-    def create_layers(self, cls, name):
-        layerCount = len(self.layers)
-        layer = cls(self, layerCount)
-        self.layers.append(layer)
-        return layer        
-    
+class NodeLayer(Layer):
+    def __init__(self, parent, name, order):
+        super(NodeLayer, self).__init__(parent, name, order)
+        self.nodes = []
+
     def add_node(self, node):
         self.nodes.append(node)
     
     def remove_node(self, node):
         self.nodes.remove(node)
         
-    def draw_nodes(self, graphics):
-        pass
-    
-    def find_group(self, texture, blend_src, blend_dest):
-        group = Group(texture, blend_src, blend_dest, self)
+    def draw(self, graphics):
+        g = graphics.copy()
+        for node in self.nodes:
+            vu = node.vu
+            if(vu != None):
+                t = node.get_transform()
+                g.translate(t.x, t.y)
+                vu.draw(g)
+
+class AbstractGroupLayer(Layer):
+    def __init__(self, parent = None, name = None, order = LAYER_DEFAULT):
+        super(AbstractGroupLayer, self).__init__(parent, name, order)
+        self.group = None
+        
+    def create_layer(self, name = None, order = LAYER_ANY):
+        if order == LAYER_ANY:
+            self.orderCount += self.orderIncrement
+            order = self.orderCount
+        layer = GroupLayer(self, name, order)
+        self.layers.append(layer)
+        return layer
+        
+class GroupLayer(AbstractGroupLayer):
+    def __init__(self, parent, name, order):
+        super(GroupLayer, self).__init__(parent, name, order)
+        self.group = pyglet.graphics.OrderedGroup(order, self.root.group)
+        #self.groups = []
+        self.groups = {}
+
+    def register_group(self, group):
         if group in self.groups:
-            group = self.groups.index(group)
+            #index = self.groups.index(group)
+            #group = self.groups[index]
+            group = self.groups[group]
         else:
-            self.groups.append(group)
+            #self.groups.append(group)
+            self.groups[group] = group
         return group
+    
+class BatchLayer(AbstractGroupLayer):
+    def __init__(self, name):
+        super(BatchLayer, self).__init__(None, name)
+        self.batch = None
+        self.group = pyglet.graphics.Group()
+        
+    def reset(self):
+        self.batch = pyglet.graphics.Batch()
+
+    def draw(self, graphics):
+        self.batch.draw()
+        
+class RootLayer(Layer):
+    def __init__(self, name):
+        super(RootLayer, self).__init__(None, name)
+        

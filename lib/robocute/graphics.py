@@ -21,7 +21,12 @@ class Graphics(Rect):
         #
         self.color=(255.,255.,255.,1.)
         #
+        #now it's really getting nuts.
+        self.cellX = 0
+        self.cellY = 0        
+        self.cellZ = 0
         self.query = None
+        
         #
         self.clip = Clip(self.x, self.y, self.width, self.height)
         #
@@ -92,39 +97,3 @@ class Graphics(Rect):
         z = GLdouble()
         gluUnProject(wx, wy, wz, mvmatrix, projmatrix, viewport, x, y, z)
         return (x.value, y.value, z.value)
-    '''
-    Event Processing
-    ...
-    Okay this is all crazy and probably temporary.
-    Were going to piggy back mouse events on the draw calls.
-    Reason being ... I don't like maintaining positions on the objects
-    '''
-
-    def visit(self, vu):
-        query = self.query        
-        if(not query):
-            return        
-        if(not vu.has_hotspots()): #temporary hack
-            return
-        pos = self.unproject(query.x, query.y)
-        for hotspot in vu.hotspots:
-            hotX = self.x + hotspot.x
-            hotY = self.y + hotspot.y
-            hotWidth = hotspot.width
-            hotHeight = hotspot.height
-            if(pos[0] > hotX and pos[0] < hotX + hotWidth):
-                if(pos[1] > hotY and pos[1] < hotY + hotHeight):
-                    query.add_result(vu.node)
-                        
-    '''
-    def visit(self, vu):
-        query = self.query        
-        if(not query):
-            return        
-        if(not vu.clickable): #temporary hack
-            return
-        pos = self.unproject(query.x, query.y)
-        if(pos[0] > self.x and pos[0] < self.x + vu.width):
-            if(pos[1] > self.y and pos[1] < self.y + vu.height):
-                query.add_result(vu.node)
-    '''

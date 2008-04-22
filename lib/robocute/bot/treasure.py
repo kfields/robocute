@@ -35,7 +35,7 @@ class TreasureBotBrain(bot.Brain):
             return cell
         if isinstance(node, GroupBlock):
             return cell        
-        if not node.has_vacancy():
+        if not node.vacancy:
             return cell
         #else
         dstNodes = self.grid.get_cell_at(coord)

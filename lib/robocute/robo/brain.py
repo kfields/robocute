@@ -1,16 +1,18 @@
 
-#import robocute.brain
 import robocute.bot.brain
 from robocute.widget.bubble import *
 
 from message import *
 
-#class Brain(robocute.brain.Brain):
 class Brain(robocute.bot.brain.Brain):
     def __init__(self, node):
         super(Brain, self).__init__(node)
         self.bubble = None
         self.on_move = None
+
+    def delete(self):
+        self.del_bubble()
+        super(Brain, self).delete()
     
     def say(self, items):
         self.del_bubble()
@@ -19,7 +21,8 @@ class Brain(robocute.bot.brain.Brain):
 
     def add_bubble(self, bubble):
         coord = self.get_coord()
-        t = self.grid.get_node_transform(self.node, coord)
+        #t = self.grid.get_top_transform_at(coord)
+        t = coord.to_transform()
         t.x += self.node.vu.width
         bubble.set_transform(t)
         self.app.scene.add_bubble(bubble)

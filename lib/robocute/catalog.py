@@ -114,17 +114,3 @@ class Catalog(Bubble):
 
     def get_prev_page(self, pageName):
         return self.pages[self.prevPages[pageName]]
-
-'''
-class Catalog:
-    def __init__(self, filename, useFn):
-        self.pages = {}
-        rdr = Reader(self, filename, useFn)
-        rdr.read()
-    
-    def add_page(self, pageName, page):
-        self.pages[pageName] = page
-        
-    def get_page(self, pageName):
-        return self.pages[pageName]
-'''

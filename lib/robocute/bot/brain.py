@@ -1,6 +1,7 @@
-import robocute.brain
+import robocute.entity
+from robocute.base import Coord
 
-class Brain(robocute.brain.Brain):
+class Brain(robocute.entity.Brain):
 
     def __init__(self, node):
         super(Brain, self).__init__(node)
@@ -11,7 +12,7 @@ class Brain(robocute.brain.Brain):
             return False
         #destination check
         top = self.grid.get_top_block_at(dstCoord)
-        if not top or not top.has_vacancy():
+        if not top or not top.vacancy:
            return False
        #good to go
         return True
@@ -29,4 +30,6 @@ class Brain(robocute.brain.Brain):
        dstCell = self.grid.get_cell_at(dstCoord)
        dstCell.push_node(node)
        #
-       self.set_coord(dstCoord)
+       _dstCoord = Coord(dstCoord.x, dstCoord.y, dstCell.height)
+       #self.set_coord(dstCoord)
+       self.coord = _dstCoord

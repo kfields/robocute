@@ -1,10 +1,81 @@
 
-import brain
+import robocute.robo
 from robocute.catalog import *
 from robocute.ods.catalog import *
 from message import *
+from robocute.keyboard import *
+from robocute.mouse import *
 
-class AbstractDesignerBrain(brain.Brain):
+class DesignerMouseQuery(MouseQuery):
+    def __init__(self, box, event):
+        super(DesignerMouseQuery, self).__init__(event)
+        self.box = box
+        self.brain = box.brain
+        
+    def process(self):
+        if(len(self.results) == 0):
+            return
+        #else
+        #get last result, highest z
+        result = self.results[-1]
+        
+        #if(not isinstance(result.node, Block)):
+        #    return super(DesignerMouseQuery, self).process()
+        if result.node.fn :
+            return super(DesignerMouseQuery, self).process()        
+        #else
+        #event = self.events[0]
+        event = self.event
+        print result.node, event
+        
+        modifiers = event.modifiers
+        brain = self.brain
+        if modifiers & key.MOD_CTRL:
+            brain.clone_at(result)
+        elif  modifiers & key.MOD_SHIFT:
+            brain.clear_clones()
+            brain.clone_to(result)
+        else:
+            brain.clear_clones()
+            brain.transfer_to(result)
+        
+class DesignerKeybox(Keybox):    
+    def __init__(self, brain):
+        super(DesignerKeybox, self).__init__()
+        self.brain = brain
+                
+    def on_key_press(self, symbol, modifiers):
+        brain = self.brain
+        if symbol == key.ESCAPE:
+            if brain.has_clones():
+                brain.clear_clones()
+            else:
+                sys.exit()
+        elif symbol == key.T:
+            self.brain.take_control()
+        elif symbol == key.DELETE:
+            brain.do(DoDelete())
+        elif symbol == key.W:
+            brain.do(GoNorth())
+        elif symbol == key.D:
+            brain.do(GoEast())
+        elif symbol == key.S:
+            brain.do(GoSouth())
+        elif symbol == key.A:
+            brain.do(GoWest())
+        else:
+            super(DesignerKeybox, self).on_key_press(symbol, modifiers)
+
+class DesignerMousebox(Mousebox):    
+    def __init__(self, brain):
+        super(DesignerMousebox, self).__init__()
+        self.brain = brain
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        super(DesignerMousebox, self).on_mouse_press(x, y, button, modifiers)
+        self.brain.scene.query = DesignerMouseQuery(self, MousePressed(x, y, button, modifiers))
+                    
+class AbstractDesignerBrain(robocute.robo.brain.Brain):
     def __init__(self, node):
         super(AbstractDesignerBrain, self).__init__(node)
     def build(self, item):
@@ -18,7 +89,9 @@ class AbstractDesignerBrain(brain.Brain):
         if(len(cell) == 1): #that's us!!
             return
         cell.remove_node(self.node)        
-        cell.remove(cell[len(cell)-1])
+        #cell.remove(cell[len(cell)-1])
+        node = cell.pop_node()
+        node.delete()
         cell.push_node(self.node)
         
     def can_transfer(self, node, srcCoord, dstCoord):
@@ -33,16 +106,12 @@ class AbstractDesignerBrain(brain.Brain):
        #else
        srcCell = self.grid.get_cell_at(srcCoord)
        srcCell.remove_node(node)
-       #if(len(srcCell) == 0):
-       #     print 'emptySrc'       
        #
        dstCell = self.grid.get_cell_at(dstCoord)
-       #if(len(dstCell) == 0):
-       #     print 'emptyDst'
        # 
        dstCell.push_node(node)
        #
-       self.set_coord(dstCoord)
+       self.coord = dstCoord
 
     def do(self, msg):
         if(isinstance(msg, DoBuild)):
@@ -61,17 +130,34 @@ class DesignerBrain(AbstractDesignerBrain):
     def __init__(self, node):
         super(DesignerBrain, self).__init__(node)
         self.clones = []
+        self.drawer = None
+        self.keybox = DesignerKeybox(self)
+        self.mousebox = DesignerMousebox(self)
 
-    def has_clones(self):
-        return not len(self.clones) == 0
+    def bind(self, user):
+        super(DesignerBrain, self).bind(user)
+        self.show_dash()        
+        user.add_keybox(self.keybox)
+        user.add_mousebox(self.mousebox)
+
+    def unbind(self):
+        self.user.remove_keybox(self.keybox)
+        self.user.remove_mousebox(self.mousebox)
+        self.hide_dash()
+        super(DesignerBrain, self).unbind()        
+
+    def show_dash(self):
+        if not self.drawer:
+            self.create_drawer()
+        self.scene.dash.add_node(self.drawer)
+
+    def hide_dash(self):
+        self.scene.dash.remove_node(self.drawer)
+        
+    def update_dash(self):
+        pass
     
-    def clear_clones(self):
-        for clone in self.clones:
-            cell = self.grid.get_cell_at(clone.coord)
-            cell.remove_node(clone.node)
-        self.clones = []
-                
-    def start(self):
+    def create_drawer(self):
         def nextPage(node):
             self.drawer.remove_node(self.page)
             self.page = self.catalog.get_next_page(self.page.name)
@@ -90,9 +176,27 @@ class DesignerBrain(AbstractDesignerBrain):
         rdr.read()
         
         self.drawer = self.scene.dash.create_drawer('Catalog', self.catalog)
-        self.page = self.catalog.get_page('Terrain')
+        self.page = self.catalog.get_page('Character')
         self.drawer.add_node(self.page)
         
+    def take_control(self):
+        cell = self.grid.get_cell_at(self.coord)
+        node = cell[-2]
+        avatar = node.brain
+        self.user.push_tool(avatar)
+        
+    def has_clones(self):
+        return not len(self.clones) == 0
+    
+    def clear_clones(self):
+        for clone in self.clones:
+            cell = self.grid.get_cell_at(clone.coord)
+            cell.remove_node(clone.node)
+        self.clones = []
+                
+    def start(self):
+        pass
+    
     def clone_to(self, coord):
         myCoord = self.coord
         #
@@ -140,3 +244,4 @@ class DesignerBrain(AbstractDesignerBrain):
         super(DesignerBrain, self).do(msg)
         for clone in self.clones:
             clone.do(msg)
+            

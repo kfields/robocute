@@ -18,8 +18,7 @@ from world import World
 from scene import Scene
 from graphics import Graphics
 #
-from user.player import *
-from user.designer import *
+from user import *
 #
 #from robo.robo import Avatar
 #
@@ -33,10 +32,12 @@ WINDOW_HEIGHT = 768
 class App(object):
     
     def __init__(self, filename):
+        #Need a GL Context!
+        self.window = window.Window(WINDOW_WIDTH, WINDOW_HEIGHT, caption='RoboCute')                
+        #
         self.filename = filename
         self.world = self.create_world()
         #
-        self.window = window.Window(WINDOW_WIDTH, WINDOW_HEIGHT, caption='RoboCute')                
         self.scene = Scene(self.world, self, self.window)
         self.world.vu = self.scene
         #
@@ -57,11 +58,8 @@ class App(object):
     
     def create_user(self):
         user = User(self)
-        #user = Designer(self)
-        #user = Player(self)
         return user
         
-
     '''
     Callbacks
     '''
@@ -86,7 +84,7 @@ class App(object):
         node = self.build(text, home, cell)
         if(not node):
             raise Exception('No Avatar found in scene!!!')
-        brain = node.get_brain()
+        brain = node.brain
         if(brain == None):
            raise Exception("This node has no brain!")
         #
@@ -108,23 +106,13 @@ class App(object):
         #
         #
         while not win.has_exit:
-            query = user.dispatch_events()
-            #
-            if(query):
-               worldGraphics.query = query
-               layerGraphics.query = query
+            user.dispatch_events()
             #
             dt = clock.tick()
             #
             win.clear()
             #
             scene.draw(layerGraphics, worldGraphics)
-            #
-            if(query):
-                query.process()
-            #
-            worldGraphics.query = None
-            layerGraphics.query = None
             #
             fps_text.text = ("fps: %d") % (clock.get_fps())
             fps_text.draw()        

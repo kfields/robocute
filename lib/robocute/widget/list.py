@@ -95,10 +95,6 @@ class ListVu(Vu):
             #g.x += vu.width + 5 #fixme:self.spacer?
             g.y += vu.height + self.vspace #fixme:self.spacer?
                 
-    #2.5D support
-    #def get_stack_height(self):
-    #    return self.height
-
 class List(Node):
     def __init__(self, items):
         super(List, self).__init__()

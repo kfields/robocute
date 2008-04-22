@@ -1,5 +1,8 @@
 
-import brain
+import robocute.robo
+#from robocute.keyboard import *
+#from robocute.mouse import *
+from robocute.avatar import *
 from robocute.widget.bubble import *
 from robocute.item.item import *
 from robocute.block.block import *
@@ -127,18 +130,58 @@ class LandState(State):
         self.brain.update_dash()
         self.brain.schedule(Transition('main'), 1.)
         
-        
-class PlayerBrain(brain.Brain):
+class PlayerKeybox(AvatarKeybox):
+    def __init__(self, brain):
+        super(PlayerKeybox, self).__init__(brain)
+
+class PlayerMousebox(AvatarMousebox):    
+    def __init__(self, brain):
+        super(PlayerMousebox, self).__init__(brain)
+                    
+class PlayerBrain(robocute.robo.brain.Brain):
     def __init__(self, node):
         super(PlayerBrain, self).__init__(node)
+        #
+        self.keybox = PlayerKeybox(self)
+        self.mousebox = PlayerMousebox(self)
+        #
         self.state = StartState(self)
         self.die = 0
         self.worth = 0 #heh ... total treasure value
         self.dash_bubble = None
         self.dash_worth = Text(str(self.worth))
+    
+    def bind(self, user):
+        super(PlayerBrain, self).bind(user)
+        self.show_dash()        
+        user.add_keybox(self.keybox)
+        user.add_mousebox(self.mousebox)
+
+    def unbind(self):
+        self.hide_dash()        
+        user = self.user
+        user.remove_keybox(self.keybox)
+        user.remove_mousebox(self.mousebox)
+        super(PlayerBrain, self).unbind()
+        
+    def show_dash(self):
+        if(not self.dash_bubble):
+            self.dash_bubble = DashBubble([Image('Mini Chest.png'), self.dash_worth])
+        self.scene.dash.add_node(self.dash_bubble)
+        self.update_dash()
+
+    def hide_dash(self):
+        self.scene.dash.remove_node(self.dash_bubble)
+        
+    def update_dash(self):
+        if not self.dash_bubble:
+            return
+        self.dash_worth.vu.text.text = str(self.worth)
+        self.dash_bubble.vu.validate()
         
     def start(self):
         self.state()
+        
     def schedule(self, msg, seconds = 0):
         if(seconds == 0):
             self.do(msg)
@@ -176,7 +219,7 @@ class PlayerBrain(brain.Brain):
                     block = self.grid.get_top_block_at(Coord(blockX, blockY))
                 if(not block):
                     vacant = False
-                elif(not block.has_vacancy()):
+                elif(not block.vacancy):
                     vacant = False
                 if(vacant):
                     vacancies.append(Coord(blockX, blockY))
@@ -215,9 +258,9 @@ class PlayerBrain(brain.Brain):
         
     def move_to(self, newCoord):
        self.del_bubble()
-       #self.scene.transfer(self.node, self.coord, newCoord)
        self.transfer(self.node, self.coord, newCoord)
-       self.on_move()
+       if self.on_move:
+           self.on_move()
        
     def search_for_items(self):
         block = self.grid.get_top_block_at(self.coord)
@@ -231,14 +274,7 @@ class PlayerBrain(brain.Brain):
         return result
         
     def take_items(self, items):
-        block = self.grid.get_top_block_at(self.coord)
+        cell = self.grid.get_cell_at(self.coord)
         for item in items:
-            block.remove_node(item)
+            cell.remove_node(item)
             
-    def update_dash(self):
-        if(not self.dash_bubble):
-            self.dash_bubble = DashBubble([Image('Mini Chest.png'), self.dash_worth])
-            self.scene.dash.add_node(self.dash_bubble)
-        #
-        self.dash_worth.vu.text.text = str(self.worth)
-        self.dash_bubble.vu.validate()

@@ -25,8 +25,8 @@ class Vu(Base):
     def __init__(self, node):
         super(Vu, self).__init__()
         self.node = node
-        self.width = 0
-        self.height = 0
+        self.width = None
+        self.height = None
         self.hotspots = []
         #
         #query support
@@ -97,7 +97,7 @@ class ImageVu(Vu):
     def __init__(self, node, imgSrc):
         super(ImageVu, self).__init__(node)
         self.imgSrc = imgSrc
-        if(imgSrc != ''):
+        if imgSrc != '':
             self.image = load_image(imgSrc)
         else:
             self.image = None
@@ -106,16 +106,17 @@ class ImageVu(Vu):
         
     def validate(self):
         super(ImageVu, self).validate()
-        self.width = self.image.width
-        self.height = self.image.height
+        if not self.width:
+            self.width = self.image.width
+        if not self.height:
+            self.height = self.image.height
         #query support
         self.hotHeight = self.height
         #hack?
         self.node.z = self.width
         
     def draw(self, graphics):
-        #super(ImageVu, self).draw(graphics)
-        if(self.image != None):
+        if self.image:
             self.image.blit(graphics.x, graphics.y, graphics.z)
         if graphics.query:
             self.query(graphics)            

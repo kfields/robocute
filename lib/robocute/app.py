@@ -14,13 +14,12 @@ from pyglet import window
 from pyglet import font
 #
 import data
+from game.default import DefaultGame
 from world import World
 from scene import Scene
 from graphics import Graphics
 #
 from user import *
-#
-#from robo.robo import Avatar
 #
 from builder import build
 
@@ -31,25 +30,24 @@ WINDOW_HEIGHT = 768
 
 class App(object):
     
-    def __init__(self, filename):
-        #Need a GL Context!
+    def __init__(self, gameName = 'Default'):
         self.window = window.Window(WINDOW_WIDTH, WINDOW_HEIGHT, caption='RoboCute')                
         #
-        self.filename = filename
-        self.world = self.create_world()
-        #
-        self.scene = Scene(self.world, self, self.window)
-        self.world.vu = self.scene
+        game = self.create_game(gameName)
+        self.game = game
+        self.catalog = game.catalog
+        self.world = game.world
+        self.scene = game.scene
         #
         self.callbacks = []
         #
         self.user = None
         self.homes = []
-    
-    def create_world(self):
-        world = World(self, self.filename)
-        return world
         
+    def create_game(self, gameName):
+        game = DefaultGame(self, gameName) #fixme: Need game factory ...
+        return game
+            
     def build(self, text, coord, cell, item = None):
         return build(self, text, coord, cell, item)
         

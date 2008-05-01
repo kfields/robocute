@@ -13,7 +13,7 @@ class DrawerVu(Vu):
             if(vu != None):
                 vu.draw(g)
                 #g.y += vu.height + 10
-                g.y += vu.height + 5
+                g.y += vu.height
     
 class Drawer(Node):
     def __init__(self, node = None):

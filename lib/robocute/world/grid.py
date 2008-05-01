@@ -1,174 +1,9 @@
-from node import *
-from block.block import *
-from pane import *
-'''
-Warning:  Do not import this.  These are hidden implementation classes.
-Only scene.py and builder.py should need to import this file.
-'''
+from robocute.node import *
+from robocute.block import *
+from robocute.pane import *
 
-class Cell(list):
-    def __init__(self, row):
-        super(Cell, self).__init__()
-        self.row = row
-        self.invalid = 0
-        self.height = 0
-        
-    def invalidate(self, flag = 1):
-        if self.invalid == 0:
-            self.row.invalidate()
-        self.invalid |= flag
-    
-    def validate(self):
-        self.invalid = 0
-        
-    def update(self):
-        height = 0
-        for node in self:
-            height += node.height
-        self.height = height
-                
-    #can't assume group is top any more. :(
-    def find_group(self):
-        for node in self:
-            if isinstance(node, GroupBlock):
-                return node
-        return None                
-                
-    def push_node(self, node):
-        self.invalidate()
-        if len(self) ==0:
-            self.append(node)
-            self.update()
-            return
-        #else
-        top = self[-1]
-        if node.groupable:
-            group = self.find_group()        
-            if group:
-                group.push_node(node)
-            elif top.groupable:
-                oldTop = self.pop()
-                top = GroupBlock()
-                top.push_node(oldTop)
-                top.push_node(node)
-                self.append(top)
-            else:
-                self.append(node)
-        else:
-            self.append(node)
-        self.update() 
-
-    def pop_node(self):
-        node = self[-1]
-        self.remove(node)
-        self.update()        
-        return node
-        
-    def remove_node(self, node):
-        self.invalidate()
-        if node.groupable:
-            group = self.find_group()
-            if group:
-                group.remove_node(node)
-                self.update()
-                return
-        #else
-        self.remove(node)
-        self.update()
-    
-    def get_top(self):
-        length = len(self)
-        if(length == 0):
-            return None
-        top = self[-1]
-        return top
-
-    def get_top_block(self):
-        length = len(self)
-        if(length == 0):
-            return None
-        for top in reversed(self):
-            if(isinstance(top, GroupBlock)): #cripes!  It is shallow testing! Good in a way.
-                break            
-            if(isinstance(top, Block)):
-                break
-        return top
-
-    '''
-    Get transform at top of cell
-    '''    
-    def get_top_transform(self, coord):
-        t = Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT)
-        t.y += self.height * BLOCK_STACK_HEIGHT
-        return t
-
-    '''
-    Get transform at bottom of cell
-    '''    
-    def get_bottom_transform(self, coord):
-        t = Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT)
-        return t
-
-    '''
-    Get transform of node at coordinate
-    '''    
-    def get_node_transform(self, targetNode, coord):
-        if(isinstance(targetNode, Block)):
-           return get_block_transform(targetNode, coord)
-        #else
-        blitUp = 0                                    
-        for node in self:
-            vu = node.vu
-            blitUp = blitUp + node.height * BLOCK_STACK_HEIGHT
-            if(isinstance(node, GroupBlock)):
-                return vu.get_member_transform(Transform(coord.x * BLOCK_WIDTH, coord.y * BLOCK_ROW_HEIGHT + blitUp), targetNode)
-        blitY = (coord.y * BLOCK_ROW_HEIGHT)
-        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
-        return t
-
-    '''
-    This will get the transform of any block.
-    '''    
-    def get_block_transform(self, block, coord):
-        blitUp = 0
-        for node in self:
-            if(node == block):
-                break
-            vu = node.vu
-            if(vu != None):
-                blitUp = blitUp + node.height * BLOCK_STACK_HEIGHT
-        blitY = (coord.y * BLOCK_ROW_HEIGHT)
-        t = Transform(coord.x * BLOCK_WIDTH, blitY + blitUp)
-        return t
-
-class Row(list):
-    def __init__(self, grid, colCount = WORLD_GRID_COL_MAX):
-        super(Row, self).__init__()
-        self.grid = grid
-        self.colCount = colCount
-        self.invalid = 0
-        
-    def invalidate(self, flag = 1):
-        if self.invalid == 0:
-            self.grid.invalidate()
-        self.invalid |= flag
-       
-    def validate(self):
-        self.invalid = 0
-        #prevent underage
-        data = self
-        if len(data) < self.colCount:
-            i = 0
-            while i < self.colCount:
-                data.append(self.create_cell())
-                i += 1
-        for cell in self:
-            if cell.invalid != 0:            
-                cell.validate()
-
-    def create_cell(self):
-        cell = Cell(self)
-        return cell
+from cell import *
+from row import *
 
 class GridLayer(BatchLayer):
     def __init__(self, grid):
@@ -324,21 +159,14 @@ class GridVu(Pane):
         return r1, r2, c1, c2
     
 class Grid(Node):
-    def __init__(self, world, x, y, colCount = WORLD_GRID_COL_MAX, rowCount = WORLD_GRID_ROW_MAX):
+    def __init__(self, colCount = WORLD_GRID_COL_MAX, rowCount = WORLD_GRID_ROW_MAX):
         super(Grid, self).__init__()
-        self.world = world
-        self.gridX = x
-        self.gridY = y
-        self.coordX = x * colCount
-        self.coordY = y * rowCount
         #
         self.colCount = colCount
         self.rowCount = rowCount
         self.data = []
         #
         self.vu = GridVu(self)
-        #do this last!!!
-        world.add_grid(self)
         
        
     def validate(self):
@@ -357,9 +185,32 @@ class Grid(Node):
                 row.validate()
 
     def create_row(self):
-        row = Row(self, self.colCount)
+        row = Row(self.colCount)
         return row
 
+    def build(self, app, world, x, y):
+        self.world = world        
+        self.gridX = x
+        self.gridY = y
+        self.coordX = x * self.colCount
+        self.coordY = y * self.rowCount
+        #do this last!!!
+        world.add_grid(self)        
+        #prevent underage     
+        self.validate()                
+        #
+        rowNdx = 0
+        for row in self.data:
+            row.build(app, self, rowNdx)
+            rowNdx += 1
+        
+    def clone(self):
+        clone = Grid(self.colCount, self.rowCount)
+        for row in self.data:
+            cloneRow = row.clone()
+            clone.data.append(cloneRow)
+        return clone
+    
     def valid_coord(self, coord):
         '''
         if coord.x < 0 or coord.x > self.coordX + self.colCount - 1:

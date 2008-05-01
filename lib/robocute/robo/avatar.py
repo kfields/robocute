@@ -1,12 +1,7 @@
-'''
-There is no Avatar class.  It's a role.
-Any brain can be an Avatar.
-A 'physical' body is optional.
-'''
 
-from tool import *
+from robocute.tool import *
 
-from robo.message import *
+from message import *
 
 class AvatarKeybox(ToolKeybox):
     def __init__(self, brain):
@@ -16,13 +11,13 @@ class AvatarKeybox(ToolKeybox):
         if symbol == key.R:
             #self.brain.do(Transition('start'))
             self.brain.do(Transition('main'))
-        if symbol == key.W:
+        if symbol == key.W or symbol == key.UP:
             self.brain.do(GoNorth())
-        elif symbol == key.D:
+        elif symbol == key.D or symbol == key.RIGHT:
             self.brain.do(GoEast())
-        elif symbol == key.S:
+        elif symbol == key.S or symbol == key.DOWN:
             self.brain.do(GoSouth())
-        elif symbol == key.A:
+        elif symbol == key.A or symbol == key.LEFT:
             self.brain.do(GoWest())
         else:
             super(AvatarKeybox, self).on_key_press(symbol, modifiers)

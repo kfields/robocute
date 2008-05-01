@@ -1,22 +1,56 @@
+from builder import builder_dict
+from builder import build_item
 
 #from ods.catalog import * #dependency problem
 #
-from widget.widget import *
-from widget.list import List
+from widget import *
+#from widget.list import List
 from widget.skin import *
 from widget.bubble import *
 from pyglet.gl import *
-from block.block import *
 
-class Item(Image):
-    def __init__(self, name, imgSrc, body, useFn):
-        super(Item, self).__init__(imgSrc, useFn)
-        self.name = name
-        self.body = body
-        self.vu = ImageVu(self, imgSrc)
-        #
-        self.assignments = [] #list of property value tuples
+class ItemVu(ImageVu):
+    def __init__(self, node, imgSrc):
+        self.width = 0
+        self.height = 0
+        super(ItemVu, self).__init__(node, imgSrc)
+        self.scaleX = .25
+        self.scaleY = .25                
+        self.width = int( self.image.width * self.scaleX ) 
+        self.height = int ( self.image.height * self.scaleY)
     
+    def draw(self, graphics):
+        g = graphics.copy()
+        glPushMatrix()
+        glTranslatef(graphics.x, graphics.y, graphics.z)        
+        glScalef(self.scaleX, self.scaleY, 1.)
+        g.x = 0
+        g.y = 0
+        super(ItemVu, self).draw(g)
+        glPopMatrix()
+
+class ToolVu(ImageVu):
+    def __init__(self, node, imgSrc):
+        super(ToolVu, self).__init__(node, imgSrc)
+        
+class Item(Image):
+    def __init__(self, type, name, title, imgSrc, body, assignments, useFn):
+        super(Item, self).__init__(imgSrc, useFn)
+        self.type = type
+        self.name = name
+        self.title = title
+        self.body = body
+        if type == 'tool':
+            self.vu = ToolVu(self, imgSrc)
+        else:
+            self.vu = ItemVu(self, imgSrc)
+        #
+        self.assignments = assignments #list of property value tuples
+    
+    def __call__(self, *args, **kargs):
+        #print self.body
+        return build_item(self)
+        
     def add_assignment(self, prop, val):
         self.assignments.append( (prop, val) )
         
@@ -26,77 +60,67 @@ class Item(Image):
 class PageVu(WidgetVu):
     def __init__(self, node, slicesName):
         super(PageVu, self).__init__(node)   
-        self.skin = VerticalSkin(slicesName)     
-        #fixme:all so temporary ... put into Vu class?  Scaling per Vu. Hmmm... uses_scaling()
-        self.scaleX = .25
-        self.scaleY = .25
+        self.skin = VerticalSkin(FileSkinData(slicesName, 3))
         
     def validate(self):
-        super(PageVu, self).validate()
-        scaleY = self.scaleY
-        #
+        self.content.width = self.skin.content.width
+        self.content.height = 0
         for item in self.node.items:
             vu = item.vu
             vu.validate()
-            #self.height += int( ( vu.height + self.vspace) *.75 * scaleY)
-            self.height += int( ( vu.height + self.vspace) * scaleY)
+            self.content.height += vu.height + self.vspace
+        #
+        super(PageVu, self).validate()
      
     def draw(self, graphics):
-        super(PageVu, self).draw(graphics)
+        super(PageVu, self).draw(graphics) #call to get skin drawn.
         self.draw_items(graphics)
         
-    def draw_items(self, graphics):
-        
-        scaleX = self.scaleX
-        scaleY = self.scaleY
-        invScaleX = 1 / scaleX
-        invScaleY = 1 / scaleY
-        
+    def draw_items(self, graphics):        
         g = graphics.copy()
-        g.height = self.height
-        g.width = self.width
-        g.x += self.margin_left
-        g.y += ( self.height - self.margin_top)
+        #g.y += self.margin_bottom
+        g.y += self.content.height - self.margin_top - self.vspace
         #
-        g.x = int( g.x * invScaleX)
+        #g.x += self.margin_left
         gX = g.x
-        g.y = int( g.y * invScaleY)
-
-        glPushMatrix()
-        glTranslatef(self.margin_left, -self.margin_bottom, 0)
-        glScalef(scaleX, scaleY, 1.)
         
         for item in self.node.items:
             vu = item.vu            
             #center horizontally
-            g.x = (gX + (g.width * .5) - (vu.width * .5)) * invScaleX
+            g.x = gX + (self.content.width * .5) - (vu.width * .5)
             #
             vu.draw(g)
             #
-            g.y -= (vu.height + self.vspace)# *.75                        
-        #
-        glPopMatrix()
+            g.y -= (vu.height + self.vspace)                        
         
-class Page(List):
+class Page(Widget):
     def __init__(self, name, items = None):
         super(Page, self).__init__(items)
         self.name = name
         self.vu = PageVu(self, 'CatalogBubble')
         self.vu.validate()
 
-class Catalog(Bubble):
-    def __init__(self, items):        
-        super(Catalog, self).__init__(items)
-        self.vu = BubbleVu(self, 'DashBubble')
-        self.vu.validate() #necessary evil. :)
+class Catalog(object):
+    def __init__(self):        
+        super(Catalog, self).__init__()
         #
         self.pages = {}
         self.nextPages = {}
         self.prevPages = {}
         #
-        #rdr = Reader(self, filename, useFn)
-        #rdr.read()
+        self.on_item = None
 
+    def create_item(self, itemType, name, title, imgSrc, body, assignments):
+        def onItem(item):
+            self.on_item(item)        
+        item = Item(itemType, name, title, imgSrc, body, assignments, onItem)
+        #globals()[name] = item
+        #klass = type(str(name), (object,), {})
+        #globals()[name] = klass
+        #builder_dict[name] = klass
+        builder_dict[name] = item
+        return item
+        
     def add_page(self, pageName, page):
         self.pages[pageName] = page
         

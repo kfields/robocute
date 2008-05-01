@@ -11,17 +11,7 @@ else:
     libdir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib'))
     sys.path.insert(0, libdir)
 
-#import main
-#main.main()
-from robocute.game import Game
+from robocute.app import App
 
-#filename = "Default.ods"
-#filename = "Fountain.ods"
-#filename = "Debug.ods"
-#filename = "SpawnDebug.ods"
-#filename = "TreasureDebug.ods"
-#filename = "SpreaderDebug.ods"
-filename = "TreasureTile.ods"
-
-game = Game('grid/' + filename)
-game.run()
+app = App()
+app.run()

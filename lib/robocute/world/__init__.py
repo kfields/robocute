@@ -1,12 +1,22 @@
 from grid import *
 
 class World(AbstractNode):
-    def __init__(self, app, gridRowMax = WORLD_GRID_ROW_MAX, gridColMax = WORLD_GRID_COL_MAX):
+    def __init__(self, app, name, gridRowMax = WORLD_GRID_ROW_MAX, gridColMax = WORLD_GRID_COL_MAX):
         super(World, self).__init__()
         self.app = app
+        self.name = name        
         self.gridRowMax = gridRowMax
         self.gridColMax = gridColMax        
         self.gridcache = {}
+        
+    def load_or_create_grid(self, x, y):
+        grid = self.load_grid(x, y)
+        if not grid:
+            grid = self.create_grid(x, y)
+        return grid
+
+    def load_grid(self, x, y):
+        return None
         
     def create_grid(self, x, y):
         grid = Grid(self, x, y, self.gridRowMax, self.gridColMax)
@@ -41,13 +51,13 @@ class World(AbstractNode):
         c1 = self.gridcache
         if not y in c1:
             c2 = {}
-            grid = self.create_grid(x, y)
+            grid = self.load_or_create_grid(x, y)
             c2[x] = grid
             c1[y] = c2 
         else:
             c2 = c1[y]
             if not x in c2:
-                grid = self.create_grid(x, y)
+                grid = self.load_or_create_grid(x, y)
                 c2[x] = grid
             else:
                 grid = c2[x]

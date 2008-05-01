@@ -7,7 +7,8 @@ import sys
 
 from robocute.robo.message import *
 from robocute.node import *
-from robocute.block.block import *
+from robocute.block import *
+from robocute.tool import *
 
 #fudge = (0, 0)
 #fudge = (50, 50) #fixme:hack for camera
@@ -92,6 +93,9 @@ class User(object):
     def bind_tool(self, tool):
         self.tool = tool        
         tool.bind(self)
+        if isinstance(tool, Tool):
+            return
+        #else
         self.move_to(tool.coord)
         def on_tool_move():
             self.move_to(self.tool.coord)                        

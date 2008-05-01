@@ -1,19 +1,8 @@
 
-from robocute.bot.bot import *
-from robocute.vu import *
-from brain import Brain
+from robocute.robo import *
+import brain
 from player import *
-from designer import *
-
-#was going to name it bot ... robo goes with the theme
-    
-class RoboVu(BotVu):
-    def __init__(self, node, imgSrc):
-        super(RoboVu, self).__init__(node, imgSrc)
-        
-class Robo(Bot):
-    def __init__(self):
-        super(Robo, self).__init__()
+from designer import * 
 
 class AbstractDesigner(Robo):
     groupable = False

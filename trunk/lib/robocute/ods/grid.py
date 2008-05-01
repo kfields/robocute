@@ -5,8 +5,6 @@ import xml.dom.minidom
 import data
 from robocute.world import *
 
-from pyglet.gl import *
-
 OD_TABLE_NS = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0'
 
 def get_text(node):
@@ -34,8 +32,6 @@ class Reader(object):
     def read(self):
         self.read_sheets()
         self.grid.data.reverse() #need to reverse to match OpenGL coordinate system.
-        #prevent underage        
-        self.grid.validate()
         
     def read_sheets(self):
         doc = self.content
@@ -96,8 +92,9 @@ class Reader(object):
                 
         while(repCount > 0):
             cell = gridRow.create_cell()
-            coord = Coord(grid.coordX + colNdx, grid.coordY + ((self.rowCount-1) - rowNdx))
-            self.app.build(cellTxt, coord, cell)
+            #coord = Coord(grid.coordX + colNdx, grid.coordY + ((self.rowCount-1) - rowNdx))
+            #self.app.build(cellTxt, coord, cell)
+            cell.dna = cellTxt
             
             gridRow.append(cell)
             repCount = repCount - 1

@@ -9,7 +9,8 @@ class Entity(node.Node):
     def __init__(self, fn = None):
         super(Entity, self).__init__()
         self.height = 1
-        self.vacancy = False
+        #self.vacancy = False
+        self.vacancy = True
                             
 class Brain(brain.Brain):
     def __init__(self, node):

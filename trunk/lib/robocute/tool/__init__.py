@@ -1,11 +1,7 @@
-'''
-There is no Tool class.  It's a role.
-Any brain can be an Tool.
-A 'physical' body is optional.
-'''
 
-from keyboard import *
-from mouse import *
+from robocute.keyboard import *
+from robocute.mouse import *
+from robocute.brain import *
 
 class ToolKeybox(Keybox):
     def __init__(self, brain):
@@ -28,3 +24,7 @@ class ToolMousebox(Mousebox):
     def on_mouse_press(self, x, y, button, modifiers):
         super(ToolMousebox, self).on_mouse_press(x, y, button, modifiers)
         self.brain.scene.query = MouseQuery(MousePressed(x, y, button, modifiers))
+
+class Tool(Brain):
+    def __init__(self):
+        super(Tool, self).__init__(None) #no node ...

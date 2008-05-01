@@ -7,14 +7,14 @@ from robocute.map import *
 from random import random
 
     
-class TreasureBot(robocute.bot.Bot):
+class LandscapeBot(robocute.bot.Bot):
     def __init__(self):
-        super(TreasureBot, self).__init__()
-        self.brain = TreasureBotBrain(self)
+        super(LandscapeBot, self).__init__()
+        self.brain = LandscapeBotBrain(self)
 
-class TreasureBotBrain(robocute.bot.Brain):
+class LandscapeBotBrain(robocute.bot.Brain):
     def __init__(self, node):
-        super(TreasureBotBrain, self).__init__(node)
+        super(LandscapeBotBrain, self).__init__(node)
         
     def start(self):
         map = Map(self.grid.coordX, self.grid.coordY, self.grid.colCount, self.grid.rowCount)
@@ -33,32 +33,26 @@ class TreasureBotBrain(robocute.bot.Brain):
             return cell
         if isinstance(node, GroupBlock):
             return cell        
-        if not node.vacancy:
+        if node.vacancy: #opposite of treasure bot.
             return cell
         #else
         dstNodes = self.grid.get_cell_at(coord)
         if(not dstNodes):
             return cell
         #
-        die = int(random() * 3)
+        die = int(random() * 7)
         if die > 0:
             cell.vacancy = True
             return cell
         
-        treasure = {
-          0 :'GemBlue()',
-          1 :'GemBlue()',
-          2 :'GemBlue()',
-          3 :'GemBlue()',                              
-          4 :'GemGreen()',
-          5 :'GemGreen()',
-          6 :'GemGreen()',          
-          7 :'GemOrange()',
-          8 :'GemOrange()',          
-          9 :'TreasureChest()'
-        }[int(random() * 10)]
+        thing = {
+          0 :'Rock()',
+          1 :'TreeShort()',
+          2 :'TreeTall()',
+          3 :'TreeUgly()'                              
+        }[int(random() * 4)]
 
-        self.app.build(treasure, coord, dstNodes)
+        self.app.build(thing, coord, dstNodes)
         #
         cell.vacancy = True
         return cell

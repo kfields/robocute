@@ -5,11 +5,18 @@ This file is the bottom of the import heirarchy so I'm gonna stick fundamentals 
 '''
 #
 #decimals behind 1 important!!! else you get zero!!!???
+'''
 BLOCK_WIDTH = 101
 BLOCK_HEIGHT = 171
 BLOCK_STACK_HEIGHT = 40
 BLOCK_ROW_HEIGHT = 85
 BLOCK_HOT_HEIGHT = 120
+'''
+BLOCK_WIDTH = 101
+BLOCK_HEIGHT = 171
+BLOCK_STACK_HEIGHT = 40
+BLOCK_ROW_HEIGHT = 85
+BLOCK_HOT_HEIGHT = BLOCK_ROW_HEIGHT + BLOCK_STACK_HEIGHT 
 #
 INV_BLOCK_WIDTH = 1. / BLOCK_WIDTH
 INV_BLOCK_HEIGHT = 1. / BLOCK_HEIGHT

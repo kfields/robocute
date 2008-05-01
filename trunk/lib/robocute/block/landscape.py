@@ -1,9 +1,9 @@
 from robocute.block import *
 
 '''
-TerrainBlock
+LandscapeBlock
 '''
-class TerrainBlock(Block):
+class LandscapeBlock(Block):
     _cache = {}    
     def __new__(cls, item, *args, **kargs):
         uri = item.name
@@ -16,6 +16,6 @@ class TerrainBlock(Block):
         return obj
         
     def __init__(self, item):
-        super(TerrainBlock, self).__init__()
+        super(LandscapeBlock, self).__init__()
         self.vu = BlockVu(self, item.imgSrc)
-        self.vacancy = True
+        self.vacancy = False

@@ -88,6 +88,7 @@ class BatchLayer(AbstractGroupLayer):
         super(BatchLayer, self).__init__(None, name)
         self.batch = None
         self.group = pyglet.graphics.Group()
+        self.reset()
         
     def reset(self):
         self.batch = pyglet.graphics.Batch()

@@ -19,13 +19,13 @@ class TileStrip(TextureStrip):
             instance = obj
             cls.instance = obj            
             obj.__init__(*args, **kargs)
+            cls.instanced = True            
         return instance
     
     def __init__(self):
         if self.instanced:
             return
         super(TileStrip, self).__init__(childWidth = 101, childHeight = 171)
-        self.instanced = True
 
 class TileVu(ImageVu):
     def __init__(self, node, imgSrc):
@@ -105,19 +105,19 @@ class TileVu(ImageVu):
         layer = g.layer
         group = layer.register_group(TextureStripGroup(self.strip))
         batchLayer = g.layer.root
-        #group = None
-        #batchLayer = g.layer
         batch = batchLayer.batch
         tex_coords = self.texture.tex_coords
         #tex_coords = self.create_texture_coords()
+        '''
         vertexList = batch.add(4, GL_QUADS, group,
             'v2i/%s' % 'dynamic', 
             'c4B', ('t3f', tex_coords))
+        '''
+        vertexList = batch.add(4, GL_QUADS, group,
+            'v2i/dynamic', ('t3f', tex_coords))        
         vertices = self.create_vertices(g)
-        vertexList.vertices[:] = vertices
+        #vertexList.vertices[:] = vertices
+        vertexList.vertices = vertices
         #self._vertex_list.colors[:] = [r, g, b, int(self._opacity)] * 4
-        vertexList.colors[:] = [255, 255, 255, 255] * 4
-
-
-
+        #vertexList.colors[:] = [255, 255, 255, 255] * 4
         

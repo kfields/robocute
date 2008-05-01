@@ -1,10 +1,9 @@
 
 import robocute.robo
-from robocute.catalog import *
-from robocute.ods.catalog import *
+from robocute.widget.catalog import *
 from message import *
-from robocute.keyboard import *
-from robocute.mouse import *
+from avatar import *
+from robocute.tool import *
 
 class DesignerMouseQuery(MouseQuery):
     def __init__(self, box, event):
@@ -19,12 +18,9 @@ class DesignerMouseQuery(MouseQuery):
         #get last result, highest z
         result = self.results[-1]
         
-        #if(not isinstance(result.node, Block)):
-        #    return super(DesignerMouseQuery, self).process()
         if result.node.fn :
             return super(DesignerMouseQuery, self).process()        
         #else
-        #event = self.events[0]
         event = self.event
         print result.node, event
         
@@ -39,10 +35,9 @@ class DesignerMouseQuery(MouseQuery):
             brain.clear_clones()
             brain.transfer_to(result)
         
-class DesignerKeybox(Keybox):    
+class DesignerKeybox(AvatarKeybox):    
     def __init__(self, brain):
-        super(DesignerKeybox, self).__init__()
-        self.brain = brain
+        super(DesignerKeybox, self).__init__(brain)
                 
     def on_key_press(self, symbol, modifiers):
         brain = self.brain
@@ -55,21 +50,12 @@ class DesignerKeybox(Keybox):
             self.brain.take_control()
         elif symbol == key.DELETE:
             brain.do(DoDelete())
-        elif symbol == key.W:
-            brain.do(GoNorth())
-        elif symbol == key.D:
-            brain.do(GoEast())
-        elif symbol == key.S:
-            brain.do(GoSouth())
-        elif symbol == key.A:
-            brain.do(GoWest())
         else:
             super(DesignerKeybox, self).on_key_press(symbol, modifiers)
 
-class DesignerMousebox(Mousebox):    
+class DesignerMousebox(AvatarMousebox):    
     def __init__(self, brain):
-        super(DesignerMousebox, self).__init__()
-        self.brain = brain
+        super(DesignerMousebox, self).__init__(brain)
 
     def on_mouse_press(self, x, y, button, modifiers):
         super(DesignerMousebox, self).on_mouse_press(x, y, button, modifiers)
@@ -169,14 +155,18 @@ class DesignerBrain(AbstractDesignerBrain):
         #items = [Text('Catalog')]
         items = [Image('icon/actions/1leftarrow.png', prevPage), Image('icon/actions/1rightarrow.png', nextPage)]
         
-        def build(item):
-            self.do(DoBuild(item))
-        self.catalog = Catalog(items)
-        rdr = Reader(self.catalog, 'catalog/Default.ods', build)
-        rdr.read()
+        def onItem(item):
+            if item.type == 'tool':
+                self.use(item)
+            else:
+                self.do(DoBuild(item))
+
+        self.app.catalog.on_item = onItem
+                
+        self.catalog = Catalog(items, self.app.catalog)
         
         self.drawer = self.scene.dash.create_drawer('Catalog', self.catalog)
-        self.page = self.catalog.get_page('Character')
+        self.page = self.catalog.get_page('Main')
         self.drawer.add_node(self.page)
         
     def take_control(self):
@@ -244,4 +234,11 @@ class DesignerBrain(AbstractDesignerBrain):
         super(DesignerBrain, self).do(msg)
         for clone in self.clones:
             clone.do(msg)
-            
+    
+    def use(self, item):
+        cell = self.grid.get_cell_at(self.coord)
+        #cell.remove_node(self.node)
+        tool = self.app.build(item.body, self.coord, cell, item)
+        #cell.push_node(self.node)
+        self.user.push_tool(tool)
+        

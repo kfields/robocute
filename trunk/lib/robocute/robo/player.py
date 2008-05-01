@@ -1,11 +1,9 @@
 
 import robocute.robo
-#from robocute.keyboard import *
-#from robocute.mouse import *
-from robocute.avatar import *
+from avatar import *
 from robocute.widget.bubble import *
-from robocute.item.item import *
-from robocute.block.block import *
+from robocute.item import *
+from robocute.block import *
 
 from message import *
 
@@ -47,7 +45,7 @@ class StartState(State):
         #fn = lambda : self.brain.schedule(Transition('main'), .5)
         def fn(nada):
             self.brain.schedule(Transition('main'), .5)
-        self.brain.do(Say([Text("Let's play!"), Image('icon/lc_browseforward.png', fn) ]))
+        self.brain.do(Say([Text("Let's play!"), Image('icon/actions/lc_browseforward.png', fn) ]))
         
 class MainState(State):
     def __init__(self, brain):

@@ -10,6 +10,8 @@ from robocute.node import *
 from robocute.block import *
 from robocute.tool import *
 
+from robocute.builder import build, build_thing, build_thing_at
+
 #fudge = (0, 0)
 #fudge = (50, 50) #fixme:hack for camera
 fudge = (BLOCK_WIDTH * .5, BLOCK_ROW_HEIGHT * .5) #fixme:hack for camera
@@ -81,7 +83,7 @@ class User(object):
         #
         self.tool = None
         self.tools = []
-        tool = self.create_avatar()
+        tool = self.create_avatar("Designer()")
         self.push_tool(tool)
         #
         win.set_mouse_visible(False)
@@ -133,12 +135,23 @@ class User(object):
     def remove_mousebox(self, box):
         self.mousebox.remove_box(box)
         
-    def create_avatar(self):
-        #tool = self.app.create_tool("CharacterBoy()")
-        #tool = self.app.create_tool("RoboCute()")
-        tool = self.app.create_avatar("Designer()")
-        return tool
-                                   
+    def create_avatar(self, text):
+        homes = self.app.homes
+        if len(homes) != 0:
+            home = homes[0] #fixme:multiple homes?
+        else:
+            home = Coord(0,0)
+
+        cell = self.world.get_cell_at(home)
+        node = build(self.app, text, home, cell)
+        if(not node):
+            raise Exception('No Avatar found in scene!!!')
+        brain = node.brain
+        if(brain == None):
+           raise Exception("This node has no brain!")
+        #
+        return brain
+                                           
     def dispatch_events(self):
         self.window.dispatch_events()
             

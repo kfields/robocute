@@ -102,12 +102,12 @@ class LandState(State):
     def __init__(self, brain):
         super(LandState, self).__init__(brain)
         self.phase = Phase('enter')
-        self.treasure = None # temporary holding spot? ...
+        self.item = None # temporary holding spot? ...
     def do(self, phase):
         result = {
           'enter': lambda : self.enter(),
           'exit': lambda : self.exit(),
-          'take_treasure': lambda : self.take_treasure()
+          'take_item': lambda : self.take_item()
         }[phase.key]()
     def enter(self):
         items = self.brain.search_for_items()
@@ -116,17 +116,22 @@ class LandState(State):
             return
         self.brain.take_items(items)
         #only deal with one item per block for now!!!
-        node = items[0]
-        self.treasure = node 
-        self.brain.do(Say([Text('We found a ' + node.name + '!'), node]))
-        self.brain.schedule(Phase('take_treasure'), 2.)
+        item = items[0]
+        self.item = item 
+        self.brain.do(Say([Text('We found a ' + item.name + '!'), item]))
+        self.brain.schedule(Phase('take_item'), 2.)
     def exit(self):
         self.brain.schedule(Transition('main'))
+    def take_item(self):
+        item = self.item
+        if isinstance(item, Treasure):
+            self.take_treasure()
+        self.brain.schedule(Transition('main'), 1.)
+        
     def take_treasure(self):
         self.brain.do(Say([Text('Kaching!')]))
-        self.brain.worth += self.treasure.worth
+        self.brain.worth += self.item.worth
         self.brain.update_dash()
-        self.brain.schedule(Transition('main'), 1.)
         
 class PlayerKeybox(AvatarKeybox):
     def __init__(self, brain):

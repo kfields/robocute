@@ -1,6 +1,7 @@
 
 from robocute.base import *
 from robocute.block import *
+from robocute.builder import execute_ctors
 
 class Cell(list):
     def __init__(self):
@@ -8,8 +9,15 @@ class Cell(list):
         self.invalid = 0
         self.height = 0
         #
-        self.dna = None
-        
+        #self.dna = None
+        self.ctors = None
+    '''
+    def __getstate__(self):
+        return self.__dict__
+                
+    def __setstate__(self, state):
+        self.__dict__ = state
+    ''' 
     def invalidate(self, flag = 1):
         if self.invalid == 0:
             self.row.invalidate()
@@ -26,11 +34,15 @@ class Cell(list):
                 
     def build(self, app, row, coord):
         self.row = row        
-        app.build(self.dna, coord, self)
+        #app.build(self.dna, coord, self)
+        #build(app, self.dna, coord, self)
+        if self.ctors:
+            execute_ctors(app, self.ctors, coord, self)
         
     def clone(self):
         clone = Cell()
-        clone.dna = self.dna
+        #clone.dna = self.dna
+        clone.ctors = self.ctors
         return clone
 
     def find_group(self):

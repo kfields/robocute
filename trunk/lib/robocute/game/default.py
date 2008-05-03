@@ -1,11 +1,11 @@
 
 from robocute.game import *
 from robocute.catalog import Catalog
-import robocute.ods.catalog
+import robocute.persist.catalog.ods
 from robocute.world import *
 from robocute.brain import *
 from robocute.scene import *
-import robocute.ods.grid
+import robocute.persist.grid.ods
 
 class DefaultWorld(World):
     def __init__(self, app, name, gridRowMax = WORLD_GRID_ROW_MAX, gridColMax = WORLD_GRID_COL_MAX):
@@ -21,19 +21,19 @@ class DefaultWorld(World):
         filename = "TreasureTile.ods"        
         filename = 'grid/' + filename
         
-        rdr = robocute.ods.grid.Reader(filename, self.app, grid)
+        rdr = robocute.persist.grid.ods.Reader(filename, self.app, grid)
         rdr.read()
         self.gridTemplate = grid
         
-    def create_grid(self, x, y):
+    def generate_grid(self, x, y):
         #grid = Grid(self.gridRowMax, self.gridColMax)
         #rdr = robocute.ods.grid.Reader(self.filename, self.app, grid)
         #rdr.read()
         grid = self.gridTemplate.clone()
         #
-        grid.build(self.app, self, x, y)
+        #grid.build(self.app, self, x, y)
         #
-        grid.register(self.app)        
+        #grid.register(self.app)        
         return grid
 
 class DefaultGame(Game):
@@ -50,6 +50,6 @@ class DefaultGame(Game):
     
     def create_catalog(self):
         catalog = Catalog()
-        rdr = robocute.ods.catalog.Reader(catalog, 'catalog/Default.ods')
+        rdr = robocute.persist.catalog.ods.Reader(catalog, 'catalog/Default.ods')
         rdr.read()
         return catalog

@@ -5,6 +5,8 @@ from message import *
 from avatar import *
 from robocute.tool import *
 
+from robocute.builder import build, build_thing, build_thing_at
+
 class DesignerMouseQuery(MouseQuery):
     def __init__(self, box, event):
         super(DesignerMouseQuery, self).__init__(event)
@@ -45,7 +47,7 @@ class DesignerKeybox(AvatarKeybox):
             if brain.has_clones():
                 brain.clear_clones()
             else:
-                sys.exit()
+                brain.exit()
         elif symbol == key.T:
             self.brain.take_control()
         elif symbol == key.DELETE:
@@ -64,10 +66,10 @@ class DesignerMousebox(AvatarMousebox):
 class AbstractDesignerBrain(robocute.robo.brain.Brain):
     def __init__(self, node):
         super(AbstractDesignerBrain, self).__init__(node)
-    def build(self, item):
+    def build(self, dna):
         cell = self.grid.get_cell_at(self.coord)
         cell.remove_node(self.node)
-        self.app.build(item.body, self.coord, cell, item)
+        build_thing_at(self.app, dna, self.coord, cell)
         cell.push_node(self.node)
         
     def delete(self):
@@ -101,7 +103,7 @@ class AbstractDesignerBrain(robocute.robo.brain.Brain):
 
     def do(self, msg):
         if(isinstance(msg, DoBuild)):
-           self.build(msg.item)
+           self.build(msg.dna)
         elif(isinstance(msg, DoDelete)):
            self.delete()
         else:        
@@ -119,10 +121,22 @@ class DesignerBrain(AbstractDesignerBrain):
         self.drawer = None
         self.keybox = DesignerKeybox(self)
         self.mousebox = DesignerMousebox(self)
+        #
+        self.avatar = None #avatar that we passed control to.
+
+    def exit(self):
+        #sys.exit() #bad choice
+        self.clear_clones()        
+        self.hide_node()
+        self.app.exit()
 
     def bind(self, user):
         super(DesignerBrain, self).bind(user)
-        self.show_dash()        
+        self.show_dash()
+        #
+        if self.avatar:
+            self.release_control()
+        #
         user.add_keybox(self.keybox)
         user.add_mousebox(self.mousebox)
 
@@ -130,6 +144,9 @@ class DesignerBrain(AbstractDesignerBrain):
         self.user.remove_keybox(self.keybox)
         self.user.remove_mousebox(self.mousebox)
         self.hide_dash()
+        #
+        if self.avatar:
+            self.hide_node()
         super(DesignerBrain, self).unbind()        
 
     def show_dash(self):
@@ -156,10 +173,10 @@ class DesignerBrain(AbstractDesignerBrain):
         items = [Image('icon/actions/1leftarrow.png', prevPage), Image('icon/actions/1rightarrow.png', nextPage)]
         
         def onItem(item):
-            if item.type == 'tool':
-                self.use(item)
+            if item.dna.type == 'tool':
+                self.build_tool(item.dna)
             else:
-                self.do(DoBuild(item))
+                self.do(DoBuild(item.dna))
 
         self.app.catalog.on_item = onItem
                 
@@ -170,10 +187,26 @@ class DesignerBrain(AbstractDesignerBrain):
         self.drawer.add_node(self.page)
         
     def take_control(self):
+        #self.hide_node()
+        #
         cell = self.grid.get_cell_at(self.coord)
         node = cell[-2]
-        avatar = node.brain
-        self.user.push_tool(avatar)
+        #node = cell[-1]
+        self.avatar = node.brain
+        self.user.push_tool(self.avatar)
+        
+    def release_control(self):
+        self.coord = self.avatar.coord
+        self.show_node()
+        self.avatar = None
+    
+    def show_node(self):
+        cell = self.grid.get_cell_at(self.coord)
+        cell.push_node(self.node)
+        
+    def hide_node(self):
+        cell = self.grid.get_cell_at(self.coord)
+        cell.remove_node(self.node)
         
     def has_clones(self):
         return not len(self.clones) == 0
@@ -235,10 +268,10 @@ class DesignerBrain(AbstractDesignerBrain):
         for clone in self.clones:
             clone.do(msg)
     
-    def use(self, item):
+    def build_tool(self, dna):
         cell = self.grid.get_cell_at(self.coord)
         #cell.remove_node(self.node)
-        tool = self.app.build(item.body, self.coord, cell, item)
+        tool = build_thing(dna, self.app)
         #cell.push_node(self.node)
         self.user.push_tool(tool)
         

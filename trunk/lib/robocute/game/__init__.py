@@ -10,9 +10,25 @@ class Game(Base):
         #
         self.catalog = self.create_catalog()        
         #
-        self.world = self.create_world()
+        self.world = self.load_or_create_world()
         self.scene = self.create_scene()
         self.world.vu = self.scene
+        
+    def save(self):
+        self.save_world()
+        
+    def save_world(self):
+        self.world.save()
+            
+    def load_or_create_world(self):
+        world = self.load_world()
+        if not world:
+            world = self.create_world()
+        return world
+    
+    def load_world(self):
+        world = None
+        return world
     
     def create_world(self):
         return None
@@ -22,3 +38,4 @@ class Game(Base):
     
     def create_catalog(self):
         return None
+    

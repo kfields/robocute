@@ -6,8 +6,8 @@ import brain
 class Entity(node.Node):
     groupable = True
     
-    def __init__(self, fn = None):
-        super(Entity, self).__init__()
+    def __init__(self, dna = None, fn = None):
+        super(Entity, self).__init__(dna, fn)
         self.height = 1
         #self.vacancy = False
         self.vacancy = True

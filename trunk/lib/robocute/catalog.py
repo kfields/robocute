@@ -1,5 +1,4 @@
-from builder import builder_dict
-from builder import build_item
+from builder import Dna
 
 #from ods.catalog import * #dependency problem
 #
@@ -34,28 +33,13 @@ class ToolVu(ImageVu):
         super(ToolVu, self).__init__(node, imgSrc)
         
 class Item(Image):
-    def __init__(self, type, name, title, imgSrc, body, assignments, useFn):
-        super(Item, self).__init__(imgSrc, useFn)
-        self.type = type
-        self.name = name
-        self.title = title
-        self.body = body
-        if type == 'tool':
-            self.vu = ToolVu(self, imgSrc)
+    def __init__(self, dna, useFn):
+        super(Item, self).__init__(dna.imgSrc, useFn)
+        self.dna = dna
+        if dna.type == 'tool':
+            self.vu = ToolVu(self, dna.imgSrc)
         else:
-            self.vu = ItemVu(self, imgSrc)
-        #
-        self.assignments = assignments #list of property value tuples
-    
-    def __call__(self, *args, **kargs):
-        #print self.body
-        return build_item(self)
-        
-    def add_assignment(self, prop, val):
-        self.assignments.append( (prop, val) )
-        
-    def has_assignments(self):
-        return not len(self.assignments) == 0
+            self.vu = ItemVu(self, dna.imgSrc)
 
 class PageVu(WidgetVu):
     def __init__(self, node, slicesName):
@@ -110,15 +94,11 @@ class Catalog(object):
         #
         self.on_item = None
 
-    def create_item(self, itemType, name, title, imgSrc, body, assignments):
+    def create_item(self, dnaType, name, title, imgSrc, body, assignments):
         def onItem(item):
-            self.on_item(item)        
-        item = Item(itemType, name, title, imgSrc, body, assignments, onItem)
-        #globals()[name] = item
-        #klass = type(str(name), (object,), {})
-        #globals()[name] = klass
-        #builder_dict[name] = klass
-        builder_dict[name] = item
+            self.on_item(item)
+        dna = Dna(dnaType, name, title, imgSrc, body, assignments)
+        item = Item(dna, onItem)
         return item
         
     def add_page(self, pageName, page):

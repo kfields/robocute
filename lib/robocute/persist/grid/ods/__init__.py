@@ -5,6 +5,8 @@ import xml.dom.minidom
 import data
 from robocute.world import *
 
+from robocute.builder import compile_ctors
+
 OD_TABLE_NS = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0'
 
 def get_text(node):
@@ -31,7 +33,7 @@ class Reader(object):
             
     def read(self):
         self.read_sheets()
-        self.grid.data.reverse() #need to reverse to match OpenGL coordinate system.
+        self.grid.rows.reverse() #need to reverse to match OpenGL coordinate system.
         
     def read_sheets(self):
         doc = self.content
@@ -46,12 +48,15 @@ class Reader(object):
     def read_rows(self, sheet):
         rows = sheet.getElementsByTagNameNS(OD_TABLE_NS, 'table-row')
         self.rowCount = len(rows)
+        rowMax = self.grid.rowCount - 1        
         rowNdx = 0
         for row in rows:
-            rowNdx = self.read_row(row, rowNdx)
+            rowNdx = self.read_row(row, rowNdx, rowMax)
+            if rowNdx > rowMax:
+                break            
 
-    def read_row(self, row, rowNdx):
-        #new
+    def read_row(self, row, rowNdx, rowMax):
+        grid = self.grid
         repCountStr = row.getAttributeNS(OD_TABLE_NS, 'number-rows-repeated')
         if(repCountStr == ''):
             repCount = 1
@@ -59,10 +64,10 @@ class Reader(object):
             repCount = int(repCountStr)
         while(repCount > 0):
             gridRow = self.read_cells(row, rowNdx)
-            self.grid.data.append(gridRow)
+            grid.rows.append(gridRow)
             repCount = repCount - 1
             #
-            if rowNdx > WORLD_GRID_ROW_MAX:
+            if rowNdx > rowMax:
                 break            
             rowNdx += 1
             
@@ -74,14 +79,17 @@ class Reader(object):
     def read_cells(self, row, rowNdx):
         gridRow = self.grid.create_row()
         cells = row.getElementsByTagNameNS(OD_TABLE_NS, 'table-cell')
-        colNdx = 0        
+        colNdx = 0
+        colMax = self.grid.colCount - 1        
         for cell in cells:
-            colNdx = self.read_cell(cell, gridRow, rowNdx, colNdx)
+            colNdx = self.read_cell(cell, gridRow, colNdx, colMax)
+            if colNdx > colMax:
+                break            
         #prevent underage
         gridRow.validate()
         return gridRow
         
-    def read_cell(self, cell, gridRow, rowNdx, colNdx):
+    def read_cell(self, cell, gridRow, colNdx, colMax):
         grid = self.grid
         repCountStr = cell.getAttributeNS(OD_TABLE_NS, 'number-columns-repeated')
         if(repCountStr == ''):
@@ -92,14 +100,12 @@ class Reader(object):
                 
         while(repCount > 0):
             cell = gridRow.create_cell()
-            #coord = Coord(grid.coordX + colNdx, grid.coordY + ((self.rowCount-1) - rowNdx))
-            #self.app.build(cellTxt, coord, cell)
-            cell.dna = cellTxt
+            cell.ctors = compile_ctors(cellTxt)
             
             gridRow.append(cell)
             repCount = repCount - 1
             #
-            if colNdx > WORLD_GRID_COL_MAX:
+            if colNdx > colMax:
                 break            
             colNdx += 1
             

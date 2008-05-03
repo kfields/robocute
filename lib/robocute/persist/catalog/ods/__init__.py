@@ -4,7 +4,7 @@ import xml.dom.minidom
 
 import data
 
-from robocute.world import *
+from robocute.catalog import *
 
 OD_TABLE_NS = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0'
 
@@ -20,14 +20,16 @@ def get_text(node):
 
 DNDX_PROP = 0
 DNDX_VAL = 1
-DNDX_IMG = 3
-DNDX_SEQ = 5
+DNDX_TITLE = 3 
+DNDX_IMG = 5
+DNDX_SEQ = 7
 DNDX_EXTRA = DNDX_SEQ + 1
  
 class Reader(object):
     
-    def __init__(self, world, filename):
-        self.world = world
+    def __init__(self, catalog, filename):
+        self.catalog = catalog
+        self.page = None
         self.filename = filename
         #self.m_odf = zipfile.ZipFile(filename)
         self.m_odf = data.load_zip(filename)
@@ -54,7 +56,6 @@ class Reader(object):
         
     def read_rows(self, sheet, items):
         rows = sheet.getElementsByTagNameNS(OD_TABLE_NS, 'table-row')
-        #self.scene.row_count = len(rows)
         rowNdx = 0
         for row in rows:
             self.read_row(row, rowNdx, items)
@@ -88,7 +89,7 @@ class Reader(object):
         DNDX_SEQ = 5
                 '''
         datum = data[DNDX_PROP]
-        if datum == 'item':
+        if datum == 'item' or datum == 'tool':
             items.append(self.create_item(data))
             return
         #else
@@ -118,14 +119,14 @@ class Reader(object):
         return page
         
     def create_item(self, data):
-        #items.append(Item(data[DNDX_VAL], data[DNDX_IMG], data[DNDX_SEQ], self.useFn))
-        item = Item(data[DNDX_VAL], data[DNDX_IMG], data[DNDX_SEQ], self.useFn)
         ndx = DNDX_EXTRA
+        assignments = []
         while ndx < len(data):
             prop = data[ndx]
             if prop == '':
                 break
             val = data[ndx+1]
-            item.add_assignment(prop, val)
+            assignments.append( ( prop, eval(val) ) )
             ndx += 2
+        item = self.catalog.create_item(data[DNDX_PROP], data[DNDX_VAL], data[DNDX_TITLE], data[DNDX_IMG], data[DNDX_SEQ], assignments)            
         return item

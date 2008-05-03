@@ -4,6 +4,8 @@ import operator #needed for sorting
 from robocute.entity import *
 from robocute.tile import *
 
+from robocute.builder import find_dna
+
 class BlockVu(TileVu):
     def __init__(self, node, imgSrc):
         super(BlockVu, self).__init__(node, imgSrc)
@@ -14,8 +16,8 @@ class BlockVu(TileVu):
         
 class Block(Entity):
     groupable = False
-    def __init__(self):
-        super(Block, self).__init__()
+    def __init__(self, dna):
+        super(Block, self).__init__(dna)
 
 class GroupBlockVu(Vu):
     def __init__(self, node):
@@ -61,8 +63,17 @@ class GroupBlockVu(Vu):
         return t
         
 class GroupBlock(Block):
-    def __init__(self):
-        super(GroupBlock, self).__init__()
+    '''
+    def __new__(cls, *args, **kargs):
+        obj = object.__new__(cls)
+        dna = cls.dna
+        obj.__init__(dna, *args, **kargs)
+        return obj
+    '''
+    def __init__(self, dna = None):
+        if not dna:
+            dna = find_dna('GroupBlock')
+        super(GroupBlock, self).__init__(dna)
         self.nodes = []
         self.vu = GroupBlockVu(self)
         self.vacancy = True
@@ -81,8 +92,6 @@ class GroupBlock(Block):
         self.update()
         
     def remove_node(self, node):
-        if not node in self.nodes:
-            print 'oops'
         self.nodes.remove(node)
         self.update()
         

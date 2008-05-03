@@ -9,8 +9,8 @@ class BotVu(SpriteVu):
         self.hotHeight = 120 #fixme:use constant
 
 class Bot(Entity):
-    def __init__(self):
-        super(Bot, self).__init__()
+    def __init__(self, dna = None):
+        super(Bot, self).__init__(dna)
         self.vacancy = False
         self.height = 2
         self.vu = BotVu(self, 'robocute.png')        

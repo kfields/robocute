@@ -1,15 +1,16 @@
 
+from random import random
+
 import robocute
 from robocute.node import *
 from robocute.block import GroupBlock
 from robocute.map import *
 
-from random import random
-
+from robocute.builder import build
     
 class TreasureBot(robocute.bot.Bot):
-    def __init__(self):
-        super(TreasureBot, self).__init__()
+    def __init__(self, dna = None):
+        super(TreasureBot, self).__init__(dna)
         self.brain = TreasureBotBrain(self)
 
 class TreasureBotBrain(robocute.bot.Brain):
@@ -58,7 +59,7 @@ class TreasureBotBrain(robocute.bot.Brain):
           9 :'TreasureChest()'
         }[int(random() * 10)]
 
-        self.app.build(treasure, coord, dstNodes)
+        build(self.app, treasure, coord, dstNodes)
         #
         cell.vacancy = True
         return cell

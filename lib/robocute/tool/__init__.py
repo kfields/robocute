@@ -26,5 +26,5 @@ class ToolMousebox(Mousebox):
         self.brain.scene.query = MouseQuery(MousePressed(x, y, button, modifiers))
 
 class Tool(Brain):
-    def __init__(self):
+    def __init__(self, dna = None):
         super(Tool, self).__init__(None) #no node ...

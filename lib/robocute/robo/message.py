@@ -38,8 +38,8 @@ class GoWest(GoMessage):
         pass
 #
 class DoBuild(Message):
-    def __init__(self, item):
-        self.item = item
+    def __init__(self, dna):
+        self.dna = dna
 
 class DoDelete(Message):
     def __init__(self):

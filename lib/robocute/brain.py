@@ -9,7 +9,7 @@ class Brain(Base):
         self.scene = None
         self.user = None
 
-    def register(self, app, coord):
+    def register(self, app, coord = None):
         super(Brain, self).register(app, coord)
         self.app = app
         self.scene = app.scene

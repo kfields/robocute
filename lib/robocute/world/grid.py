@@ -71,14 +71,14 @@ class GridVu(Pane):
         r1, r2, c1, c2 = self.clip(g.clip)
         r = r1
         #
-        data = self.node.data
+        rows = self.node.rows
         while(r >= r2): #rows in sheet
-            if len(data[r]) == 0:
+            if len(rows[r]) == 0:
                 r += 1
                 continue
             #else
             g.cellY = self.node.coordY + r
-            row = data[r]            
+            row = rows[r]            
             c = c1
             blitY = r * BLOCK_ROW_HEIGHT
             while(c <= c2): #cells in row
@@ -164,23 +164,22 @@ class Grid(Node):
         #
         self.colCount = colCount
         self.rowCount = rowCount
-        self.data = []
+        self.rows = []
         #
         self.vu = GridVu(self)
-        
-       
+               
     def validate(self):
         super(Grid, self).validate()
         #prevent underage
-        data = self.data
-        if len(data) < self.rowCount:
+        rows = self.rows
+        if len(rows) < self.rowCount:
             i = 0
             while i < self.rowCount:
                 row = self.create_row()
                 row.validate()
-                data.append(row)
+                rows.append(row)
                 i += 1
-        for row in self.data:
+        for row in self.rows:
             if row.invalid != 0:
                 row.validate()
 
@@ -200,15 +199,15 @@ class Grid(Node):
         self.validate()                
         #
         rowNdx = 0
-        for row in self.data:
+        for row in self.rows:
             row.build(app, self, rowNdx)
             rowNdx += 1
         
     def clone(self):
         clone = Grid(self.colCount, self.rowCount)
-        for row in self.data:
+        for row in self.rows:
             cloneRow = row.clone()
-            clone.data.append(cloneRow)
+            clone.rows.append(cloneRow)
         return clone
     
     def valid_coord(self, coord):
@@ -241,8 +240,7 @@ class Grid(Node):
         if not self.local_coord(coord):
             return self.world.get_cell_at(coord)
         #else
-        #return self.data[coord.y][coord.x]
-        return self.data[coord.y % self.rowCount][coord.x % self.colCount]
+        return self.rows[coord.y % self.rowCount][coord.x % self.colCount]
     
     '''
     Cell Access Helpers

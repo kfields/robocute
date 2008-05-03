@@ -5,8 +5,8 @@ import data
 import pyglet
 from pyglet import image
 
-from base import *
-from graphics import Graphics
+from robocute.base import *
+from robocute.graphics import Graphics
 
 '''
 HotSpot : Just a way to clip events right now.  More in the future.

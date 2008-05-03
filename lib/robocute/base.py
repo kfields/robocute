@@ -66,8 +66,9 @@ class Transform:
 '''
 '''
 class Base(object):
-    def __init__(self):
+    def __init__(self, dna = None):
         self.invalid = 0
+        self.dna = dna
 
     def delete(self):
         pass

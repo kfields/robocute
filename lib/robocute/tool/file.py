@@ -6,7 +6,7 @@ import robocute
 from robocute.widget.document import *
 
 class FileTool(robocute.tool.Tool):
-    def __init__(self):
+    def __init__(self, dna = None):
         super(FileTool, self).__init__()
         self.widget = None
         self.keybox = robocute.tool.ToolKeybox(self)
@@ -36,29 +36,30 @@ class FileTool(robocute.tool.Tool):
         self.widget = None
 
 class FileOpener(FileTool):
-    def __init__(self):
+    def __init__(self, dna = None):
         super(FileOpener, self).__init__()
     def create_widget(self):
         self.widget = DocWidget('data/html/file_open.html')
 
 class FileSaver(FileTool):
-    def __init__(self):
+    def __init__(self, dna = None):
         super(FileSaver, self).__init__()
     def create_widget(self):
         self.widget = DocWidget('data/html/file_save.html')
         doc = self.widget.document
         pos = len(doc.text)
-        doc.insert_text(pos, '\nhowdy!')
+        doc.insert_text(pos, '\nSaving ...\n')
+        self.app.save_game()
                         
 class Helper(FileTool):
-    def __init__(self):
+    def __init__(self, dna = None):
         super(Helper, self).__init__()
                 
     def create_widget(self):
         self.widget = DocWidget('data/html/file_help.html')
 
 class Exiter(FileTool):
-    def __init__(self):
+    def __init__(self, dna = None):
         super(Exiter, self).__init__()
     def create_widget(self):
         self.widget = DocWidget('data/html/file_exit.html')

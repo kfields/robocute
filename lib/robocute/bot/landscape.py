@@ -1,15 +1,15 @@
 
+from random import random
+
 import robocute
 from robocute.node import *
 from robocute.block import GroupBlock
 from robocute.map import *
+from robocute.builder import build
 
-from random import random
-
-    
 class LandscapeBot(robocute.bot.Bot):
-    def __init__(self):
-        super(LandscapeBot, self).__init__()
+    def __init__(self, dna = None):
+        super(LandscapeBot, self).__init__(dna)
         self.brain = LandscapeBotBrain(self)
 
 class LandscapeBotBrain(robocute.bot.Brain):
@@ -52,7 +52,7 @@ class LandscapeBotBrain(robocute.bot.Brain):
           3 :'TreeUgly()'                              
         }[int(random() * 4)]
 
-        self.app.build(thing, coord, dstNodes)
+        build(self.app, thing, coord, dstNodes)
         #
         cell.vacancy = True
         return cell

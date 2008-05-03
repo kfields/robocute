@@ -4,8 +4,8 @@ from vu import *
 #import brain
 
 class AbstractNode(Base):
-    def __init__(self, fn = None):
-        super(AbstractNode, self).__init__()
+    def __init__(self, dna = None, fn = None):
+        super(AbstractNode, self).__init__(dna)
         self.name = 'Unknown'
         self.vu = None
         self.fn = fn #not sure about this...
@@ -36,8 +36,8 @@ class AbstractNode(Base):
             self.fn(self)
         
 class Node(AbstractNode):
-    def __init__(self, fn = None):
-        super(Node, self).__init__(fn)
+    def __init__(self, dna = None, fn = None):
+        super(Node, self).__init__(dna, fn)
         self.x = 0
         self.y = 0
         self.z = 0

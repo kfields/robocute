@@ -78,8 +78,6 @@ class User(object):
         self.mousebox = UserMousebox(self)
         #
         self.camera = self.scene.create_camera()
-        self.camera.deviceWidth = win.width
-        self.camera.deviceHeight = win.height        
         #
         self.tool = None
         self.tools = []

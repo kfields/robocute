@@ -4,7 +4,7 @@ from builder import Dna
 #
 from widget import *
 #from widget.list import List
-from widget.skin import *
+from skin import *
 from widget.bubble import *
 from pyglet.gl import *
 

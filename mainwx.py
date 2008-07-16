@@ -11,7 +11,7 @@ else:
     libdir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib'))
     sys.path.insert(0, libdir)
 
-from robocute.app import App
+from robocute.wxtest import TestApp
 
-app = App()
-app.run()
+app = TestApp(redirect=False)
+app.MainLoop()

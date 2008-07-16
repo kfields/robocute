@@ -83,9 +83,3 @@ class Image(Node):
         self.imgSrc = imgSrc
         self.fn = fn
         self.vu = ImageVu(self, imgSrc)
-'''
-Button Node
-'''
-class Button(Node):
-    def __init__(self):
-        super(Button, self).__init__()

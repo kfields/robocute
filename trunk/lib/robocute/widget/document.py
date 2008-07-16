@@ -4,7 +4,7 @@ import pyglet
 import robocute
 
 from robocute.widget import *
-from robocute.widget.skin import *
+from robocute.skin import *
 
 '''
 DocVu

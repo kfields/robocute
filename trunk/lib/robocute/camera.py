@@ -2,17 +2,24 @@ from graphics import *
 
 class Camera(Clip):
     
-    def __init__(self, x = 0, y = 0, z = 0, width = 640, height = 480):
-        super(Camera, self).__init__(x, y, z, width, height)
+    def __init__(self, win):
+        super(Camera, self).__init__()
+        self.window = win
         #
-        self.focalX = x
-        self.focalY = y
-        self.focalZ = z
+        self.focalX = 0
+        self.focalY = 0
+        self.focalZ = 0
         #
-        self.deviceWidth = width
-        self.deviceHeight = height
+        self.deviceWidth = win.width
+        self.deviceHeight = win.height
+        @win.event
+        def on_resize(width, height):
+            self.deviceWidth = width
+            self.deviceHeight = height
+            self.validate()            
         #
         self.graphics = Graphics()
+        #self.validate()
     
     def look_at(self, x, y, z = 0):
         self.focalX = x

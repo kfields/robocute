@@ -21,15 +21,10 @@ from graphics import Graphics
 #
 from user import *
 #
-#WINDOW_WIDTH = 800
-#WINDOW_HEIGHT = 600
-WINDOW_WIDTH = 1024
-WINDOW_HEIGHT = 768
-
 class App(object):
     
-    def __init__(self, gameName = 'Default'):
-        self.window = window.Window(WINDOW_WIDTH, WINDOW_HEIGHT, caption='RoboCute')                
+    def __init__(self, win, gameName = 'Default'):
+        self.window = win                
         #
         game = self.load_or_create_game(gameName)
         self.game = game
@@ -65,6 +60,11 @@ class App(object):
         seed()
         self.user = self.create_user()
         self.isRunning = True
+        #
+        #Create a font for our FPS clock
+        ft = font.load('Verdana', 28)
+        #
+        self.fps_text = font.Text(ft, y=10, x=self.window.width - 200)        
     
     def exit(self):
         self.isRunning = False
@@ -93,35 +93,32 @@ class App(object):
     def run(self):
         self.on_run()
         #
+        while not self.window.has_exit and self.isRunning:
+            self.step()
+            
+    def step(self):
         win = self.window
         scene = self.scene
         user = self.user
+        fps_text = self.fps_text
+        #
         worldGraphics = user.camera.graphics
         layerGraphics = Graphics()
         #
-        #Create a font for our FPS clock
-        ft = font.load('Verdana', 28)
+        user.dispatch_events()
         #
-        fps_text = font.Text(ft, y=10, x=WINDOW_WIDTH - 200)
+        dt = clock.tick()
         #
+        win.clear()
         #
-        #while not win.has_exit:
-        #while self.isRunning:
-        while not win.has_exit and self.isRunning:
-            user.dispatch_events()
-            #
-            dt = clock.tick()
-            #
-            win.clear()
-            #
-            scene.draw(layerGraphics, worldGraphics)
-            #
-            fps_text.text = ("fps: %d") % (clock.get_fps())
-            fps_text.draw()        
-            #
-            win.flip()
-            #
-            if len(self.callbacks) != 0:
-                for callback in self.callbacks:
-                    callback()
-                self.callbacks = []
+        scene.draw(layerGraphics, worldGraphics)
+        #
+        fps_text.text = ("fps: %d") % (clock.get_fps())
+        fps_text.draw()        
+        #
+        win.flip()
+        #
+        if len(self.callbacks) != 0:
+            for callback in self.callbacks:
+                callback()
+            self.callbacks = []

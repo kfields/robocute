@@ -56,7 +56,7 @@ class Clip(graphics.Clip):
 
 class Camera(camera.Camera):
     def __init__(self, scene, rowCount = 3, colCount = 3):
-        super(Camera, self).__init__()
+        super(Camera, self).__init__(scene.window)
         #
         self.world = scene.node
         self.graphics.camera = self
@@ -127,6 +127,8 @@ class Scene(Pane):
         
     def create_camera(self):
         camera = Camera(self)
+        camera.deviceWidth = self.window.width
+        camera.deviceHeight = self.window.height        
         return camera
     '''
     Rendering

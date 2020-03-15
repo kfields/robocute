@@ -8,7 +8,7 @@ try:
 except NameError:
     pass
 else:
-    libdir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib'))
+    libdir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'robocute'))
     sys.path.insert(0, libdir)
 
 from robocute.wxtest import TestApp

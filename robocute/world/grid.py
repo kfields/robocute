@@ -77,7 +77,7 @@ class GridVu(Pane):
         #
         # print(len(rows))
         while(r >= r2): #rows in sheet
-            print(r)
+            #print(r)
             '''
             if len(rows[r]) == 0:
                 r += 1
@@ -86,7 +86,7 @@ class GridVu(Pane):
             #else
             g.cellY = self.node.coordY + r
             row = rows[r]
-            print(row)
+            #print(row)
             c = c1
             blitY = r * BLOCK_ROW_HEIGHT
             while(c <= c2): #cells in row

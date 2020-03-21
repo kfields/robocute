@@ -17,8 +17,8 @@ class World(AbstractNode):
         self.save_grids()
         
     def save_grids(self):
-        for cacheRow in self.gridcache.itervalues():
-            for grid in cacheRow.itervalues():
+        for cacheRow in self.gridcache.values():
+            for grid in cacheRow.values():
                 self.save_grid(grid)
     
     def get_filepath(self):
@@ -34,7 +34,9 @@ class World(AbstractNode):
     def save_grid(self, grid):
         x = grid.gridX
         y = grid.gridY
-        path = self.get_grid_filepath(x, y) 
+        path = self.get_grid_filepath(x, y)
+        path_dir = os.path.dirname(path)
+        os.makedirs(path_dir, exist_ok=True)
         writer = robocute.persist.grid.native.Writer(path, grid)
         writer.write()
         

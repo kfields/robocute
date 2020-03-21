@@ -5,8 +5,6 @@ from robocute.widget.bubble import *
 from message import *
 from .message import *
 
-import inspect
-
 class Brain(robocute.bot.brain.Brain):
     def __init__(self, node):
         super().__init__(node)
@@ -52,7 +50,6 @@ class Brain(robocute.bot.brain.Brain):
             self.on_move()
                      
     def do(self, msg):
-        print(inspect.getmro(msg.__class__))
         print(msg)
         success = True
         if(isinstance(msg, Say)):

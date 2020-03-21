@@ -66,14 +66,11 @@ class Vu(Base):
 class TextVu(Vu):
     def __init__(self, node):
         super().__init__(node)
-        #ft = pyglet.font.load('Verdana', 14)
-        #self.text = pyglet.font.Text(ft, self.node.text)
         self.text = pyglet.text.Label(self.node.text,
                                 font_name='Verdana',
-                                font_size=14)
-
-        self.text.color=(0,0,0,1)
-        self.text.valign='center'
+                                font_size=14,
+                                color=(0,0,0,255)
+                                )
         self.validate()
         self.add_hotspot(HotSpot(0,0,self.width,self.height))#fixme:put in base?
         

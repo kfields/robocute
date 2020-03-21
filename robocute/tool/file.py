@@ -50,6 +50,8 @@ class FileSaver(FileTool):
         pos = len(doc.text)
         doc.insert_text(pos, '\nSaving ...\n')
         self.app.save_game()
+        pos = len(doc.text)
+        doc.insert_text(pos, '\nGame saved.\n')
                         
 class Helper(FileTool):
     def __init__(self, dna = None):

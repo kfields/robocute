@@ -12,13 +12,13 @@ class DefaultWorld(World):
         super().__init__(app, name, 12, 12)
         #
         grid = Grid(self.gridRowMax, self.gridColMax)
-        filename = "Default.ods"
+        #filename = "Default.ods"
         #filename = "Fountain.ods"
         #filename = "Debug.ods"
         #filename = "SpawnDebug.ods"
         #filename = "TreasureDebug.ods"
         #filename = "SpreaderDebug.ods"
-        #filename = "TreasureTile.ods"
+        filename = "TreasureTile.ods"
         filename = 'grid/' + filename
         
         rdr = robocute.persist.grid.ods.Reader(filename, self.app, grid)

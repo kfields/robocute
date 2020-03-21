@@ -66,4 +66,4 @@ class DocWidget(Widget):
         self.document = pyglet.text.load(filename)
         #
         self.vu = DocVu(self, 'HelpBubble')
-        self.vu.validate() #necessary evil. :)        
+        self.vu.validate() #necessary evil. :)  

@@ -12,7 +12,7 @@ TextureGroup
 '''
 class TextureGroup(pyglet.graphics.Group):
     def __init__(self, texture, blend_src = GL_SRC_ALPHA, blend_dest = GL_ONE_MINUS_SRC_ALPHA, parent=None):
-        super(TextureGroup, self).__init__(parent)
+        super().__init__(parent)
         self.texture = texture
         self.blend_src = blend_src
         self.blend_dest = blend_dest
@@ -47,7 +47,7 @@ TextureStripGroup
 '''
 class TextureStripGroup(pyglet.graphics.Group):
     def __init__(self, strip, blend_src = GL_SRC_ALPHA, blend_dest = GL_ONE_MINUS_SRC_ALPHA, parent=None):
-        super(TextureStripGroup, self).__init__(parent)
+        super().__init__(parent)
         self.strip = strip
         self.texture = strip.texture
         self.blend_src = blend_src

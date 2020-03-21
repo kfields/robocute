@@ -16,6 +16,6 @@ class TerrainBlock(Block):
         return obj
         
     def __init__(self, dna = None):
-        super(TerrainBlock, self).__init__(dna)
+        super().__init__(dna)
         self.vu = BlockVu(self, self.dna.imgSrc)
         self.vacancy = True

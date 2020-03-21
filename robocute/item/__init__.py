@@ -4,7 +4,7 @@ from robocute.sprite import *
    
 class Item(Entity):
     def __init__(self, dna):
-        super(Item, self).__init__(dna)
+        super().__init__(dna)
 
 '''
 Treasure
@@ -22,7 +22,7 @@ class Treasure(Item):
         return obj
         
     def __init__(self, dna):
-        super(Treasure, self).__init__(dna)
+        super().__init__(dna)
         self.worth = 0
         self.name = dna.title
         self.vu = SpriteVu(self, dna.imgSrc)
@@ -43,6 +43,6 @@ class Special(Item):
         return obj
         
     def __init__(self, dna):
-        super(Special, self).__init__(dna)
+        super().__init__(dna)
         self.name = dna.title
         self.vu = SpriteVu(self, dna.imgSrc)

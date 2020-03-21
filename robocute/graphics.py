@@ -5,7 +5,7 @@ from shape import *
 
 class Clip(Rect):
     def __init__(self, x = 0, y = 0, z = 0, width = 0, height = 0):
-        super(Clip, self).__init__(x, y, z, width, height)
+        super().__init__(x, y, z, width, height)
         self.top = y + height
         self.left = x
         self.bottom = y
@@ -13,7 +13,7 @@ class Clip(Rect):
 
 class Graphics(Rect):
     def __init__(self, x = 0, y = 0, z = 0, width = 0, height = 0):
-        super(Graphics, self).__init__(x, y, z, width, height)
+        super().__init__(x, y, z, width, height)
         #
         self.scaleX = 1.
         self.scaleY = 1.

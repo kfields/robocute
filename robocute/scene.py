@@ -11,7 +11,7 @@ from pyglet.gl import *
 
 class Clip(graphics.Clip):
     def __init__(self, world, rowCount = 3, colCount = 3):
-        super(Clip, self).__init__()
+        super().__init__()
         self.world = world
         self.data = []
         self.gridX = 0
@@ -34,7 +34,7 @@ class Clip(graphics.Clip):
         self.data[rowNdx][colNdx] = self.world.get_grid(self.gridX + colNdx, self.gridY + rowNdx)
 
     def validate(self):
-        #super(Clip, self).validate()
+        #super().validate()
         gridColMax = self.world.gridColMax
         gridRowMax = self.world.gridRowMax
         gridWidth = gridColMax * BLOCK_WIDTH
@@ -56,7 +56,7 @@ class Clip(graphics.Clip):
 
 class Camera(camera.Camera):
     def __init__(self, scene, rowCount = 3, colCount = 3):
-        super(Camera, self).__init__(scene.window)
+        super().__init__(scene.window)
         #
         self.world = scene.node
         self.graphics.camera = self
@@ -65,20 +65,20 @@ class Camera(camera.Camera):
         self.graphics.clip = clip 
         
     def validate(self):
-        super(Camera, self).validate()
+        super().validate()
         self.clip.validate()
 
 class BubbleLayer(NodeLayer):
     def __init__(self, parent, name, order):
-        super(BubbleLayer, self).__init__(parent, name, order)
+        super().__init__(parent, name, order)
         
 class WidgetLayer(NodeLayer):
     def __init__(self, parent, name, order):
-        super(WidgetLayer, self).__init__(parent, name, order)
+        super().__init__(parent, name, order)
         
 class MouseLayer(NodeLayer):
     def __init__(self, parent, name, order):
-        super(MouseLayer, self).__init__(parent, name, order)
+        super().__init__(parent, name, order)
         
     def draw(self, graphics):
         g = graphics.copy() #fixme:necessary?
@@ -90,7 +90,7 @@ class MouseLayer(NodeLayer):
 
 class SceneLayer(RootLayer):
     def __init__(self):
-        super(SceneLayer, self).__init__('scene')
+        super().__init__('scene')
     def create_layer(self, name):
         order = len(self.layers)
         if name == 'bubbles' :
@@ -107,13 +107,13 @@ class SceneLayer(RootLayer):
 class Scene(Pane):
     
     def __init__(self, world, app, win):
-        super(Scene, self).__init__(world)
+        super().__init__(world)
         #
         self.layer = SceneLayer()
         self.app = app
         self.window = win
         #
-        self.bgImg = image.load(data.filepath('image/clouds.jpg'))
+        self.bgImg = image.load(data.filepath('image/clouds.png'))
         #
         self.bubbles = self.layer.create_layer('bubbles')
         #

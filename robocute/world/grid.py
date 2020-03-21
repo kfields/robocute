@@ -7,12 +7,12 @@ from .row import *
 
 class GridLayer(BatchLayer):
     def __init__(self, grid):
-        super(GridLayer, self).__init__('grid')
+        super().__init__('grid')
         self.grid = grid
         
 class GridVu(Pane):
     def __init__(self, node):
-        super(GridVu, self).__init__(node)
+        super().__init__(node)
         self.layer = GridLayer(node)
         self.tileLayer = self.layer.create_layer()
         self.app = None #needed to register callbacks .. actually didn't work that well!
@@ -21,11 +21,11 @@ class GridVu(Pane):
         #self.batching = False
         
     def register(self, app, coord):
-        super(GridVu, self).register(app, coord)
+        super().register(app, coord)
         self.app = app
         
     def validate(self):
-        super(GridVu, self).validate()
+        super().validate()
         if not self.batching:
             return
         #
@@ -69,6 +69,7 @@ class GridVu(Pane):
         query = g.query
         #
         r1, r2, c1, c2 = self.clip(g.clip)
+        # r1, r2, c1, c2 = 1, 0, 1, 0
         r = r1
         #
         rows = self.node.rows
@@ -163,7 +164,7 @@ class GridVu(Pane):
     
 class Grid(Node):
     def __init__(self, colCount = WORLD_GRID_COL_MAX, rowCount = WORLD_GRID_ROW_MAX):
-        super(Grid, self).__init__()
+        super().__init__()
         #
         self.colCount = colCount
         self.rowCount = rowCount
@@ -172,7 +173,7 @@ class Grid(Node):
         self.vu = GridVu(self)
                
     def validate(self):
-        super(Grid, self).validate()
+        super().validate()
         #prevent underage
         rows = self.rows
         if len(rows) < self.rowCount:

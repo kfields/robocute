@@ -151,7 +151,7 @@ class AbstractWxCanvas(wx.Panel, AbstractCanvas):
 
 class Win32WxCanvas(AbstractWxCanvas):
     def __init__(self, parent, id=-1, config=None, context=None):
-        super(Win32WxCanvas, self).__init__(parent, id, config, context)
+        super().__init__(parent, id, config, context)
 
         self._hwnd = self.GetHandle()
         self._dc = _user32.GetDC(self._hwnd)
@@ -169,7 +169,7 @@ class GTKWxCanvas(AbstractWxCanvas):
     _window = None
 
     def __init__(self, parent, id=-1, config=None, context=None):
-        super(GTKWxCanvas, self).__init__(parent, id, config, context)
+        super().__init__(parent, id, config, context)
 
         self._glx_context = self._context._context
         self._x_display = self._config._display
@@ -189,7 +189,7 @@ class GTKWxCanvas(AbstractWxCanvas):
                 self._glx_window = glx.glXCreateWindow(self._x_display,
                     self._config._fbconfig, self._window, None)
             self.switch_to()
-        super(GTKWxCanvas, self)._OnPaint(event)
+        super()._OnPaint(event)
 
     def _switch_to_impl(self):
         if not self._window:

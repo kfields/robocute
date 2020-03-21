@@ -1,17 +1,10 @@
-'''Game main module.
-
-Contains the entry point used by the run_game.py script.
-
-Feel free to put all your game code here, or in other modules in this "lib"
-directory.
-'''
 import sys
 import os
 from random import seed
 #
+import pyglet
 from pyglet import clock
 from pyglet import window
-from pyglet import font
 #
 import data
 from game.default import DefaultGame
@@ -21,12 +14,12 @@ from graphics import Graphics
 #
 from user import *
 #
-class App(object):
+class App():
     
-    def __init__(self, win, gameName = 'Default'):
+    def __init__(self, win, game_name = 'Default'):
         self.window = win                
         #
-        game = self.load_or_create_game(gameName)
+        game = self.load_or_create_game(game_name)
         self.game = game
         self.catalog = game.catalog
         self.world = game.world
@@ -39,18 +32,18 @@ class App(object):
         #
         self.isRunning = False
     
-    def load_or_create_game(self, gameName):
-        game = self.load_game(gameName)
+    def load_or_create_game(self, game_name):
+        game = self.load_game(game_name)
         if not game:
-            game = self.create_game(gameName)
+            game = self.create_game(game_name)
         return game
     
-    def load_game(self, gameName):
+    def load_game(self, game_name):
         game = None
         return game
         
-    def create_game(self, gameName):
-        game = DefaultGame(self, gameName) #fixme: Need game factory ...
+    def create_game(self, game_name):
+        game = DefaultGame(self, game_name) #fixme: Need game factory ...
         return game
     
     def save_game(self):
@@ -61,11 +54,11 @@ class App(object):
         self.user = self.create_user()
         self.isRunning = True
         #
-        #Create a font for our FPS clock
-        ft = font.load('Verdana', 28)
-        #
-        self.fps_text = font.Text(ft, y=10, x=self.window.width - 200)        
-    
+        #Create our FPS clock
+        self.fps_text = pyglet.text.Label('0',
+                                font_name='Verdana',
+                                font_size=28,
+                                x=self.window.width - 200, y=10)
     def exit(self):
         self.isRunning = False
         self.on_exit()

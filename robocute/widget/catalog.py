@@ -3,7 +3,7 @@ from robocute.widget.bubble import *
 
 class Catalog(Bubble):
     def __init__(self, items, catalog):
-        super(Catalog, self).__init__(items)
+        super().__init__(items)
         self.catalog = catalog
         self.vu = BubbleVu(self, 'DashBubble')
         self.vu.validate() #necessary evil. :)

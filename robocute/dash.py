@@ -4,7 +4,7 @@ from node import *
 
 class DrawerVu(Vu):
     def __init__(self, node):
-        super(DrawerVu, self).__init__(node)   
+        super().__init__(node)   
 
     def draw(self, graphics):
         g = graphics.copy()
@@ -17,7 +17,7 @@ class DrawerVu(Vu):
     
 class Drawer(Node):
     def __init__(self, node = None):
-        super(Drawer, self).__init__()
+        super().__init__()
         self.nodes = []        
         if node:
             self.nodes.append(node)
@@ -35,7 +35,7 @@ class Drawer(Node):
 
 class Dash(NodeLayer):
     def __init__(self, parent, name, order):
-        super(Dash, self).__init__(parent, name, order)
+        super().__init__(parent, name, order)
         #self.drawers = {}
     
     def create_drawer(self, drawerName, node = None):

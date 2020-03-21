@@ -7,7 +7,7 @@ from robocute.shape import Rect
 
 class WidgetVu(Vu):
     def __init__(self, node):
-        super(WidgetVu, self).__init__(node)
+        super().__init__(node)
         #
         self.content = Rect()        
         #
@@ -22,7 +22,7 @@ class WidgetVu(Vu):
         self.skin = None
 
     def validate(self):
-        super(WidgetVu, self).validate()
+        super().validate()
         if not self.skin:
             return
         #else        
@@ -37,7 +37,7 @@ class WidgetVu(Vu):
         self.height = self.content.height + self.margin_bottom + self.margin_top
         
     def draw(self, graphics):
-        super(WidgetVu, self).draw(graphics)
+        super().draw(graphics)
         if not self.skin:
             return
         #else

@@ -765,7 +765,7 @@ from robocute.app import App
 
 class TestCanvas(WxCanvas):
     def __init__(self, parent, id=-1, config=None, context=None):
-        super(TestCanvas, self).__init__(parent, id, config, context)        
+        super().__init__(parent, id, config, context)        
         self.app = App(self)
         self.app.on_run()
         #

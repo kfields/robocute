@@ -6,7 +6,7 @@ import robocute.persist.grid.native
 
 class World(AbstractNode):
     def __init__(self, app, name, gridRowMax = WORLD_GRID_ROW_MAX, gridColMax = WORLD_GRID_COL_MAX):
-        super(World, self).__init__()
+        super().__init__()
         self.app = app
         self.name = name        
         self.gridRowMax = gridRowMax

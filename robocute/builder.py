@@ -26,6 +26,7 @@ def add_classes(clsList):
     
 def build_thing(dna, app = None):
     cls = dna.cls
+    print(cls.__name__)
     #
     thing = cls(dna)
     #

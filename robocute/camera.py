@@ -3,7 +3,7 @@ from graphics import *
 class Camera(Clip):
     
     def __init__(self, win):
-        super(Camera, self).__init__()
+        super().__init__()
         self.window = win
         #
         self.focalX = 0

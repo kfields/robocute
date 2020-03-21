@@ -11,7 +11,7 @@ Bubble
 '''
 class BubbleVu(WidgetVu):
     def __init__(self, node, slicesName):
-        super(BubbleVu, self).__init__(node)        
+        super().__init__(node)        
         self.skin = HorizontalSkin(FileSkinData(slicesName, 3))
 
     def validate(self):
@@ -22,10 +22,10 @@ class BubbleVu(WidgetVu):
             vu.validate()
             self.content.width += vu.width
         
-        super(BubbleVu, self).validate()
+        super().validate()
 
     def draw(self, graphics):
-        super(BubbleVu, self).draw(graphics)
+        super().draw(graphics)
         self.draw_items(graphics)
             
     def draw_items(self, graphics):
@@ -42,17 +42,17 @@ class BubbleVu(WidgetVu):
                 
 class Bubble(Widget):
     def __init__(self, items):
-        super(Bubble, self).__init__(items)
+        super().__init__(items)
 
 class DashBubble(Bubble):
     def __init__(self, items):
-        super(DashBubble, self).__init__(items)
+        super().__init__(items)
         self.vu = BubbleVu(self, 'DashBubble')
         self.vu.validate() #necessary evil. :)
 
 class SpeechBubble(Bubble):
     def __init__(self, items):
-        super(SpeechBubble, self).__init__(items)
+        super().__init__(items)
         self.vu = BubbleVu(self, 'SpeechBubble')
         self.vu.validate()
 

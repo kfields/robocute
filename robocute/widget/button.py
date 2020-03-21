@@ -11,7 +11,7 @@ Bubble
 '''
 class ButtonVu(WidgetVu):
     def __init__(self, node, slicesName):
-        super(ButtonVu, self).__init__(node)        
+        super().__init__(node)        
         self.skin = HorizontalSkin(FileSkinData(slicesName, 3))
 
     def validate(self):
@@ -22,10 +22,10 @@ class ButtonVu(WidgetVu):
             vu.validate()
             self.content.width += vu.width
         
-        super(ButtonVu, self).validate()
+        super().validate()
 
     def draw(self, graphics):
-        super(ButtonVu, self).draw(graphics)
+        super().draw(graphics)
         self.draw_items(graphics)
             
     def draw_items(self, graphics):
@@ -42,10 +42,10 @@ class ButtonVu(WidgetVu):
                 
 class AbstractButton(Widget):
     def __init__(self, items):
-        super(Button, self).__init__(items)
+        super().__init__(items)
 
 class Button(Button):
     def __init__(self, items):
-        super(Button, self).__init__(items)
+        super().__init__(items)
         self.vu = ButtonVu(self, 'DashButton')
         self.vu.validate() #necessary evil. :)

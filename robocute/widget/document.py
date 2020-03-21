@@ -11,7 +11,7 @@ DocVu
 '''
 class DocVu(WidgetVu):
     def __init__(self, node, slicesName):
-        super(DocVu, self).__init__(node)        
+        super().__init__(node)        
         self.skin = GridSkin(GridSkinner(slicesName))
         #
     def validate(self):
@@ -33,11 +33,11 @@ class DocVu(WidgetVu):
         #self.layout = pyglet.text.layout.IncrementalTextLayout(doc, docWidth, docHeight, True)
         #self.layout.view_x = 32
         #self.layout.view_y = 32        
-        super(DocVu, self).validate()
+        super().validate()
         self.on_resize(0, 0)
 
     def on_resize(self, width, height):
-        #super(TestWindow, self).on_resize(width, height)
+        #super().on_resize(width, height)
         self.layout.begin_update()
         self.layout.x = self.margin_left
         #self.layout.y = self.margin_bottom
@@ -51,7 +51,7 @@ class DocVu(WidgetVu):
         self.layout.end_update()
 
     def draw(self, graphics):
-        super(DocVu, self).draw(graphics)
+        super().draw(graphics)
         self.layout.draw()
             
 '''
@@ -59,7 +59,7 @@ DocWidget
 '''                
 class DocWidget(Widget):
     def __init__(self, filename):
-        super(DocWidget, self).__init__()
+        super().__init__()
         self.filename = filename
         #
         print(pyglet.resource.get_script_home())

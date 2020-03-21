@@ -10,7 +10,7 @@ from robocute.builder import find_dna
 
 class Writer(ReaderWriter):
     def __init__(self, filename, grid):
-        super(Writer, self).__init__(filename, grid)
+        super().__init__(filename, grid)
 
     def write(self):
         self.file = open(self.filename, 'wb')
@@ -51,7 +51,7 @@ class Writer(ReaderWriter):
         
 class Reader(ReaderWriter):
     def __init__(self, filename, grid):
-        super(Reader, self).__init__(filename, grid)
+        super().__init__(filename, grid)
 
     def read(self):
         self.file = open(self.filename, 'rb')

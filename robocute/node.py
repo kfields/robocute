@@ -5,7 +5,7 @@ from vu import *
 
 class AbstractNode(Base):
     def __init__(self, dna = None, fn = None):
-        super(AbstractNode, self).__init__(dna)
+        super().__init__(dna)
         self.name = 'Unknown'
         self.vu = None
         self.fn = fn #not sure about this...
@@ -13,20 +13,20 @@ class AbstractNode(Base):
     def delete(self):
         if self.vu:
             self.vu.delete()
-        super(AbstractNode, self).delete()
+        super().delete()
                 
     def register(self, app, coord = None):
-        super(AbstractNode, self).register(app, coord)
+        super().register(app, coord)
         if self.vu:
             self.vu.register(app, coord)
 
     def invalidate(self, flag = 1):
-        super(AbstractNode, self).invalidate(flag)
+        super().invalidate(flag)
         if self.vu:
             self.vu.invalidate(flag)        
                 
     def validate(self):
-        super(AbstractNode, self).validate()
+        super().validate()
         if self.vu:
             self.vu.validate()        
     
@@ -37,7 +37,7 @@ class AbstractNode(Base):
         
 class Node(AbstractNode):
     def __init__(self, dna = None, fn = None):
-        super(Node, self).__init__(dna, fn)
+        super().__init__(dna, fn)
         self.x = 0
         self.y = 0
         self.z = 0
@@ -46,15 +46,15 @@ class Node(AbstractNode):
     def delete(self):
         if self.brain:
             self.brain.delete()
-        super(Node, self).delete()
+        super().delete()
 
     def register(self, app, coord = None):
-        super(Node, self).register(app, coord)
+        super().register(app, coord)
         if self.brain:
             self.brain.register(app, coord)
         
     def validate(self):
-        super(Node, self).validate()
+        super().validate()
         
     def set_transform(self, transform):
         self.x = transform.x
@@ -67,7 +67,7 @@ Text Node
 '''
 class Text(Node):
     def __init__(self, text, fn = None):
-        super(Text, self).__init__(fn)
+        super().__init__(fn)
         self.text = text
         self.fn = fn
         self.vu = TextVu(self)
@@ -79,7 +79,7 @@ Image Node
 '''
 class Image(Node):
     def __init__(self, imgSrc, fn = None):
-        super(Image, self).__init__(fn)
+        super().__init__(fn)
         self.imgSrc = imgSrc
         self.fn = fn
         self.vu = ImageVu(self, imgSrc)

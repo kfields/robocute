@@ -3,8 +3,7 @@ import copy
 '''
 This file is the bottom of the import heirarchy so I'm gonna stick fundamentals in here for now.
 '''
-#
-#decimals behind 1 important!!! else you get zero!!!???
+
 '''
 BLOCK_WIDTH = 101
 BLOCK_HEIGHT = 171

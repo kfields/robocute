@@ -6,13 +6,13 @@ from message import *
 
 class Brain(robocute.bot.brain.Brain):
     def __init__(self, node):
-        super(Brain, self).__init__(node)
+        super().__init__(node)
         self.bubble = None
         self.on_move = None
 
     def delete(self):
         self.del_bubble()
-        super(Brain, self).delete()
+        super().delete()
     
     def say(self, items):
         self.del_bubble()

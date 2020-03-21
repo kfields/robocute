@@ -3,7 +3,7 @@ import copy
 
 class Shape(object):
     def __init__(self):
-        super(Shape, self).__init__()
+        super().__init__()
 
     def copy(self):
         return copy.copy(self)
@@ -13,7 +13,7 @@ class Shape(object):
 
 class Rect(Shape):
     def __init__(self, x = 0, y = 0, z = 0, width = 0, height = 0):
-        super(Rect, self).__init__()
+        super().__init__()
         self.x = x
         self.y = y
         self.z = z

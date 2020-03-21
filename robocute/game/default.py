@@ -9,12 +9,12 @@ import robocute.persist.grid.ods
 
 class DefaultWorld(World):
     def __init__(self, app, name, gridRowMax = WORLD_GRID_ROW_MAX, gridColMax = WORLD_GRID_COL_MAX):
-        super(DefaultWorld, self).__init__(app, name, 12, 12)
+        super().__init__(app, name, 12, 12)
         #
         grid = Grid(self.gridRowMax, self.gridColMax)
-        filename = "Default.ods"
+        #filename = "Default.ods"
         #filename = "Fountain.ods"
-        #filename = "Debug.ods"
+        filename = "Debug.ods"
         #filename = "SpawnDebug.ods"
         #filename = "TreasureDebug.ods"
         #filename = "SpreaderDebug.ods"
@@ -38,7 +38,7 @@ class DefaultWorld(World):
 
 class DefaultGame(Game):
     def __init__(self, app, name):
-        super(DefaultGame, self).__init__(app, name)
+        super().__init__(app, name)
     
     def create_world(self):
         world = DefaultWorld(self.app, self.name)

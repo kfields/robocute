@@ -8,23 +8,23 @@ from robocute.builder import find_dna, add_class, add_classes
 
 class BlockVu(TileVu):
     def __init__(self, node, imgSrc):
-        super(BlockVu, self).__init__(node, imgSrc)
+        super().__init__(node, imgSrc)
 
     def validate(self):
-        super(BlockVu, self).validate()
+        super().validate()
         self.hotHeight = self.node.height * BLOCK_HOT_HEIGHT
         
 class Block(Entity):
     groupable = False
     def __init__(self, dna):
-        super(Block, self).__init__(dna)
+        super().__init__(dna)
 
 class GroupBlockVu(Vu):
     def __init__(self, node):
-        super(GroupBlockVu, self).__init__(node)
+        super().__init__(node)
 
     def validate(self):
-        super(GroupBlockVu, self).validate()
+        super().validate()
 
     def draw(self, graphics):
         def draw(vu, graphics):
@@ -73,7 +73,7 @@ class GroupBlock(Block):
     def __init__(self, dna = None):
         if not dna:
             dna = find_dna('GroupBlock')
-        super(GroupBlock, self).__init__(dna)
+        super().__init__(dna)
         self.nodes = []
         self.vu = GroupBlockVu(self)
         self.vacancy = True
@@ -103,13 +103,13 @@ class GroupBlock(Block):
 
 class HomeBlock(GroupBlock):
     def __init__(self):
-        super(HomeBlock, self).__init__()
+        super().__init__()
     def register(self, app, coord):
         app.add_home(self, coord)
 
 class SpawnBlock(GroupBlock):
     def __init__(self, spawn):
-        super(SpawnBlock, self).__init__()
+        super().__init__()
         self.spawn = spawn
         self.add_node(spawn)
 
@@ -119,7 +119,7 @@ class SpawnBlock(GroupBlock):
             clock.schedule_once(lambda dt, *args, **kwargs : respawn(), delay)
         
     def remove_node(self, node):
-        super(SpawnBlock, self).remove_node(node)
+        super().remove_node(node)
         if node == self.spawn:
             self.spawn = self.spawn.copy()
             self.schedule_respawn(3.)

@@ -9,7 +9,7 @@ LAYER_DEFAULT = 0
 
 class Layer(Base):
     def __init__(self, parent, name = None, order = LAYER_ANY):
-        super(Layer, self).__init__()
+        super().__init__()
         self.parent = parent
         self.name = name
         self.order = order
@@ -35,7 +35,7 @@ class Layer(Base):
     
 class NodeLayer(Layer):
     def __init__(self, parent, name, order):
-        super(NodeLayer, self).__init__(parent, name, order)
+        super().__init__(parent, name, order)
         self.nodes = []
 
     def add_node(self, node):
@@ -55,7 +55,7 @@ class NodeLayer(Layer):
 
 class AbstractGroupLayer(Layer):
     def __init__(self, parent = None, name = None, order = LAYER_DEFAULT):
-        super(AbstractGroupLayer, self).__init__(parent, name, order)
+        super().__init__(parent, name, order)
         self.group = None
         
     def create_layer(self, name = None, order = LAYER_ANY):
@@ -68,7 +68,7 @@ class AbstractGroupLayer(Layer):
         
 class GroupLayer(AbstractGroupLayer):
     def __init__(self, parent, name, order):
-        super(GroupLayer, self).__init__(parent, name, order)
+        super().__init__(parent, name, order)
         self.group = pyglet.graphics.OrderedGroup(order, self.root.group)
         #self.groups = []
         self.groups = {}
@@ -85,7 +85,7 @@ class GroupLayer(AbstractGroupLayer):
     
 class BatchLayer(AbstractGroupLayer):
     def __init__(self, name):
-        super(BatchLayer, self).__init__(None, name)
+        super().__init__(None, name)
         self.batch = None
         self.group = pyglet.graphics.Group()
         self.reset()
@@ -98,5 +98,5 @@ class BatchLayer(AbstractGroupLayer):
         
 class RootLayer(Layer):
     def __init__(self, name):
-        super(RootLayer, self).__init__(None, name)
+        super().__init__(None, name)
         

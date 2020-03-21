@@ -28,7 +28,7 @@ class State(object):
     
 class StartState(State):
     def __init__(self, brain):
-        super(StartState, self).__init__(brain)
+        super().__init__(brain)
         self.phase = Phase('play')
     def do(self, phase):
         result = {
@@ -50,7 +50,7 @@ class StartState(State):
         
 class MainState(State):
     def __init__(self, brain):
-        super(MainState, self).__init__(brain)
+        super().__init__(brain)
         self.phase = Phase('enter')
     def do(self, phase):
         result = {
@@ -68,7 +68,7 @@ class MainState(State):
 
 class MoveState(State):
     def __init__(self, brain):
-        super(MoveState, self).__init__(brain)
+        super().__init__(brain)
         self.phase = Phase('enter')
         self.count = 0
     def do(self, phase):
@@ -101,7 +101,7 @@ class MoveState(State):
 
 class LandState(State):
     def __init__(self, brain):
-        super(LandState, self).__init__(brain)
+        super().__init__(brain)
         self.phase = Phase('enter')
         self.item = None # temporary holding spot? ...
     def do(self, phase):
@@ -136,15 +136,15 @@ class LandState(State):
         
 class PlayerKeybox(AvatarKeybox):
     def __init__(self, brain):
-        super(PlayerKeybox, self).__init__(brain)
+        super().__init__(brain)
 
 class PlayerMousebox(AvatarMousebox):    
     def __init__(self, brain):
-        super(PlayerMousebox, self).__init__(brain)
+        super().__init__(brain)
                     
 class PlayerBrain(brain.Brain):
     def __init__(self, node):
-        super(PlayerBrain, self).__init__(node)
+        super().__init__(node)
         #
         self.keybox = PlayerKeybox(self)
         self.mousebox = PlayerMousebox(self)
@@ -156,7 +156,7 @@ class PlayerBrain(brain.Brain):
         self.dash_worth = Text(str(self.worth))
     
     def bind(self, user):
-        super(PlayerBrain, self).bind(user)
+        super().bind(user)
         self.show_dash()        
         user.add_keybox(self.keybox)
         user.add_mousebox(self.mousebox)
@@ -166,7 +166,7 @@ class PlayerBrain(brain.Brain):
         user = self.user
         user.remove_keybox(self.keybox)
         user.remove_mousebox(self.mousebox)
-        super(PlayerBrain, self).unbind()
+        super().unbind()
         
     def show_dash(self):
         if(not self.dash_bubble):
@@ -199,7 +199,7 @@ class PlayerBrain(brain.Brain):
         elif(isinstance(msg, Transition)):
             self.do_transition(msg)
         else:
-            super(PlayerBrain, self).do(msg)
+            super().do(msg)
             
     def do_transition(self, transition):
         result = {

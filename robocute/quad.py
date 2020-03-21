@@ -14,7 +14,7 @@ Quad
 '''
 class Quad(Base):
     def __init__(self, texture):
-        super(Quad, self).__init__()
+        super().__init__()
         self.texture = texture
         self.width = texture.width
         self.height = texture.height
@@ -35,7 +35,7 @@ class Quad(Base):
         return (u, v, r)
         
     def validate(self):
-        super(Quad, self).validate()
+        super().validate()
 
     '''
     Compose
@@ -114,11 +114,11 @@ QuadContainer
 '''
 class QuadContainer(Base):
     def __init__(self):
-        super(QuadContainer, self).__init__()
+        super().__init__()
         self.quads = []
 
     def validate(self):
-        super(QuadContainer, self).validate()
+        super().validate()
         
     def add_quad(self, quad):
         self.invalidate()
@@ -135,13 +135,13 @@ QuadRow
 '''
 class QuadRow(QuadContainer):
     def __init__(self):
-        super(QuadRow, self).__init__()
+        super().__init__()
         self.north = None
         self.south = None
         self.height = None
     
     def validate(self):
-        super(QuadRow, self).validate()
+        super().validate()
         lastQuad = None
         for quad in self.quads:
             if lastQuad:
@@ -158,7 +158,7 @@ class QuadRow(QuadContainer):
             quad.compose(graphics, mesh)
             graphics.x += quad.width
         '''
-        #fixme:reinstate this when shared vertices get figure out.
+        #fixme:reinstate this when shared vertices get figured out.
         for quad in self.quads:
             quad.postcompose(mesh)
         '''
@@ -167,10 +167,10 @@ QuadColumn
 '''
 class QuadColumn(QuadContainer):
     def __init__(self):
-        super(QuadColumn, self).__init__()
+        super().__init__()
             
     def validate(self):
-        super(QuadColumn, self).validate()
+        super().validate()
         lastQuad = None
         for quad in self.quads:
             if lastQuad:
@@ -198,13 +198,13 @@ QuadGrid
 '''
 class QuadGrid(QuadContainer):
     def __init__(self):
-        super(QuadGrid, self).__init__()
+        super().__init__()
 
     def add_row(self, row):
         self.add_quad(row)
     
     def validate(self):
-        super(QuadGrid, self).validate()
+        super().validate()
         lastRow = None
         for row in self.quads:
             if lastRow:
@@ -235,7 +235,7 @@ QuadMesh
 '''    
 class QuadMesh(Base):
     def __init__(self, texture):
-        super(QuadMesh, self).__init__()
+        super().__init__()
         self.texture = texture
         #self.indices = []
         self.vertices = []

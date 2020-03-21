@@ -18,7 +18,7 @@ fudge = (BLOCK_WIDTH * .5, BLOCK_ROW_HEIGHT * .5) #fixme:hack for camera
 
 class UserKeybox(MultiKeybox):
     def __init__(self, user):
-        super(UserKeybox, self).__init__()
+        super().__init__()
         self.user = user
         win = user.window
         #
@@ -27,7 +27,7 @@ class UserKeybox(MultiKeybox):
         win.on_key_press = on_key_press
 
     def on_key_press(self, symbol, modifiers):
-        super(UserKeybox, self).on_key_press(symbol, modifiers)
+        super().on_key_press(symbol, modifiers)
         user = self.user
         if symbol == key.NUM_ADD:
             user.camera.zoom(.1, .1)
@@ -36,7 +36,7 @@ class UserKeybox(MultiKeybox):
 
 class UserMousebox(MultiMousebox):
     def __init__(self, user):
-        super(UserMousebox, self).__init__()
+        super().__init__()
         self.user = user
         win = user.window
         #
@@ -53,20 +53,20 @@ class UserMousebox(MultiMousebox):
         win.on_mouse_drag = on_mouse_drag
 
     def on_mouse_motion(self, x, y, dx, dy):
-        super(UserMousebox, self).on_mouse_motion(x, y, dx, dy)
+        super().on_mouse_motion(x, y, dx, dy)
         self.user.mouse.x = x
         self.user.mouse.y = y
 
     def on_mouse_press(self, x, y, button, modifiers):
-        super(UserMousebox, self).on_mouse_press(x, y, button, modifiers)
+        super().on_mouse_press(x, y, button, modifiers)
         #self.inject(MousePressed(x, y, button, modifiers))
     
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        super(UserMousebox, self).on_mouse_drag(x, y, dx, dy, buttons, modifiers)
+        super().on_mouse_drag(x, y, dx, dy, buttons, modifiers)
         self.user.mouse.x = x
         self.user.mouse.y = y
 
-class User(object):
+class User():
     def __init__(self, app):
         self.app = app
         win = app.window
@@ -79,10 +79,12 @@ class User(object):
         #
         self.camera = self.scene.create_camera()
         #
+        '''
         self.tool = None
         self.tools = []
         tool = self.create_avatar("Designer()")
         self.push_tool(tool)
+        '''
         #
         win.set_mouse_visible(False)
         self.mouse = Mouse()

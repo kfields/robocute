@@ -12,7 +12,7 @@ class ItemVu(ImageVu):
     def __init__(self, node, imgSrc):
         self.width = 0
         self.height = 0
-        super(ItemVu, self).__init__(node, imgSrc)
+        super().__init__(node, imgSrc)
         self.scaleX = .25
         self.scaleY = .25                
         self.width = int( self.image.width * self.scaleX ) 
@@ -25,16 +25,16 @@ class ItemVu(ImageVu):
         glScalef(self.scaleX, self.scaleY, 1.)
         g.x = 0
         g.y = 0
-        super(ItemVu, self).draw(g)
+        super().draw(g)
         glPopMatrix()
 
 class ToolVu(ImageVu):
     def __init__(self, node, imgSrc):
-        super(ToolVu, self).__init__(node, imgSrc)
+        super().__init__(node, imgSrc)
         
 class Item(Image):
     def __init__(self, dna, useFn):
-        super(Item, self).__init__(dna.imgSrc, useFn)
+        super().__init__(dna.imgSrc, useFn)
         self.dna = dna
         if dna.type == 'tool':
             self.vu = ToolVu(self, dna.imgSrc)
@@ -43,7 +43,7 @@ class Item(Image):
 
 class PageVu(WidgetVu):
     def __init__(self, node, slicesName):
-        super(PageVu, self).__init__(node)   
+        super().__init__(node)   
         self.skin = VerticalSkin(FileSkinData(slicesName, 3))
         
     def validate(self):
@@ -54,10 +54,10 @@ class PageVu(WidgetVu):
             vu.validate()
             self.content.height += vu.height + self.vspace
         #
-        super(PageVu, self).validate()
+        super().validate()
      
     def draw(self, graphics):
-        super(PageVu, self).draw(graphics) #call to get skin drawn.
+        super().draw(graphics) #call to get skin drawn.
         self.draw_items(graphics)
         
     def draw_items(self, graphics):        
@@ -79,14 +79,14 @@ class PageVu(WidgetVu):
         
 class Page(Widget):
     def __init__(self, name, items = None):
-        super(Page, self).__init__(items)
+        super().__init__(items)
         self.name = name
         self.vu = PageVu(self, 'CatalogBubble')
         self.vu.validate()
 
 class Catalog(object):
     def __init__(self):        
-        super(Catalog, self).__init__()
+        super().__init__()
         #
         self.pages = {}
         self.nextPages = {}

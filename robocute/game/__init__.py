@@ -3,7 +3,7 @@ from robocute.base import *
 
 class Game(Base):
     def __init__(self, app, name):
-        super(Game, self).__init__()
+        super().__init__()
         self.app = app
         self.window = app.window
         self.name = name

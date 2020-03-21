@@ -31,14 +31,14 @@ class MouseQuery(object):
         
 class Mouse(Node):
     def __init__(self):
-        super(Mouse, self).__init__()
+        super().__init__()
         self.vu = ImageVu(self, 'Pointer-Standard.png')
         #self.vu.clickable = False
         self.vu.hotspots = [] #clear the list
         
 class MouseMessage(Message):
     def __init__(self, x, y, button, modifiers):
-        super(MouseMessage, self).__init__()
+        super().__init__()
         self.x = x
         self.y = y
         self.button = button
@@ -46,15 +46,15 @@ class MouseMessage(Message):
     
 class MousePressed(MouseMessage):
     def __init__(self,  x, y, button, modifiers):
-        super(MousePressed, self).__init__(x, y, button, modifiers)
+        super().__init__(x, y, button, modifiers)
 
 class MouseMoved(MouseMessage):
     def __init__(self,  x, y, button, modifiers):
-        super(MouseMoved, self).__init__(x, y, button, modifiers)
+        super().__init__(x, y, button, modifiers)
 
 class Mousebox(Mailbox):
     def __init__(self):
-        super(Mousebox, self).__init__()
+        super().__init__()
         
     def create_query(self, event):
         return MouseQuery(event) 
@@ -72,7 +72,7 @@ class Mousebox(Mailbox):
     
 class MultiMousebox(Mailbox):
     def __init__(self):
-        super(MultiMousebox, self).__init__()
+        super().__init__()
                 
     def on_mouse_motion(self, x, y, dx, dy):
         for box in self.boxes:

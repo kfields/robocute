@@ -17,6 +17,6 @@ class BuildingBlock(Block):
         return obj
         
     def __init__(self):
-        super(BuildingBlock, self).__init__()
+        super().__init__()
         self.vu = BlockVu(self, self.dna.imgSrc)
         self.vacancy = False

@@ -2,27 +2,27 @@
 
 ## Installation
 
-1. Navigate to a directory where you keep your software projects:
+Navigate to a directory where you keep your software projects
 
         cd projects
 
-2. Clone the repository:
+Clone the repository
 
         git clone https://github.com/kfields/robocute.git
         
-3. Navigate to the new directory which contains the repository.
+Navigate to the new directory which contains the repository
 
         cd robocute
 
-4. Create a Python 3 virtual environment called `env`:
+Create a Python 3 virtual environment called `env`
 
         python3 -m venv env
         
-5. Activate the environment:
+Activate the environment
 
         source env/bin/activate
         
-6. Install required packages:
+Install required packages
 
         pip install -r requirements.txt
 
@@ -30,13 +30,13 @@
 pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-18.04  wxPython
 
 
-## Development
+## Run
 
-1. Activate the virtual environment, if not already active:
+Activate the virtual environment, if not already active
 
-        cd pugsley-lite
+        cd robocute
         source env/bin/activate
         
-2. Launch the Flask application in debug mode:
+Run the game
 
-        ./dev
+        python main.py

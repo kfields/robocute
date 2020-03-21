@@ -25,18 +25,18 @@ class TileStrip(TextureStrip):
     def __init__(self):
         if self.instanced:
             return
-        super(TileStrip, self).__init__(childWidth = 101, childHeight = 171)
+        super().__init__(childWidth = 101, childHeight = 171)
 
 class TileVu(ImageVu):
     def __init__(self, node, imgSrc):
-        super(TileVu, self).__init__(node, imgSrc)
+        super().__init__(node, imgSrc)
         #self.texture = self.image.get_texture(True) #is rectangle
         self.strip = TileStrip()
         #self.texture = self.strip.add(self.image) 
         self.texture = self.strip.register(self.imgSrc, self.image)
         
     def validate(self):
-        super(TileVu, self).validate()
+        super().validate()
 
     def create_array(self, g):
         x1 = g.x

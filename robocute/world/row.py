@@ -4,7 +4,7 @@ from .cell import *
 
 class Row(list):
     def __init__(self, colCount = WORLD_GRID_COL_MAX):
-        super(Row, self).__init__()
+        super().__init__()
         self.colCount = colCount
         self.invalid = 0
         

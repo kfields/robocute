@@ -7,14 +7,14 @@ class Entity(node.Node):
     groupable = True
     
     def __init__(self, dna = None, fn = None):
-        super(Entity, self).__init__(dna, fn)
+        super().__init__(dna, fn)
         self.height = 1
         #self.vacancy = False
         self.vacancy = True
                             
 class Brain(brain.Brain):
     def __init__(self, node):
-        super(Brain, self).__init__(node)
+        super().__init__(node)
         self.grid = None
         #
         self.__coord = Coord(0,0) #brain knows where node is at roughly
@@ -23,7 +23,7 @@ class Brain(brain.Brain):
         self.on_move = None #need callback for camera!!!
 
     def register(self, app, coord):
-        super(Brain, self).register(app, coord)
+        super().register(app, coord)
         self.grid = app.world.get_grid_at(coord)
         self.coord = coord
             

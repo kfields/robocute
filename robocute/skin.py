@@ -23,7 +23,7 @@ class SkinData(object):
 
 class FileSkinData(SkinData):
     def __init__(self, slicesName, sliceCount):
-        super(FileSkinData, self).__init__(sliceCount)
+        super().__init__(sliceCount)
         self.atlas = pyglet.image.atlas.TextureAtlas()
         
         imgCount = 0        
@@ -41,7 +41,7 @@ class FileSkinData(SkinData):
 
 class GridSkinner(SkinData):
     def __init__(self, filename, cornerWidth = 32, cornerHeight = 32):
-        super(GridSkinner, self).__init__(9)
+        super().__init__(9)
         image = pyglet.image.load(data.filepath('image/skin/' + filename + '.png'))
         texture = image.get_texture(True)
         self.texture = texture
@@ -84,7 +84,7 @@ class Skin(object):
 
 class HorizontalSkin(Skin):
     def __init__(self, data):
-        super(HorizontalSkin, self).__init__(data)
+        super().__init__(data)
 
     def validate(self):
         slices = self.data.slices
@@ -124,7 +124,7 @@ class HorizontalSkin(Skin):
         
 class VerticalSkin(Skin):
     def __init__(self, data):
-        super(VerticalSkin, self).__init__(data)
+        super().__init__(data)
 
     def validate(self):
         slices = self.data.slices
@@ -164,7 +164,7 @@ class VerticalSkin(Skin):
         
 class GridSkin(Skin):
     def __init__(self, data):
-        super(GridSkin, self).__init__(data)
+        super().__init__(data)
 
     def validate(self):
         slices = self.data.slices

@@ -5,12 +5,12 @@ from robocute.sprite import *
     
 class BotVu(SpriteVu):
     def __init__(self, node, imgSrc):
-        super(BotVu, self).__init__(node, imgSrc)
+        super().__init__(node, imgSrc)
         self.hotHeight = 120 #fixme:use constant
 
 class Bot(Entity):
     def __init__(self, dna = None):
-        super(Bot, self).__init__(dna)
+        super().__init__(dna)
         self.vacancy = False
         self.height = 2
         self.vu = BotVu(self, 'robocute.png')        
@@ -19,7 +19,7 @@ class Bot(Entity):
     Idea is to add ourselves to Scene list of spreaders, fillers, mappers, etc.
     '''
     def register(self, app, coord):
-        super(Bot, self).register(app, coord)
+        super().register(app, coord)
         def start():
             brain = self.brain
             if(brain):

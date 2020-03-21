@@ -7,13 +7,13 @@ from robocute.widget.document import *
 
 class FileTool(robocute.tool.Tool):
     def __init__(self, dna = None):
-        super(FileTool, self).__init__()
+        super().__init__()
         self.widget = None
         self.keybox = robocute.tool.ToolKeybox(self)
         self.mousebox = robocute.tool.ToolMousebox(self)
 
     def bind(self, user):
-        super(FileTool, self).bind(user)
+        super().bind(user)
         self.show_widget()
         user.add_keybox(self.keybox)
         user.add_mousebox(self.mousebox)
@@ -22,7 +22,7 @@ class FileTool(robocute.tool.Tool):
         self.user.remove_keybox(self.keybox)
         self.user.remove_mousebox(self.mousebox)
         self.hide_widget()
-        super(FileTool, self).unbind()        
+        super().unbind()        
 
     def show_widget(self):
         if not self.widget:
@@ -37,13 +37,13 @@ class FileTool(robocute.tool.Tool):
 
 class FileOpener(FileTool):
     def __init__(self, dna = None):
-        super(FileOpener, self).__init__()
+        super().__init__()
     def create_widget(self):
         self.widget = DocWidget('data/html/file_open.html')
 
 class FileSaver(FileTool):
     def __init__(self, dna = None):
-        super(FileSaver, self).__init__()
+        super().__init__()
     def create_widget(self):
         self.widget = DocWidget('data/html/file_save.html')
         doc = self.widget.document
@@ -53,13 +53,13 @@ class FileSaver(FileTool):
                         
 class Helper(FileTool):
     def __init__(self, dna = None):
-        super(Helper, self).__init__()
+        super().__init__()
                 
     def create_widget(self):
         self.widget = DocWidget('data/html/file_help.html')
 
 class Exiter(FileTool):
     def __init__(self, dna = None):
-        super(Exiter, self).__init__()
+        super().__init__()
     def create_widget(self):
         self.widget = DocWidget('data/html/file_exit.html')

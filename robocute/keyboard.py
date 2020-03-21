@@ -7,7 +7,7 @@ from mailbox import Mailbox
 
 class Keybox(Mailbox):
     def __init__(self):
-        super(Keybox, self).__init__()
+        super().__init__()
 
     def exit(self):
         sys.exit()
@@ -17,7 +17,7 @@ class Keybox(Mailbox):
 
 class MultiKeybox(Mailbox):
     def __init__(self):
-        super(MultiKeybox, self).__init__()
+        super().__init__()
             
     def on_key_press(self, symbol, modifiers):
         for box in self.boxes:

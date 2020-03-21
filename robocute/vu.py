@@ -23,7 +23,7 @@ def load_image(filename):
 
 class Vu(Base):
     def __init__(self, node):
-        super(Vu, self).__init__()
+        super().__init__()
         self.node = node
         self.width = None
         self.height = None
@@ -68,7 +68,7 @@ class Vu(Base):
         
 class TextVu(Vu):
     def __init__(self, node):
-        super(TextVu, self).__init__(node)
+        super().__init__(node)
         ft = pyglet.font.load('Verdana', 14)
         self.text = pyglet.font.Text(ft, self.node.text)
         self.text.color=(0,0,0,1)#red
@@ -77,12 +77,12 @@ class TextVu(Vu):
         self.add_hotspot(HotSpot(0,0,self.width,self.height))#fixme:put in base?
         
     def validate(self):
-        super(TextVu, self).validate()
+        super().validate()
         self.width = self.text.width
         self.height = self.text.height
         
     def draw(self, graphics):
-        #super(TextVu, self).draw(graphics)
+        #super().draw(graphics)
         #either way works...
         #glPushMatrix()
         #glTranslatef(graphics.x, graphics.y, graphics.z)
@@ -95,7 +95,7 @@ class TextVu(Vu):
 
 class ImageVu(Vu):
     def __init__(self, node, imgSrc):
-        super(ImageVu, self).__init__(node)
+        super().__init__(node)
         self.imgSrc = imgSrc
         if imgSrc != '':
             self.image = load_image(imgSrc)
@@ -105,7 +105,7 @@ class ImageVu(Vu):
         self.add_hotspot(HotSpot(0,0,self.width,self.hotHeight))#fixme:put in base?
         
     def validate(self):
-        super(ImageVu, self).validate()
+        super().validate()
         if not self.width:
             self.width = self.image.width
         if not self.height:

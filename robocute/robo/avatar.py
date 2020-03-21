@@ -5,7 +5,7 @@ from message import *
 
 class AvatarKeybox(ToolKeybox):
     def __init__(self, brain):
-        super(AvatarKeybox, self).__init__(brain)
+        super().__init__(brain)
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.R:
@@ -20,8 +20,8 @@ class AvatarKeybox(ToolKeybox):
         elif symbol == key.A or symbol == key.LEFT:
             self.brain.do(GoWest())
         else:
-            super(AvatarKeybox, self).on_key_press(symbol, modifiers)
+            super().on_key_press(symbol, modifiers)
 
 class AvatarMousebox(ToolMousebox):    
     def __init__(self, brain):
-        super(AvatarMousebox, self).__init__(brain)
+        super().__init__(brain)

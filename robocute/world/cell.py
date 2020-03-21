@@ -5,7 +5,7 @@ from robocute.builder import execute_ctors
 
 class Cell(list):
     def __init__(self):
-        super(Cell, self).__init__()
+        super().__init__()
         self.invalid = 0
         self.height = 0
         #

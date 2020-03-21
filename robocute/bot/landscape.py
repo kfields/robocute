@@ -9,12 +9,12 @@ from robocute.builder import build
 
 class LandscapeBot(robocute.bot.Bot):
     def __init__(self, dna = None):
-        super(LandscapeBot, self).__init__(dna)
+        super().__init__(dna)
         self.brain = LandscapeBotBrain(self)
 
 class LandscapeBotBrain(robocute.bot.Brain):
     def __init__(self, node):
-        super(LandscapeBotBrain, self).__init__(node)
+        super().__init__(node)
         
     def start(self):
         map = Map(self.grid.coordX, self.grid.coordY, self.grid.colCount, self.grid.rowCount)

@@ -4,7 +4,7 @@ from robocute.base import Coord
 class Brain(robocute.entity.Brain):
 
     def __init__(self, node):
-        super(Brain, self).__init__(node)
+        super().__init__(node)
 
     def can_transfer(self, node, srcCoord, dstCoord):
         #boundary check

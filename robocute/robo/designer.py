@@ -9,7 +9,7 @@ from robocute.builder import build, build_thing, build_thing_at
 
 class DesignerMouseQuery(MouseQuery):
     def __init__(self, box, event):
-        super(DesignerMouseQuery, self).__init__(event)
+        super().__init__(event)
         self.box = box
         self.brain = box.brain
         
@@ -21,7 +21,7 @@ class DesignerMouseQuery(MouseQuery):
         result = self.results[-1]
         
         if result.node.fn :
-            return super(DesignerMouseQuery, self).process()        
+            return super().process()        
         #else
         event = self.event
         print(result.node, event)
@@ -39,7 +39,7 @@ class DesignerMouseQuery(MouseQuery):
         
 class DesignerKeybox(AvatarKeybox):    
     def __init__(self, brain):
-        super(DesignerKeybox, self).__init__(brain)
+        super().__init__(brain)
                 
     def on_key_press(self, symbol, modifiers):
         brain = self.brain
@@ -53,19 +53,19 @@ class DesignerKeybox(AvatarKeybox):
         elif symbol == key.DELETE:
             brain.do(DoDelete())
         else:
-            super(DesignerKeybox, self).on_key_press(symbol, modifiers)
+            super().on_key_press(symbol, modifiers)
 
 class DesignerMousebox(AvatarMousebox):    
     def __init__(self, brain):
-        super(DesignerMousebox, self).__init__(brain)
+        super().__init__(brain)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        super(DesignerMousebox, self).on_mouse_press(x, y, button, modifiers)
+        super().on_mouse_press(x, y, button, modifiers)
         self.brain.scene.query = DesignerMouseQuery(self, MousePressed(x, y, button, modifiers))
                     
 class AbstractDesignerBrain(Brain):
     def __init__(self, node):
-        super(AbstractDesignerBrain, self).__init__(node)
+        super().__init__(node)
     def build(self, dna):
         cell = self.grid.get_cell_at(self.coord)
         cell.remove_node(self.node)
@@ -107,16 +107,16 @@ class AbstractDesignerBrain(Brain):
         elif(isinstance(msg, DoDelete)):
            self.delete()
         else:        
-            super(AbstractDesignerBrain, self).do(msg)
+            super().do(msg)
        
        
 class DesignerCloneBrain(AbstractDesignerBrain):
     def __init__(self, node):
-        super(DesignerCloneBrain, self).__init__(node)
+        super().__init__(node)
 
 class DesignerBrain(AbstractDesignerBrain):
     def __init__(self, node):
-        super(DesignerBrain, self).__init__(node)
+        super().__init__(node)
         self.clones = []
         self.drawer = None
         self.keybox = DesignerKeybox(self)
@@ -131,7 +131,7 @@ class DesignerBrain(AbstractDesignerBrain):
         self.app.exit()
 
     def bind(self, user):
-        super(DesignerBrain, self).bind(user)
+        super().bind(user)
         self.show_dash()
         #
         if self.avatar:
@@ -147,7 +147,7 @@ class DesignerBrain(AbstractDesignerBrain):
         #
         if self.avatar:
             self.hide_node()
-        super(DesignerBrain, self).unbind()        
+        super().unbind()
 
     def show_dash(self):
         if not self.drawer:
@@ -264,7 +264,7 @@ class DesignerBrain(AbstractDesignerBrain):
         self.clones.append(cloneBrain)        
         
     def do(self, msg):
-        super(DesignerBrain, self).do(msg)
+        super().do(msg)
         for clone in self.clones:
             clone.do(msg)
     

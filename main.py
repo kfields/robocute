@@ -3,13 +3,7 @@
 import sys
 import os
 
-try:
-    __file__
-except NameError:
-    pass
-else:
-    libdir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'robocute'))
-    sys.path.insert(0, libdir)
+sys.path.append(os.path.abspath(__file__))
 
 from pyglet import window
 from robocute.app import App

@@ -1,6 +1,6 @@
 
-from base import *
-from node import Node
+from robocute.base import *
+from robocute.node import Node
 
 from robocute import dna_dict
 from robocute import class_dict

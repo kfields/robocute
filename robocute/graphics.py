@@ -1,7 +1,7 @@
 
 from pyglet.gl import *
 
-from shape import *
+from robocute.shape import *
 
 class Clip(Rect):
     def __init__(self, x = 0, y = 0, z = 0, width = 0, height = 0):

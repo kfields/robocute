@@ -2,8 +2,8 @@
 import robocute.bot.brain
 from robocute.widget.bubble import *
 
-from message import *
-from .message import *
+from robocute.message import *
+from robocute.robo.message import *
 
 class Brain(robocute.bot.brain.Brain):
     def __init__(self, node):

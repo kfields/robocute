@@ -1,7 +1,6 @@
 
-from base import *
-from vu import *
-#import brain
+from robocute.base import *
+from robocute.vu import *
 
 class AbstractNode(Base):
     def __init__(self, dna = None, fn = None):

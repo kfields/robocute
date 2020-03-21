@@ -3,7 +3,7 @@ import sys
 
 from pyglet.window import key
 
-from mailbox import Mailbox
+from robocute.mailbox import Mailbox
 
 class Keybox(Mailbox):
     def __init__(self):

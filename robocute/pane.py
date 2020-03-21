@@ -1,9 +1,9 @@
 
 import pyglet
 
-from vu import Vu
+from robocute.vu import Vu
 
-from layer import *
+from robocute.layer import *
 
 class Pane(Vu):    
     def __init__(self, node):

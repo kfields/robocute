@@ -1,5 +1,5 @@
 
-from base import *
+from robocute.base import *
 
 class Brain(Base):
     def __init__(self, node):

@@ -1,4 +1,4 @@
-from graphics import *
+from robocute.graphics import *
 
 class Camera(Clip):
     

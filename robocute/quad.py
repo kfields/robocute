@@ -2,7 +2,7 @@
 import pyglet
 from pyglet.gl import *
 
-from base import *
+from robocute.base import *
 
 QUAD_SW = 0
 QUAD_SE = 1

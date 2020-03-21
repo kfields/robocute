@@ -1,9 +1,9 @@
 
-from base import *
-import node
-import brain 
+from robocute.base import *
+from robocute.node import Node
+import robocute.brain
 
-class Entity(node.Node):
+class Entity(Node):
     groupable = True
     
     def __init__(self, dna = None, fn = None):
@@ -12,7 +12,7 @@ class Entity(node.Node):
         #self.vacancy = False
         self.vacancy = True
                             
-class Brain(brain.Brain):
+class Brain(robocute.brain.Brain):
     def __init__(self, node):
         super().__init__(node)
         self.grid = None

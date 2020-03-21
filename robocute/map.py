@@ -1,5 +1,5 @@
 
-from node import *
+from robocute.node import *
 
 class Cell:
     def __init__(self):

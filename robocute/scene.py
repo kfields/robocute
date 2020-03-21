@@ -1,15 +1,14 @@
-
-import graphics
-import camera
-from node import *
-from world import *
-from pane import *
-from dash import *
-from mouse import Mouse
-
 from pyglet.gl import *
 
-class Clip(graphics.Clip):
+import robocute.graphics
+import robocute.camera
+from robocute.node import *
+from robocute.world import *
+from robocute.pane import *
+from robocute.dash import *
+from robocute.mouse import Mouse
+
+class Clip(robocute.graphics.Clip):
     def __init__(self, world, rowCount = 3, colCount = 3):
         super().__init__()
         self.world = world
@@ -54,7 +53,7 @@ class Clip(graphics.Clip):
             self.gridX = gridX 
             self.gridY = gridY
 
-class Camera(camera.Camera):
+class Camera(robocute.camera.Camera):
     def __init__(self, scene, rowCount = 3, colCount = 3):
         super().__init__(scene.window)
         #

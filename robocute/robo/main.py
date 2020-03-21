@@ -1,8 +1,8 @@
 
 from robocute.robo import *
-import brain
-from .player import *
-from .designer import * 
+import robocute.robo.brain
+from robocute.robo.player import *
+from robocute.robo.designer import * 
 
 class AbstractDesigner(Robo):
     groupable = False

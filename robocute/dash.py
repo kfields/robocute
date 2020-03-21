@@ -1,6 +1,6 @@
-from layer import *
-from vu import *
-from node import *
+from robocute.layer import *
+from robocute.vu import *
+from robocute.node import *
 
 class DrawerVu(Vu):
     def __init__(self, node):

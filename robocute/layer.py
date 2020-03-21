@@ -1,8 +1,8 @@
 import pyglet
 
-import sprite
+import robocute.sprite
 
-from base import *
+from robocute.base import *
 
 LAYER_ANY = -1
 LAYER_DEFAULT = 0

@@ -2,10 +2,10 @@
 import pyglet
 from pyglet.gl import *
 
-from vu import *
-from texture import *
+from robocute.vu import *
+from robocute.texture import *
 
-from tile import *
+from robocute.tile import *
 
 class SpriteVu(TileVu):  #just hang around with the tiles for now ...
     def __init__(self, node, imgSrc):

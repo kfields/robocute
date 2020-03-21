@@ -1,12 +1,9 @@
-from builder import Dna
-
-#from ods.catalog import * #dependency problem
-#
-from widget import *
-#from widget.list import List
-from skin import *
-from widget.bubble import *
 from pyglet.gl import *
+
+from robocute.builder import Dna
+from robocute.widget import *
+from robocute.skin import *
+from robocute.widget.bubble import *
 
 class ItemVu(ImageVu):
     def __init__(self, node, imgSrc):

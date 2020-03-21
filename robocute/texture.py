@@ -2,7 +2,7 @@
 import pyglet
 from pyglet.gl import *
 
-from vu import *
+from robocute.vu import *
 
 GROUP_TEXTURE = 0
 GROUP_ATLAS = 1

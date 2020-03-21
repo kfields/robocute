@@ -7,14 +7,14 @@ from pyglet import clock
 from pyglet import window
 #
 import data
-from game.default import DefaultGame
-from world import World
-from scene import Scene
-from graphics import Graphics
+from robocute.game.default import DefaultGame
+from robocute.world import World
+from robocute.scene import Scene
+from robocute.graphics import Graphics
 #
-from user import *
+from robocute.user import *
 #
-class App():
+class App:
     
     def __init__(self, win, game_name = 'Default'):
         self.window = win                

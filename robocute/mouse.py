@@ -1,9 +1,8 @@
 
-from node import Node
-from node import Coord
-from vu import ImageVu
-from message import Message
-from mailbox import Mailbox
+from robocute.node import Node, Coord
+from robocute.vu import ImageVu
+from robocute.message import Message
+from robocute.mailbox import Mailbox
 
 class Result(Coord):
     def __init__(self, node, cellX, cellY, cellZ):

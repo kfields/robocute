@@ -2,8 +2,8 @@
 import pyglet
 from pyglet.gl import *
 
-from vu import *
-from texture import *
+from robocute.vu import *
+from robocute.texture import *
 
 '''
 TileStrip

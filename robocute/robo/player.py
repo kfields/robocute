@@ -108,9 +108,8 @@ class LandState(State):
           'take_item': lambda : self.take_item()
         }[phase.key]()
     def enter(self):
-        print('enter')
         items = self.brain.search_for_items()
-        print(items)
+        #print(items)
         if(not items):
             self.brain.schedule(Phase('exit'))
             return

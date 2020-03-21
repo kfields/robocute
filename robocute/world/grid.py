@@ -65,20 +65,24 @@ class GridVu(Pane):
     Might be better off with generators for row and column?
     '''
     def walk(self, graphics, callback):
+        rows = self.node.rows
         g = graphics.copy()
         query = g.query
         #
         r1, r2, c1, c2 = self.clip(g.clip)
-        # r1, r2, c1, c2 = 1, 0, 1, 0
-        r = r1
+        # print(r1, r2, c1, c2)
+
+        # r = r1
+        r = len(rows) - 1
         #
-        rows = self.node.rows
-        print(rows)
+        # print(len(rows))
         while(r >= r2): #rows in sheet
             print(r)
+            '''
             if len(rows[r]) == 0:
                 r += 1
                 continue
+            '''
             #else
             g.cellY = self.node.coordY + r
             row = rows[r]

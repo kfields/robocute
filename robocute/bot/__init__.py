@@ -1,8 +1,6 @@
 from robocute.entity import *
 from robocute.sprite import *
 
-#was going to name it bot ... robo goes with the theme
-    
 class BotVu(SpriteVu):
     def __init__(self, node, imgSrc):
         super().__init__(node, imgSrc)

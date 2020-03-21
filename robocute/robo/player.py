@@ -1,16 +1,13 @@
+from random import random
+from pyglet import clock
 
-import robocute.robo
-from .brain import *
-from .avatar import *
+import robocute.robo.brain
+from robocute.robo.avatar import *
 from robocute.widget.bubble import *
 from robocute.item import *
 from robocute.block import *
 
-from message import *
-
-from pyglet import clock
-
-from random import random
+# from message import *
     
 class State(object):
     def __init__(self, brain):
@@ -142,7 +139,7 @@ class PlayerMousebox(AvatarMousebox):
     def __init__(self, brain):
         super().__init__(brain)
                     
-class PlayerBrain(brain.Brain):
+class PlayerBrain(robocute.robo.brain.Brain):
     def __init__(self, node):
         super().__init__(node)
         #

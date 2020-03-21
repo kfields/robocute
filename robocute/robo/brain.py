@@ -3,6 +3,9 @@ import robocute.bot.brain
 from robocute.widget.bubble import *
 
 from message import *
+from .message import *
+
+import inspect
 
 class Brain(robocute.bot.brain.Brain):
     def __init__(self, node):
@@ -33,6 +36,7 @@ class Brain(robocute.bot.brain.Brain):
             self.bubble = None
         
     def go(self, msg):
+        print('go')
         self.del_bubble()
         #
         if(isinstance(msg, GoNorth)):
@@ -48,6 +52,8 @@ class Brain(robocute.bot.brain.Brain):
             self.on_move()
                      
     def do(self, msg):
+        print(inspect.getmro(msg.__class__))
+        print(msg)
         success = True
         if(isinstance(msg, Say)):
            self.say(msg.text)

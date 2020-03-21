@@ -1,8 +1,9 @@
 
 import robocute.robo
+import robocute.robo.brain
 from robocute.widget.catalog import *
-from .message import *
-from .avatar import *
+from robocute.robo.message import *
+from robocute.robo.avatar import *
 from robocute.tool import *
 
 from robocute.builder import build, build_thing, build_thing_at
@@ -63,7 +64,7 @@ class DesignerMousebox(AvatarMousebox):
         super().on_mouse_press(x, y, button, modifiers)
         self.brain.scene.query = DesignerMouseQuery(self, MousePressed(x, y, button, modifiers))
                     
-class AbstractDesignerBrain(Brain):
+class AbstractDesignerBrain(robocute.robo.brain.Brain):
     def __init__(self, node):
         super().__init__(node)
     def build(self, dna):

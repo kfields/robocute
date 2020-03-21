@@ -247,7 +247,7 @@ class QuadMesh(Base):
         self.vertices.append(vertex[0])
         self.vertices.append(vertex[1])
         self.tex_coords.extend([0.]*3)
-        return len(self.vertices) / 2 - 1
+        return int(len(self.vertices) / 2 - 1)
     
     def set_tex_coord(self, indice, tex_coord):
         self.tex_coords[indice * 3] = tex_coord[0] 
@@ -256,7 +256,7 @@ class QuadMesh(Base):
         
     def create_vertex_list(self):
         #vertexList = self.domain.create(len(self.vertices)/2, len(self.indices))
-        vertexList = self.domain.create(len(self.vertices)/2)
+        vertexList = self.domain.create(int(len(self.vertices)/2))
         #vertexList.indices = self.indices
         vertexList.vertices = self.vertices
         vertexList.tex_coords = self.tex_coords

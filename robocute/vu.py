@@ -32,9 +32,6 @@ class Vu(Base):
         #query support
         self.hotHeight = 0
             
-    '''
-    Note: significant speed penalty for calling super.draw! ... super.anything for that matter.
-    '''
     def draw(self, graphics):
         pass
 
@@ -69,17 +66,23 @@ class Vu(Base):
 class TextVu(Vu):
     def __init__(self, node):
         super().__init__(node)
-        ft = pyglet.font.load('Verdana', 14)
-        self.text = pyglet.font.Text(ft, self.node.text)
-        self.text.color=(0,0,0,1)#red
+        #ft = pyglet.font.load('Verdana', 14)
+        #self.text = pyglet.font.Text(ft, self.node.text)
+        self.text = pyglet.text.Label(self.node.text,
+                                font_name='Verdana',
+                                font_size=14)
+
+        self.text.color=(0,0,0,1)
         self.text.valign='center'
         self.validate()
         self.add_hotspot(HotSpot(0,0,self.width,self.height))#fixme:put in base?
         
     def validate(self):
         super().validate()
-        self.width = self.text.width
-        self.height = self.text.height
+        #self.width = self.text.width
+        self.width = self.text.content_width
+        #self.height = self.text.height
+        self.height = self.text.content_height
         
     def draw(self, graphics):
         #super().draw(graphics)

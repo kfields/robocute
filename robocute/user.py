@@ -79,12 +79,10 @@ class User():
         #
         self.camera = self.scene.create_camera()
         #
-        '''
         self.tool = None
         self.tools = []
         tool = self.create_avatar("Designer()")
         self.push_tool(tool)
-        '''
         #
         win.set_mouse_visible(False)
         self.mouse = Mouse()
@@ -98,7 +96,7 @@ class User():
         if isinstance(tool, Tool):
             return
         #else
-        self.move_to(tool.coord)
+        # self.move_to(tool.coord)
         def on_tool_move():
             self.move_to(self.tool.coord)                        
         self.tool.on_move = on_tool_move

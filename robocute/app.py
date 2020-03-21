@@ -86,10 +86,14 @@ class App():
     def run(self):
         self.on_run()
         #
+        '''
         while not self.window.has_exit and self.isRunning:
-            self.step()
-            
-    def step(self):
+            self.update()
+        '''
+        pyglet.clock.schedule_interval(self.update, .01)
+        pyglet.app.run()
+ 
+    def update(self, dt):
         win = self.window
         scene = self.scene
         user = self.user

@@ -10,15 +10,30 @@ from robocute.builder import compile_ctors
 OD_TABLE_NS = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0'
 
 def get_text(node):
+    # print(dir(node))
+    print(node.nodeValue)
     text = ''
     for child in node.childNodes:
+        print(child)
         if child.nodeType == child.ELEMENT_NODE:
             text = text+get_text(child)
         elif child.nodeType == child.TEXT_NODE:
-            text = text+child.nodeValue
+            print('fuck')
+            text = text+child.data
 
+    print(text)
     return text
-
+'''
+def get_text(node):
+    nodelist = node.childNodes
+    rc = []
+    for node in nodelist:
+        if node.nodeType == node.TEXT_NODE:
+            rc.append(node.data)
+    text = ''.join(rc)
+    print(text)
+    return text
+'''
 class Reader(object):
     def __init__(self, filename, app, grid):
         self.filename = filename

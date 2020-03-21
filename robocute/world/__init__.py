@@ -83,8 +83,8 @@ class World(AbstractNode):
     def get_grid_at(self, coord):
         gridRowMax = self.gridRowMax
         gridColMax = self.gridColMax
-        gridX = coord.x / gridColMax
-        gridY = coord.y / gridRowMax                
+        gridX = int(coord.x / gridColMax)
+        gridY = int(coord.y / gridRowMax)
         return self.get_grid(gridX, gridY)
         
     def get_grid(self, x, y):

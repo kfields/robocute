@@ -12,9 +12,9 @@ class DefaultWorld(World):
         super().__init__(app, name, 12, 12)
         #
         grid = Grid(self.gridRowMax, self.gridColMax)
-        #filename = "Default.ods"
+        filename = "Default.ods"
         #filename = "Fountain.ods"
-        filename = "Debug.ods"
+        #filename = "Debug.ods"
         #filename = "SpawnDebug.ods"
         #filename = "TreasureDebug.ods"
         #filename = "SpreaderDebug.ods"

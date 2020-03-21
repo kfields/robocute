@@ -107,11 +107,12 @@ class HomeBlock(GroupBlock):
     def register(self, app, coord):
         app.add_home(self, coord)
 
+# todo: this is really broke
 class SpawnBlock(GroupBlock):
     def __init__(self, spawn):
         super().__init__()
         self.spawn = spawn
-        self.add_node(spawn)
+        #self.add_node(spawn)
 
     def schedule_respawn(self, delay):
             def respawn():

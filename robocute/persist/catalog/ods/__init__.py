@@ -25,7 +25,7 @@ DNDX_IMG = 5
 DNDX_SEQ = 7
 DNDX_EXTRA = DNDX_SEQ + 1
  
-class Reader(object):
+class Reader:
     
     def __init__(self, catalog, filename):
         self.catalog = catalog

@@ -1,11 +1,11 @@
 
 from node import *
 
-class Cell(object):
+class Cell:
     def __init__(self):
         self.vacancy = False
         
-class Map(object):
+class Map:
     def __init__(self, coordX, coordY, width, height):
         self.coordX = coordX
         self.coordY = coordY
@@ -25,7 +25,7 @@ class Map(object):
         #print 'x: ', x, 'y: ', y
         self.rows[y][x] = cell
     
-class Explorer(object):
+class Explorer:
     def __init__(self, map, callback):
         self.map = map
         self.callback = callback

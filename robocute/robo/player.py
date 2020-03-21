@@ -9,7 +9,7 @@ from robocute.block import *
 
 # from message import *
     
-class State(object):
+class State:
     def __init__(self, brain):
         self.brain = brain
         brain.state = self
@@ -108,7 +108,9 @@ class LandState(State):
           'take_item': lambda : self.take_item()
         }[phase.key]()
     def enter(self):
+        print('enter')
         items = self.brain.search_for_items()
+        print(items)
         if(not items):
             self.brain.schedule(Phase('exit'))
             return

@@ -28,11 +28,11 @@ class DocVu(WidgetVu):
         doc = self.node.document
         docWidth = self.content.width
         docHeight = self.content.height
-        self.layout = pyglet.text.layout.TextLayout(doc, docWidth, docHeight, True)        
+        self.layout = pyglet.text.layout.TextLayout(doc, docWidth, docHeight, multiline=True)        
         #self.layout = pyglet.text.layout.ScrollableTextLayout(doc, docWidth, docHeight, True)
         #self.layout = pyglet.text.layout.IncrementalTextLayout(doc, docWidth, docHeight, True)
         #self.layout.view_x = 32
-        #self.layout.view_y = 32        
+        #self.layout.view_y = 32
         super().validate()
         self.on_resize(0, 0)
 
@@ -40,12 +40,7 @@ class DocVu(WidgetVu):
         #super().on_resize(width, height)
         self.layout.begin_update()
         self.layout.x = self.margin_left
-        #self.layout.y = self.margin_bottom
-        if self.layout.content_height < self.content.height:
-            self.layout.y = self.margin_bottom + self.content.height - self.layout.content_height
-        else:
-            self.layout.y = self.margin_bottom
-            
+        self.layout.y = self.margin_bottom    
         self.layout.width = self.content.width
         self.layout.height = self.content.height 
         self.layout.end_update()

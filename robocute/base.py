@@ -64,7 +64,7 @@ class Transform:
         return copy.copy(self)
 '''
 '''
-class Base(object):
+class Base:
     def __init__(self, dna = None):
         self.invalid = 0
         self.dna = dna

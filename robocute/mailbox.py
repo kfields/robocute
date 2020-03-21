@@ -1,4 +1,4 @@
-class Messenger(object):
+class Messenger:
     def __init__(self, name):
         super().__init__()
 
@@ -18,7 +18,7 @@ class Messenger(object):
             self.downlink.receive(msg)
 
 
-class Mailbox(object):
+class Mailbox:
     def __init__(self, name = None):
         super().__init__()
         self.boxes = []

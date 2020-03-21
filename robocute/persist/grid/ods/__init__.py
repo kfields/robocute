@@ -19,7 +19,7 @@ def get_text(node):
 
     return text
 
-class Reader(object):
+class Reader:
     def __init__(self, filename, app, grid):
         self.filename = filename
         self.app = app        

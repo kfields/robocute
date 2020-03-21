@@ -16,7 +16,7 @@ GRID_NW = 6
 GRID_NC = 7
 GRID_NE = 8
 
-class SkinData(object):
+class SkinData:
     def __init__(self, sliceCount):
         self.sliceCount = sliceCount
         self.slices = [None] * sliceCount
@@ -65,7 +65,7 @@ class GridSkinner(SkinData):
             i += 1 
          
                 
-class Skin(object):
+class Skin:
     def __init__(self, data):
         self.data = data
         self.content = Rect()

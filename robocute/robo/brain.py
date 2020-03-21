@@ -50,7 +50,7 @@ class Brain(robocute.bot.brain.Brain):
             self.on_move()
                      
     def do(self, msg):
-        print(msg)
+        #print(msg)
         success = True
         if(isinstance(msg, Say)):
            self.say(msg.text)

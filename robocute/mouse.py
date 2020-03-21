@@ -10,7 +10,7 @@ class Result(Coord):
         Coord.__init__(self, cellX, cellY, cellZ)
         self.node = node
                 
-class MouseQuery(object):
+class MouseQuery:
     def __init__(self, event):
         self.event = event
         self.x = event.x

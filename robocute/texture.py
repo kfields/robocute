@@ -79,7 +79,7 @@ class TextureStripGroup(pyglet.graphics.Group):
                      self.blend_src, self.blend_dest))
 
 
-class TextureStrip(object):
+class TextureStrip:
     def __init__(self, childWidth = 256, childHeight = 256, maxChildren = 20):
         self.childWidth = childWidth
         self.childHeight = childHeight

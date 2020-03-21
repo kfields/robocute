@@ -9,7 +9,7 @@ class WidgetVu(Vu):
     def __init__(self, node):
         super().__init__(node)
         #
-        self.content = Rect()        
+        self.content = Rect()
         #
         self.margin_top = 5
         self.margin_bottom = 5        

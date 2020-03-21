@@ -84,7 +84,7 @@ class Page(Widget):
         self.vu = PageVu(self, 'CatalogBubble')
         self.vu.validate()
 
-class Catalog(object):
+class Catalog:
     def __init__(self):        
         super().__init__()
         #

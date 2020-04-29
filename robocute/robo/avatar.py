@@ -8,7 +8,6 @@ class AvatarKeybox(ToolKeybox):
         super().__init__(brain)
 
     def on_key_press(self, symbol, modifiers):
-        print('keypress')
         if symbol == key.R:
             #self.brain.do(Transition('start'))
             self.brain.do(Transition('main'))

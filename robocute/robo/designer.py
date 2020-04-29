@@ -31,7 +31,7 @@ class DesignerMouseQuery(MouseQuery):
         brain = self.brain
         if modifiers & key.MOD_CTRL:
             brain.clone_at(result)
-        elif  modifiers & key.MOD_SHIFT:
+        elif modifiers & key.MOD_SHIFT:
             brain.clear_clones()
             brain.clone_to(result)
         else:
@@ -75,10 +75,9 @@ class AbstractDesignerBrain(robocute.robo.brain.Brain):
         
     def delete(self):
         cell = self.grid.get_cell_at(self.coord)
-        if(len(cell) == 1): #that's us!!
+        if len(cell) == 1: #that's us!!
             return
         cell.remove_node(self.node)        
-        #cell.remove(cell[len(cell)-1])
         node = cell.pop_node()
         node.delete()
         cell.push_node(self.node)
@@ -96,8 +95,7 @@ class AbstractDesignerBrain(robocute.robo.brain.Brain):
        srcCell = self.grid.get_cell_at(srcCoord)
        srcCell.remove_node(node)
        #
-       dstCell = self.grid.get_cell_at(dstCoord)
-       # 
+       dstCell = self.grid.get_cell_at(dstCoord) 
        dstCell.push_node(node)
        #
        self.coord = dstCoord
@@ -170,7 +168,7 @@ class DesignerBrain(AbstractDesignerBrain):
             self.drawer.remove_node(self.page)
             self.page = self.catalog.get_prev_page(self.page.name)
             self.drawer.add_node(self.page)            
-        #items = [Text('Catalog')]
+
         items = [Image('icon/actions/1leftarrow.png', prevPage), Image('icon/actions/1rightarrow.png', nextPage)]
         
         def onItem(item):

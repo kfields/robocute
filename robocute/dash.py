@@ -36,12 +36,9 @@ class Drawer(Node):
 class Dash(NodeLayer):
     def __init__(self, parent, name, order):
         super().__init__(parent, name, order)
-        #self.drawers = {}
     
     def create_drawer(self, drawerName, node = None):
         drawer = Drawer(node)
-        #self.drawers = drawer
-        #self.add_node(drawer)
         return drawer
     
     def draw(self, graphics):

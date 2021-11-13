@@ -1,42 +1,31 @@
-# RoboCute
+# RoboCute :robot:
 
-## Installation
+This is a game I wrote [PyWeek #6](https://pyweek.org/)
 
-Navigate to a directory where you keep your software projects
+## Quick Start
 
-        cd projects
+```bash
+git clone https://github.com/kfields/robocute.git
 
-Clone the repository
+cd robocute
 
-        git clone https://github.com/kfields/robocute.git
-        
-Navigate to the new directory which contains the repository
+poetry shell
 
-        cd robocute
+poetry install
 
-Create a Python 3 virtual environment called `env`
+python main.py
+```
 
-        python3 -m venv env
-        
-Activate the environment
+## wxPython Integration
 
-        source env/bin/activate
-        
-Install required packages
+Since there aren't any binary wheels for wxPython,  I leave this to you, the reader.
+In short, it takes a long time to build. :(
 
-        pip install -r requirements.txt
+### Ubuntu
 
-## Extras
-pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-18.04  wxPython
+```bash
+sudo apt install libgtk-3-dev
+pip install wxPython
 
-
-## Run
-
-Activate the virtual environment, if not already active
-
-        cd robocute
-        source env/bin/activate
-        
-Run the game
-
-        python main.py
+python mainwx.py
+```

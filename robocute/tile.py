@@ -108,13 +108,10 @@ class TileVu(ImageVu):
         batch = batchLayer.batch
         tex_coords = self.texture.tex_coords
         #tex_coords = self.create_texture_coords()
-        '''
+        
         vertexList = batch.add(4, GL_QUADS, group,
-            'v2i/%s' % 'dynamic', 
-            'c4B', ('t3f', tex_coords))
-        '''
-        vertexList = batch.add(4, GL_QUADS, group,
-            'v2i/dynamic', ('t3f', tex_coords))        
+            'v2i/dynamic', ('t3f', tex_coords))
+
         vertices = self.create_vertices(g)
         #vertexList.vertices[:] = vertices
         vertexList.vertices = vertices

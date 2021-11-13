@@ -70,7 +70,6 @@ class GroupLayer(AbstractGroupLayer):
     def __init__(self, parent, name, order):
         super().__init__(parent, name, order)
         self.group = pyglet.graphics.OrderedGroup(order, self.root.group)
-        #self.groups = []
         self.groups = {}
 
     def register_group(self, group):

@@ -113,7 +113,7 @@ class App:
         fps_text.text = ("fps: %d") % (clock.get_fps())
         fps_text.draw()        
         #
-        win.flip()
+        #win.flip()
         #
         if len(self.callbacks) != 0:
             for callback in self.callbacks:

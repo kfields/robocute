@@ -1,6 +1,6 @@
 # RoboCute :robot:
 
-This is a game I wrote [PyWeek #6](https://pyweek.org/)
+This is a game I wrote for [PyWeek #6](https://pyweek.org/)
 
 ## Quick Start
 

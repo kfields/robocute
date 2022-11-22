@@ -13,16 +13,33 @@ from robocute.app import App
 
 class TestCanvas(WxCanvas):
     def __init__(self, parent, id=-1, config=None, context=None):
-        super().__init__(parent, id, config, context)        
+        super().__init__(parent, id, config, context)
+        #TODO: Get from WxCanvas
+        self.width = 640
+        self.height = 480
+
         self.app = App(self)
+        #self.app = App(self.inner)
         self.app.on_run()
         #
         self.timer = wx.Timer(self, -1)
         self.timer.Start(100)
         self.Bind(wx.EVT_TIMER, self.OnTimer)
+        
+        #wx.CallAfter(self.StartApp)
                 
+    def StartApp(self):
+        self.app = App(self.inner)
+        self.app.on_run()
+        #
+        self.timer = wx.Timer(self, -1)
+        self.timer.Start(100)
+        self.Bind(wx.EVT_TIMER, self.OnTimer)
+
     def OnTimer(self, event):
-        self.app.step()
+        #self.app.step()
+        self.app.update(0.01)
+        pass
         
     def on_draw(self):
         #self.app.step()

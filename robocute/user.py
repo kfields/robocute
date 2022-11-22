@@ -151,7 +151,8 @@ class User():
         return brain
                                            
     def dispatch_events(self):
-        self.window.dispatch_events()
+        #self.window.dispatch_events()
+        pass
             
     def move_to(self, coord):
         self.coord = coord

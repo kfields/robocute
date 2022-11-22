@@ -5,7 +5,10 @@
 
 import wx
 import pyglet
-from pyglet.gl import *
+
+pyglet.options['shadow_window'] = False
+
+from pyglet import gl
 from pyglet.window import key
 from pyglet.window import mouse
 
@@ -21,59 +24,81 @@ elif sys.platform == 'linux2':
     from pyglet.image.codecs.gdkpixbuf2 import gdk
     from pyglet.gl import glx
 
-#class AbstractCanvas(pyglet.event.EventDispatcher):
-class AbstractCanvas(pyglet.window.BaseWindow):
+class AbstractCanvas(pyglet.event.EventDispatcher):
     def __init__(self, context, config):
         self._event_handlers = {}
         self._event_queue = []
         # Create context (same as pyglet.window.Window.__init__)
+        #if not display:
+        display = pyglet.canvas.get_display()
+
+        #if not screen:
+        screen = display.get_default_screen()
+
         if not config:
-            platform = pyglet.window.get_platform()
-            display = platform.get_default_display()
-            screen = display.get_screens()[0]
             for template_config in [
-                pyglet.gl.Config(double_buffer=True, depth_size=24),
-                pyglet.gl.Config(double_buffer=True, depth_size=16)]:
+                gl.Config(double_buffer=True, depth_size=24, major_version=4, minor_version=2),
+                gl.Config(double_buffer=True, depth_size=16, major_version=4, minor_version=2),
+                None]:
                 try:
                     config = screen.get_best_config(template_config)
                     break
-                except pyglet.window.NoSuchConfigException:
+                except pyglet.NoSuchConfigException:
                     pass
             if not config:
-                raise pyglet.window.NoSuchConfigException(
-                    'No standard config is available.')
+                raise pyglet.NoSuchConfigException('No standard config is available.')
+
+        # Necessary on Windows. More investigation needed:
+        #if style in ('transparent', 'overlay'):
+        #    config.alpha = 8
 
         if not config.is_complete():
             config = screen.get_best_config(config)
 
         if not context:
-            context = config.create_context(pyglet.gl.current_context)
+            context = config.create_context(gl.current_context)
+            context._gl_begin = True
 
-        self._display = display
-        self._screen = screen
-        self._config = config
+        # Set these in reverse order to above, to ensure we get user preference
         self._context = context
+        self._config = self._context.config
+
+        # XXX deprecate config's being screen-specific
+        if hasattr(self._config, 'screen'):
+            self._screen = self._config.screen
+        else:
+            self._screen = screen
+        self._display = self._screen.display
 
     def on_resize(self, width, height):
+        print(width)
         self.switch_to()
-        glViewport(0, 0, width, height)
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glOrtho(0, width, 0, height, -1, 1)
-        glMatrixMode(GL_MODELVIEW)
+        gl.glViewport(0, 0, width, height)
+        gl.glMatrixMode(gl.GL_PROJECTION)
+        gl.glLoadIdentity()
+        gl.glOrtho(0, width, 0, height, -1, 1)
+        gl.glMatrixMode(gl.GL_MODELVIEW)
 
     def switch_to(self):
         self._switch_to_impl()
         self._context.set_current()
-        pyglet.gl.gl_info.set_active_context()
-        pyglet.gl.glu_info.set_active_context()
+        gl.gl_info.set_active_context()
+        gl.glu_info.set_active_context()
 
     def _switch_to_impl(self):
         raise NotImplementedError('abstract')
 
     def flip(self):
         raise NotImplementedError('abstract')
-    
+
+    @property
+    def context(self):
+        """The OpenGL context attached to this window.  Read-only.
+
+        :type: :py:class:`pyglet.gl.Context`
+        """
+        return self._context
+
 AbstractCanvas.register_event_type('on_draw')
 AbstractCanvas.register_event_type('on_resize')
 
@@ -94,7 +119,7 @@ class AbstractWxCanvas(wx.Panel, AbstractCanvas):
         self.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
         # set the cursor for the window
         # TODO:         
-        cursor = wx.StockCursor(wx.CURSOR_BLANK)    
+        cursor = wx.Cursor(wx.CURSOR_BLANK)    
         self.SetCursor(cursor) 
         
     def OnMotion(self, event):
@@ -153,17 +178,24 @@ class Win32WxCanvas(AbstractWxCanvas):
     def __init__(self, parent, id=-1, config=None, context=None):
         super().__init__(parent, id, config, context)
 
-        self._hwnd = self.GetHandle()
-        self._dc = _user32.GetDC(self._hwnd)
-        self._context._set_window(self)
-        self._wgl_context = self._context._context
+        self._hwnd = hwnd = self.GetHandle()
+        self._dc = dc = _user32.GetDC(self._hwnd)
+        #self._context._set_window(self)
+        #self._wgl_context = self._context._context
+
+        self.canvas = pyglet.window.win32.Win32Canvas(self._display, hwnd, dc)
+        self.context.attach(self.canvas)
+        self._wgl_context = self.context._context
+
         self.switch_to()
          
     def _switch_to_impl(self):
-        wgl.wglMakeCurrent(self._dc, self._wgl_context)
+        #wgl.wglMakeCurrent(self._dc, self._wgl_context)
+        self.context.set_current()
 
     def flip(self):
-        wgl.wglSwapLayerBuffers(self._dc, wgl.WGL_SWAP_MAIN_PLANE)
+        #wgl.wglSwapLayerBuffers(self._dc, wgl.WGL_SWAP_MAIN_PLANE)
+        self.context.flip()
 
 class GTKWxCanvas(AbstractWxCanvas):
     _window = None
@@ -204,7 +236,7 @@ class GTKWxCanvas(AbstractWxCanvas):
     def flip(self):
         if not self._window:
             return
-
+        
         if self._glx_1_3:
             glx.glXSwapBuffers(self._x_display, self._glx_window)
         else:

@@ -90,7 +90,7 @@ class App:
         while not self.window.has_exit and self.isRunning:
             self.update()
         '''
-        pyglet.clock.schedule_interval(self.update, .01)
+        pyglet.clock.schedule_interval(self.update, 1/60)
         pyglet.app.run()
  
     def update(self, dt):
@@ -102,16 +102,16 @@ class App:
         worldGraphics = user.camera.graphics
         layerGraphics = Graphics()
         #
-        user.dispatch_events()
+        #user.dispatch_events()
         #
         dt = clock.tick()
         #
-        win.clear()
+        #win.clear()
         #
         scene.draw(layerGraphics, worldGraphics)
         #
-        fps_text.text = ("fps: %d") % (clock.get_fps())
-        fps_text.draw()        
+        #fps_text.text = ("fps: %d") % (clock.get_fps())
+        #fps_text.draw()        
         #
         #win.flip()
         #

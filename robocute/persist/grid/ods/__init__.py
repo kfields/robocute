@@ -1,8 +1,6 @@
-import os, sys
-import zipfile
 import xml.dom.minidom
 
-import data
+from robocute import resources
 from robocute.world import *
 
 from robocute.builder import compile_ctors
@@ -25,7 +23,7 @@ class Reader:
         self.app = app        
         self.grid = grid
         #self.m_odf = zipfile.ZipFile(filename)
-        self.m_odf = data.load_zip(filename)
+        self.m_odf = resources.load_zip(filename)
         self.filelist = self.m_odf.infolist()
         #
         ostr = self.m_odf.read('content.xml')

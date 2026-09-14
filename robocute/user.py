@@ -20,11 +20,11 @@ class UserKeybox(MultiKeybox):
     def __init__(self, user):
         super().__init__()
         self.user = user
-        win = user.window
+        #win = user.window
         #
-        def on_key_press(symbol, modifiers):
-            self.on_key_press(symbol, modifiers)
-        win.on_key_press = on_key_press
+        #def on_key_press(symbol, modifiers):
+        #    self.on_key_press(symbol, modifiers)
+        #win.on_key_press = on_key_press
 
     def on_key_press(self, symbol, modifiers):
         super().on_key_press(symbol, modifiers)
@@ -38,8 +38,9 @@ class UserMousebox(MultiMousebox):
     def __init__(self, user):
         super().__init__()
         self.user = user
-        win = user.window
+        #win = user.window
         #
+        '''
         def on_mouse_motion(x, y, dx, dy):
             self.on_mouse_motion(x, y, dx, dy)            
         win.on_mouse_motion = on_mouse_motion
@@ -51,6 +52,7 @@ class UserMousebox(MultiMousebox):
         def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
             self.on_mouse_drag(x, y, dx, dy, buttons, modifiers)
         win.on_mouse_drag = on_mouse_drag
+        '''
 
     def on_mouse_motion(self, x, y, dx, dy):
         super().on_mouse_motion(x, y, dx, dy)
@@ -69,22 +71,20 @@ class UserMousebox(MultiMousebox):
 class User():
     def __init__(self, app):
         self.app = app
-        win = app.window
-        self.window = win        
         self.scene = app.scene
         self.world = app.world
         #
         self.keybox = UserKeybox(self)
         self.mousebox = UserMousebox(self)
         #
-        self.camera = self.scene.create_camera()
+        #self.camera = self.scene.create_camera()
         #
         self.tool = None
         self.tools = []
         tool = self.create_avatar("Designer()")
         self.push_tool(tool)
         #
-        win.set_mouse_visible(False)
+        #win.set_mouse_visible(False)
         self.mouse = Mouse()
         self.scene.add_mouse(self.mouse)
         #

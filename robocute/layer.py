@@ -1,7 +1,3 @@
-import pyglet
-
-import robocute.sprite
-
 from robocute.base import *
 
 LAYER_ANY = -1
@@ -32,26 +28,6 @@ class Layer(Base):
         
     def draw(self, graphics):
         pass
-    
-class NodeLayer(Layer):
-    def __init__(self, parent, name, order):
-        super().__init__(parent, name, order)
-        self.nodes = []
-
-    def add_node(self, node):
-        self.nodes.append(node)
-    
-    def remove_node(self, node):
-        self.nodes.remove(node)
-        
-    def draw(self, graphics):
-        g = graphics.copy()
-        for node in self.nodes:
-            vu = node.vu
-            if(vu != None):
-                t = node.get_transform()
-                g.translate(t.x, t.y)
-                vu.draw(g)
 
 class AbstractGroupLayer(Layer):
     def __init__(self, parent = None, name = None, order = LAYER_DEFAULT):

@@ -1,5 +1,4 @@
 from random import random
-from pyglet import clock
 
 import robocute.robo.brain
 from robocute.robo.avatar import *

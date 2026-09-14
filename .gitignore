@@ -2,6 +2,14 @@
 .vscode
 __pycache__
 .pyc
+.env
 env
-*.ods#
-storage/*
+.eggs
+*.egg-info
+dist/
+build/
+_build
+
+imgui.ini
+
+.envrc

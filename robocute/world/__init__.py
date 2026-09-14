@@ -1,10 +1,12 @@
 
 import os
-import pickle
-from .grid import *
+
+from crunge.engine.d2 import Node2D
+
+from .grid import Grid, WORLD_GRID_ROW_MAX, WORLD_GRID_COL_MAX
 import robocute.persist.grid.native
 
-class World(AbstractNode):
+class World(Node2D):
     def __init__(self, app, name, gridRowMax = WORLD_GRID_ROW_MAX, gridColMax = WORLD_GRID_COL_MAX):
         super().__init__()
         self.app = app
@@ -40,18 +42,19 @@ class World(AbstractNode):
         writer = robocute.persist.grid.native.Writer(path, grid)
         writer.write()
         
-    def load_or_generate_grid(self, x, y):
+    def load_or_generate_grid(self, x, y) -> Grid:
         grid = self.load_grid(x, y)
         if not grid:
             grid = self.generate_grid(x, y)
         #
         grid.build(self.app, self, x, y)
+        self.add_child(grid)
         #
-        grid.register(self.app)        
+        #grid.register(self.app)        
             
         return grid
 
-    def load_grid(self, x, y):
+    def load_grid(self, x, y) -> Grid:
         grid = None
         path = self.get_grid_filepath(x, y)
         print(path)
@@ -62,10 +65,10 @@ class World(AbstractNode):
                
         return grid
     
-    def generate_grid(self, x, y):
+    def generate_grid(self, x, y) -> Grid:
         return self.create_grid(self, x, y)
     
-    def create_grid(self, x, y):
+    def create_grid(self, x, y) -> Grid:
         grid = Grid(self.gridRowMax, self.gridColMax)
         return grid
         

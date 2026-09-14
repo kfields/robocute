@@ -8,7 +8,7 @@ class Entity(Node):
     
     def __init__(self, dna = None, fn = None):
         super().__init__(dna, fn)
-        self.height = 1
+        #self.height = 1
         #self.vacancy = False
         self.vacancy = True
                             

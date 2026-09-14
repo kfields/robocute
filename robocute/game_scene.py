@@ -1,12 +1,12 @@
-from pyglet.gl import *
+from crunge.engine.d2.scene import Scene2D
+from crunge.engine.d2.scene.layer import GraphLayer2D
 
 import robocute.graphics
 import robocute.camera
 from robocute.node import *
 from robocute.world import *
-from robocute.pane import *
 from robocute.dash import *
-from robocute.mouse import Mouse
+from robocute import globe
 
 class Clip(robocute.graphics.Clip):
     def __init__(self, world, rowCount = 3, colCount = 3):
@@ -53,6 +53,7 @@ class Clip(robocute.graphics.Clip):
             self.gridX = gridX 
             self.gridY = gridY
 
+'''
 class Camera(robocute.camera.Camera):
     def __init__(self, scene, rowCount = 3, colCount = 3):
         super().__init__(scene.window)
@@ -66,71 +67,53 @@ class Camera(robocute.camera.Camera):
     def validate(self):
         super().validate()
         self.clip.validate()
+'''
 
-class BubbleLayer(NodeLayer):
-    def __init__(self, parent, name, order):
-        super().__init__(parent, name, order)
-        
-class WidgetLayer(NodeLayer):
-    def __init__(self, parent, name, order):
-        super().__init__(parent, name, order)
-        
-class MouseLayer(NodeLayer):
-    def __init__(self, parent, name, order):
-        super().__init__(parent, name, order)
-        
-    def draw(self, graphics):
-        g = graphics.copy() #fixme:necessary?
-        for node in self.nodes:                
-            vu = node.vu
-            g.x = node.x
-            g.y = node.y - vu.height #fixme:mouse.hotx & hoty!!!
-            vu.draw(g)
-
-class SceneLayer(RootLayer):
-    def __init__(self):
-        super().__init__('scene')
-    def create_layer(self, name):
-        order = len(self.layers)
-        if name == 'bubbles' :
-            layer = BubbleLayer(self, name, order)
-        elif name == 'dash':
-            layer = Dash(self, name, order)            
-        elif name == 'widgets':
-            layer = WidgetLayer(self, name, order)
-        elif name == 'mice':
-            layer = MouseLayer(self, name, order)
-        self.layers.append(layer)
-        return layer
-
-class Scene(Pane):
+class GameScene(Scene2D):
     
-    def __init__(self, world, app, win):
-        super().__init__(world)
+    def __init__(self, world, app):
+        super().__init__()
+        self.world = world
+        #self.primary_layer.attach(self.world)
         #
-        self.layer = SceneLayer()
         self.app = app
-        self.window = win
+        globe.scene = self
         #
-        self.bgImg = image.load(data.filepath('image/clouds.png'))
-        #
-        self.bubbles = self.layer.create_layer('bubbles')
-        #
-        self.dash = self.layer.create_layer('dash')
-        #
-        self.widgets = self.layer.create_layer('widgets')
-        #
-        self.mice = self.layer.create_layer('mice')
+        #self.bgImg = image.load(data.filepath('image/clouds.png'))
         #
         self.query = None
-        
+
+        clip = Clip(self.world, 3, 3)
+        self.clip = clip
+
+    def _enable(self):
+        super()._enable()
+        self.primary_layer.attach(self.world)
+
+    '''
+    def _create(self):
+        super()._create()
+        self.primary_layer.attach(self.world)
+    '''
+
+    '''
     def create_camera(self):
         camera = Camera(self)
         camera.deviceWidth = self.window.width
         camera.deviceHeight = self.window.height        
         return camera
     '''
+
+    '''
     Rendering
+    '''
+
+    '''
+    def _draw(self):
+        super()._draw()
+        self.draw_world()
+    '''
+
     '''
     def draw(self, layerGraphics, worldGraphics):
         query = self.query
@@ -157,6 +140,7 @@ class Scene(Pane):
             self.query = None
             worldGraphics.query = None
             layerGraphics.query = None            
+    '''
         
     def draw_background(self, graphics):
         bgWidth = self.bgImg.width
@@ -169,7 +153,10 @@ class Scene(Pane):
                 self.bgImg.blit(blitX, blitY, 0)
                 blitX = blitX + bgWidth
             blitY = blitY + bgHeight
-    
+
+    def draw_world(self):
+        self.draw_grids()
+    '''
     def draw_world(self, graphics):
         glPushMatrix()
         #
@@ -181,8 +168,82 @@ class Scene(Pane):
         self.bubbles.draw(graphics)
         #
         glPopMatrix()
+    '''
 
+    def draw_grids(self):
+        clip = self.clip
+        #
+        #gridColMax = self.node.gridColMax
+        gridColMax = 10
+        #gridRowMax = self.node.gridRowMax
+        gridRowMax = 10
+        
+        #
+        gridWidth = gridColMax * BLOCK_WIDTH
+        invGridWidth = 1. / gridWidth 
+        gridHeight = gridRowMax * BLOCK_ROW_HEIGHT
+        invGridHeight = 1. / gridHeight
+        #
+        posX = clip.gridX * gridWidth
+        posY = clip.gridY * gridHeight
+        #
+        bottom = clip.bottom - posY
+        top = clip.top - posY
+        left = clip.left - posX
+        right = clip.right - posX
+        #
+        rowCount = clip.rowCount
+        rowMax = rowCount - 1 
+        colCount = clip.colCount
+        colMax = colCount - 1
+        #
+        r1 = int(top * invGridHeight)
+        if(r1 < 0):
+            r1 = 0
+        if(r1 > rowMax):
+            r1 = rowMax
+        #  
+        r2 = int(bottom * invGridHeight)
+        if(r2 < 0):
+            r2 = 0
+        if(r2 > rowMax):
+            r2 = rowMax
+        #
+        c1 = int(left * invGridWidth)
+        if(c1 < 0):
+            c1 = 0
+        if(c1 > colMax):
+            c1 = colMax          
+        #  
+        c2 = int(right * invGridWidth)
+        if(c2 < 0):
+            c2 = 0
+        if(c2 > colMax):
+            c2 = colMax
+        #
+        r = r1
+        while(r >= r2): #rows in sheet
+            row = clip.data[r]
+            if len(row) == 0:
+                c += 1
+                continue
+            c = c1
+            blitY = posY + (r * gridHeight)
+            while(c <= c2): #cells in row
+                blitX = posX + (c * gridWidth)
+                grid = row[c]
+                if not grid:
+                    #c += 1
+                    clip.cache_miss(c, r)
+                    continue
+                #else
+                self.draw_grid(grid, blitX, blitY, 1.)
+                c += 1
+            r -= 1
+        #
+        #glPopMatrix()    
 
+    '''
     def draw_grids(self, graphics):
         clip = graphics.clip
         g = graphics
@@ -196,12 +257,6 @@ class Scene(Pane):
         gridHeight = gridRowMax * BLOCK_ROW_HEIGHT
         invGridHeight = 1. / gridHeight
         #
-        '''
-        topPadding = gridHeight
-        bottomPadding = gridHeight
-        leftPadding = gridWidth
-        rightPadding = gridWidth
-        '''
         topPadding = 0
         bottomPadding = 0
         leftPadding = 0
@@ -265,7 +320,10 @@ class Scene(Pane):
             r -= 1
         #
         #glPopMatrix()    
-    
+    '''
+    def draw_grid(self, grid, tX, tY, tZ = 1.):
+        grid.draw()
+    '''
     def draw_grid(self, grid, graphics, tX, tY, tZ = 1.):
         g = graphics.copy()
         #
@@ -276,7 +334,8 @@ class Scene(Pane):
         grid.vu.draw(g)
         #
         glPopMatrix()
-        
+    '''
+
     '''
     Bubbles:
     '''

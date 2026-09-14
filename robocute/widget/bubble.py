@@ -1,7 +1,4 @@
 
-import pyglet
-from pyglet.gl import *
-
 from robocute.node import *
 from robocute.widget import *
 from robocute.skin import *

@@ -1,16 +1,24 @@
+from typing import TYPE_CHECKING
+
+from loguru import logger
+import glm
 
 from robocute.base import *
 from robocute.block import *
 from robocute.builder import execute_ctors
+from robocute.node import Node
+
+if TYPE_CHECKING:
+    from .row import Row
 
 class Cell(list):
-    def __init__(self):
+    def __init__(self, row: "Row" = None):
         super().__init__()
+        self.row = row
         self.invalid = 0
         self.height = 0
-        #
-        #self.dna = None
         self.ctors = None
+
     '''
     def __getstate__(self):
         return self.__dict__
@@ -18,6 +26,7 @@ class Cell(list):
     def __setstate__(self, state):
         self.__dict__ = state
     ''' 
+
     def invalidate(self, flag = 1):
         if self.invalid == 0:
             self.row.invalidate()
@@ -34,14 +43,11 @@ class Cell(list):
                 
     def build(self, app, row, coord):
         self.row = row        
-        #app.build(self.dna, coord, self)
-        #build(app, self.dna, coord, self)
         if self.ctors:
             execute_ctors(app, self.ctors, coord, self)
         
     def clone(self):
         clone = Cell()
-        #clone.dna = self.dna
         clone.ctors = self.ctors
         return clone
 
@@ -50,15 +56,59 @@ class Cell(list):
             if isinstance(node, GroupBlock):
                 return node
         return None                
-                
-    def push_node(self, node):
+
+    def push_node(self, node: Node, coord: Coord):
+        #self.invalidate()
+        if len(self) ==0:
+            self.add_node(node, coord)
+            return
+        #else
+        top = self[-1]
+
+        if node.groupable:
+            group = self.find_group()        
+            if group:
+                group.push_node(node)
+            elif top.groupable:
+                oldTop = self.pop()
+                top = GroupBlock()
+                top.push_node(oldTop)
+                top.push_node(node)
+                self.append(top)
+            else:
+                self.add_node(node, coord)
+        else:
+            self.add_node(node, coord)
+
+
+    def add_node(self, node: Node, coord: Coord):
+        t = self.get_node_transform(node, coord)
+        node.position = glm.vec2(t.x, t.y)
+        logger.debug("Coord.x: {}", coord.x)
+        logger.debug("Coord.y: {}", coord.y)
+        logger.debug("Node position set to: {}", node.position)
+        if node.parent is None:
+            self.row.grid.add_child(node)
+
+        self.append(node)
+        self.update()
+
+    """
+    def push_node(self, node: Node, coord: Coord):
         self.invalidate()
         if len(self) ==0:
             self.append(node)
             self.update()
+            t = self.get_node_transform(node, coord)
+            node.position = glm.vec2(t.x, t.y)
+            logger.debug("Coord.x: {}", coord.x)
+            logger.debug("Coord.y: {}", coord.y)
+            logger.debug("Node position set to: {}", node.position)
+
             return
         #else
         top = self[-1]
+        '''
         if node.groupable:
             group = self.find_group()        
             if group:
@@ -73,7 +123,17 @@ class Cell(list):
                 self.append(node)
         else:
             self.append(node)
-        self.update() 
+        '''
+        
+        self.update()
+
+        t = self.get_node_transform(node, coord)
+        node.position = glm.vec2(t.x, t.y)
+        logger.debug("Coord.x: {}", coord.x)
+        logger.debug("Coord.y: {}", coord.y)
+        logger.debug("Node position set to: {}", node.position)
+        self.row.grid.add_child(node)
+        """
 
     def pop_node(self):
         node = self[-1]
@@ -81,7 +141,7 @@ class Cell(list):
         self.update()        
         return node
         
-    def remove_node(self, node):
+    def remove_node(self, node: Node):
         self.invalidate()
         if node.groupable:
             group = self.find_group()
@@ -137,7 +197,7 @@ class Cell(list):
     '''    
     def get_node_transform(self, targetNode, coord):
         if(isinstance(targetNode, Block)):
-           return get_block_transform(targetNode, coord)
+           return self.get_block_transform(targetNode, coord)
         #else
         blitUp = 0                                    
         for node in self:

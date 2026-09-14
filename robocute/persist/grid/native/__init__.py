@@ -1,8 +1,6 @@
 import os, sys
 import pickle
 
-import data
-
 from robocute.world import *
 from robocute.persist.grid import ReaderWriter
 

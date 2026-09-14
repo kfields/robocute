@@ -1,14 +1,25 @@
-import data
 import operator #needed for sorting
 
-from robocute.entity import *
-from robocute.tile import *
+from loguru import logger
 
+from crunge.engine.d2.sprite import SpriteVu
+from crunge.engine.d2.sprite.instanced import InstancedSpriteVuGroup
+from crunge.engine.loader.sprite.sprite_loader import SpriteLoader
+from crunge.engine.resource.resource_manager import ResourceManager
+
+from robocute.entity import *
+from robocute.vu import *
 from robocute.builder import find_dna, add_class, add_classes
 
-class BlockVu(TileVu):
-    def __init__(self, node, imgSrc):
-        super().__init__(node, imgSrc)
+sprite_loader = SpriteLoader()
+
+class BlockVu(SpriteVu):
+    def __init__(self, imgSrc):
+        print(f"Loading sprite from {imgSrc}")
+        path = ResourceManager().resolve_path("${resources}/image/" + imgSrc)
+        sprite = sprite_loader.load(path)
+        logger.debug(f"Sprite loaded from {sprite}")
+        super().__init__(sprite)
 
     def validate(self):
         super().validate()
@@ -19,7 +30,7 @@ class Block(Entity):
     def __init__(self, dna):
         super().__init__(dna)
 
-class GroupBlockVu(Vu):
+class GroupBlockVu(InstancedSpriteVuGroup):
     def __init__(self, node):
         super().__init__(node)
 
@@ -75,7 +86,7 @@ class GroupBlock(Block):
             dna = find_dna('GroupBlock')
         super().__init__(dna)
         self.nodes = []
-        self.vu = GroupBlockVu(self)
+        self.add(GroupBlockVu(self))
         self.vacancy = True
 
     def update(self):

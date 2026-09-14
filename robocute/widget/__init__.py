@@ -1,6 +1,3 @@
-import pyglet
-from pyglet.gl import *
-
 from robocute.node import *
 from robocute.vu import *
 from robocute.shape import Rect

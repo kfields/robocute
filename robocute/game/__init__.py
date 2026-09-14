@@ -1,18 +1,17 @@
 
 from robocute.base import *
+from ..world import World
 
 class Game(Base):
     def __init__(self, app, name):
         super().__init__()
         self.app = app
-        self.window = app.window
         self.name = name
-        #
-        self.catalog = self.create_catalog()        
-        #
+
+        self.catalog = self.create_catalog()
+
         self.world = self.load_or_create_world()
         self.scene = self.create_scene()
-        self.world.vu = self.scene
         
     def save(self):
         self.save_world()
@@ -26,11 +25,11 @@ class Game(Base):
             world = self.create_world()
         return world
     
-    def load_world(self):
+    def load_world(self) -> World:
         world = None
         return world
     
-    def create_world(self):
+    def create_world(self) -> World:
         return None
     
     def create_scene(self):

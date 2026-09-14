@@ -31,7 +31,7 @@ class MouseQuery:
 class Mouse(Node):
     def __init__(self):
         super().__init__()
-        self.vu = ImageVu(self, 'Pointer-Standard.png')
+        self.add(ImageVu(self, 'Pointer-Standard.png'))
         #self.vu.clickable = False
         self.vu.hotspots = [] #clear the list
         

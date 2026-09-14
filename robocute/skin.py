@@ -1,6 +1,5 @@
-
-import pyglet
-import data
+from crunge.engine.resource.sprite import SpriteAtlas
+from crunge.engine.loader.sprite.sprite_loader import SpriteLoader
 
 from robocute.graphics import *
 from robocute.quad import *
@@ -24,7 +23,7 @@ class SkinData:
 class FileSkinData(SkinData):
     def __init__(self, slicesName, sliceCount):
         super().__init__(sliceCount)
-        self.atlas = pyglet.image.atlas.TextureAtlas()
+        self.atlas = SpriteAtlas()
         
         imgCount = 0        
         while(imgCount != sliceCount):
@@ -35,8 +34,9 @@ class FileSkinData(SkinData):
         self.texture = self.atlas.texture
 
     def load_slice(self, filename):
-        image = pyglet.image.load(data.filepath('image/skin/' + filename))
-        slice = self.atlas.add(image)
+        #image = pyglet.image.load(data.filepath('image/skin/' + filename))
+        sprite = SpriteLoader().load("${resources}/image/skin/" + filename)
+        slice = self.atlas.add(sprite)
         return slice
 
 class GridSkinner(SkinData):

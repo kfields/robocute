@@ -1,15 +1,72 @@
-[tool.poetry]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[project]
 name = "robocute"
 version = "0.1.0"
-description = ""
-authors = ["Kurtis Fields <kurtisfields@gmail.com>"]
+description = "RoboCute Game using Crunge"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+keywords = []
+authors = [{ name = "Kurtis Fields", email = "kurtisfields@gmail.com" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Rust",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-pyglet = "^1.5.26"
+#dynamic = ["version"]
 
-[tool.poetry.dev-dependencies]
+[project.optional-dependencies]
+dev = ["black"]
+test = ["pytest"]
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[project.gui-scripts]
+robocute = 'robocute.cli:main'
+
+[project.urls]
+homepage = "https://github.com/kfields/robocute"
+documentation = "https://kfields.github.io/robocute/"
+repository = "https://github.com/kfields/robocute"
+changelog = "https://github.com/kfields/robocute/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "robocute/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = ["pytest", "pytest-cov", "snakeviz"]
+
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=robocute --cov=tests {args}"
+no-cov = "cov --no-cov {args}"
+
+[tool.hatch.envs.docs]
+dependencies = [
+  "sphinx",
+  "furo",
+  "sphinxcontrib-apidoc",
+  "sphinxemoji"
+]
+
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build docs docs/_build"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["312", "313"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = ["robocute/__about__.py"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ ~= .__main__.:", "if TYPE_CHECKING:"]

@@ -2,9 +2,8 @@ import os, sys
 import zipfile
 import xml.dom.minidom
 
-import data
-
 from robocute.catalog import *
+from robocute import resources
 
 OD_TABLE_NS = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0'
 
@@ -32,7 +31,7 @@ class Reader:
         self.page = None
         self.filename = filename
         #self.m_odf = zipfile.ZipFile(filename)
-        self.m_odf = data.load_zip(filename)
+        self.m_odf = resources.load_zip(filename)
         self.filelist = self.m_odf.infolist()
         #
         ostr = self.m_odf.read('content.xml')

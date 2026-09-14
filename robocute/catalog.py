@@ -1,5 +1,3 @@
-from pyglet.gl import *
-
 from robocute.builder import Dna
 from robocute.widget import *
 from robocute.skin import *
@@ -12,8 +10,8 @@ class ItemVu(ImageVu):
         super().__init__(node, imgSrc)
         self.scaleX = .25
         self.scaleY = .25                
-        self.width = int( self.image.width * self.scaleX ) 
-        self.height = int ( self.image.height * self.scaleY)
+        #self.width = int( self.image.width * self.scaleX ) 
+        #self.height = int ( self.image.height * self.scaleY)
     
     def draw(self, graphics):
         g = graphics.copy()
@@ -34,9 +32,9 @@ class Item(Image):
         super().__init__(dna.imgSrc, useFn)
         self.dna = dna
         if dna.type == 'tool':
-            self.vu = ToolVu(self, dna.imgSrc)
+            self.add(ToolVu(self, dna.imgSrc))
         else:
-            self.vu = ItemVu(self, dna.imgSrc)
+            self.add(ItemVu(self, dna.imgSrc))
 
 class PageVu(WidgetVu):
     def __init__(self, node, slicesName):
@@ -78,8 +76,7 @@ class Page(Widget):
     def __init__(self, name, items = None):
         super().__init__(items)
         self.name = name
-        self.vu = PageVu(self, 'CatalogBubble')
-        self.vu.validate()
+        #self.add(PageVu(self, 'CatalogBubble'))
 
 class Catalog:
     def __init__(self):        

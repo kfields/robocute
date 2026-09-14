@@ -1,6 +1,8 @@
 
 from random import random
 
+from loguru import logger
+
 import robocute
 from robocute.node import *
 from robocute.block import GroupBlock
@@ -53,6 +55,7 @@ class LandscapeBotBrain(robocute.bot.Brain):
         }[int(random() * 4)]
 
         build(self.app, thing, coord, dstNodes)
+        logger.debug(f'Built thing: {thing} at coord: {coord}')
         #
         cell.vacancy = True
         return cell

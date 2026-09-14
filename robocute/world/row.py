@@ -1,21 +1,26 @@
+from typing import TYPE_CHECKING
 
 from robocute.base import *
+if TYPE_CHECKING:
+    from .grid import Grid
 from .cell import *
 
+
 class Row(list):
-    def __init__(self, colCount = WORLD_GRID_COL_MAX):
+    def __init__(self, grid: "Grid"):
         super().__init__()
-        self.colCount = colCount
+        self.grid = grid
+        self.colCount = grid.colCount
         self.invalid = 0
-        
-    def invalidate(self, flag = 1):
+
+    def invalidate(self, flag=1):
         if self.invalid == 0:
             self.grid.invalidate()
         self.invalid |= flag
-       
+
     def validate(self):
         self.invalid = 0
-        #prevent underage
+        # prevent underage
         data = self
         if len(data) < self.colCount:
             i = 0
@@ -23,15 +28,15 @@ class Row(list):
                 data.append(self.create_cell())
                 i += 1
         for cell in self:
-            if cell.invalid != 0:            
+            if cell.invalid != 0:
                 cell.validate()
 
     def create_cell(self):
-        cell = Cell()
+        cell = Cell(self)
         return cell
 
     def build(self, app, grid, rowNdx):
-        self.grid = grid        
+        self.grid = grid
         colNdx = 0
         for cell in self:
             coord = Coord(self.grid.coordX + colNdx, self.grid.coordY + rowNdx)
@@ -39,7 +44,7 @@ class Row(list):
             colNdx += 1
 
     def clone(self):
-        clone = Row(self.colCount)
+        clone = Row(self.grid)
         for cell in self:
             cloneCell = cell.clone()
             clone.append(cloneCell)

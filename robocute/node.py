@@ -1,33 +1,23 @@
 
+from crunge.engine.d2 import Node2D
+from crunge.engine.d2.sprite import SpriteVu
+from crunge.engine.loader.sprite.sprite_loader import SpriteLoader
+
 from robocute.base import *
 from robocute.vu import *
 
-class AbstractNode(Base):
+class AbstractNode(Node2D):
     def __init__(self, dna = None, fn = None):
-        super().__init__(dna)
+        super().__init__()
+        self.dna = dna
         self.name = 'Unknown'
-        self.vu = None
         self.fn = fn #not sure about this...
 
-    def delete(self):
-        if self.vu:
-            self.vu.delete()
-        super().delete()
-                
-    def register(self, app, coord = None):
-        super().register(app, coord)
-        if self.vu:
-            self.vu.register(app, coord)
-
     def invalidate(self, flag = 1):
-        super().invalidate(flag)
-        if self.vu:
-            self.vu.invalidate(flag)        
-                
+        pass
+        
     def validate(self):
-        super().validate()
-        if self.vu:
-            self.vu.validate()        
+        pass
     
     #events
     def process(self, event):
@@ -37,21 +27,15 @@ class AbstractNode(Base):
 class Node(AbstractNode):
     def __init__(self, dna = None, fn = None):
         super().__init__(dna, fn)
-        self.x = 0
-        self.y = 0
-        self.z = 0
+        #self.x = 0
+        #self.y = 0
+        #self.z = 0
         self.brain = None
 
-    def delete(self):
-        if self.brain:
-            self.brain.delete()
-        super().delete()
-
     def register(self, app, coord = None):
-        super().register(app, coord)
-        if self.brain:
-            self.brain.register(app, coord)
-        
+        #pass
+        self.validate()
+ 
     def validate(self):
         super().validate()
         
@@ -69,16 +53,18 @@ class Text(Node):
         super().__init__(fn)
         self.text = text
         self.fn = fn
-        self.vu = TextVu(self)
+        self.add(TextVu(self))
     def process(self, event):
         if(self.fn):
             fn()
+
+sprite_loader = SpriteLoader()
+
 '''
 Image Node
 '''
-class Image(Node):
+class Image(Node2D):
     def __init__(self, imgSrc, fn = None):
-        super().__init__(fn)
-        self.imgSrc = imgSrc
+        super().__init__()
+        self.model = sprite_loader.load("${resources}/image/" + imgSrc)
         self.fn = fn
-        self.vu = ImageVu(self, imgSrc)

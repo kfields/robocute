@@ -18,5 +18,5 @@ class LandscapeBlock(Block):
         
     def __init__(self, dna):
         super().__init__(dna)
-        self.vu = BlockVu(self, self.dna.imgSrc)
+        self.add(BlockVu(self.dna.imgSrc))
         self.vacancy = False

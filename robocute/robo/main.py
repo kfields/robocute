@@ -8,8 +8,8 @@ class AbstractDesigner(Robo):
     groupable = False
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.height = 0
-        self.vu = RoboVu(self, 'Selector.png')
+        #self.height = 0
+        self.vu = RoboVu('Selector.png')
         self.vu.hotspots = [] #clear the list
 
 class DesignerClone(AbstractDesigner):
@@ -31,30 +31,30 @@ class RoboCute(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
         self.brain = PlayerBrain(self)
-        self.vu = RoboVu(self, 'robocute.png')
+        self.vu = RoboVu('robocute.png')
         
 class RoboBoy(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
         self.brain = PlayerBrain(self)
-        self.vu = RoboVu(self, 'Character Boy.png')
+        self.vu = RoboVu('Character Boy.png')
         
 class RoboCatGirl(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.vu = RoboVu(self, 'Character Cat Girl.png')
+        self.vu = RoboVu('Character Cat Girl.png')
         
 class RoboHornGirl(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.vu = RoboVu(self, 'Character Horn Girl.png')
+        self.vu = RoboVu('Character Horn Girl.png')
         
 class RoboPinkGirl(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.vu = RoboVu(self, 'Character Pink Girl.png')
+        self.vu = RoboVu('Character Pink Girl.png')
         
 class RoboPrincessGirl(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.vu = RoboVu(self, 'Character Princess Girl.png')
+        self.vu = RoboVu('Character Princess Girl.png')

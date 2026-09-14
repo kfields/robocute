@@ -1,16 +1,19 @@
-
 from robocute.entity import *
-from robocute.sprite import *
-   
+
+
 class Item(Entity):
     def __init__(self, dna):
         super().__init__(dna)
 
-'''
+
+"""
 Treasure
-'''
+"""
+
+
 class Treasure(Item):
-    _cache = {}    
+    _cache = {}
+
     def __new__(cls, dna, *args, **kargs):
         uri = dna.name
         if uri not in cls._cache:
@@ -20,18 +23,22 @@ class Treasure(Item):
         else:
             obj = cls._cache[uri]
         return obj
-        
+
     def __init__(self, dna):
         super().__init__(dna)
         self.worth = 0
         self.name = dna.title
-        self.vu = SpriteVu(self, dna.imgSrc)
+        #self.add(SpriteVu(self, dna.imgSrc))
 
-'''
+
+"""
 Special
-'''
+"""
+
+
 class Special(Item):
-    _cache = {}    
+    _cache = {}
+
     def __new__(cls, dna, *args, **kargs):
         uri = dna.name
         if uri not in cls._cache:
@@ -41,7 +48,7 @@ class Special(Item):
         else:
             obj = cls._cache[uri]
         return obj
-        
+
     def __init__(self, dna):
         super().__init__(dna)
         self.name = dna.title

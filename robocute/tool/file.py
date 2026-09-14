@@ -1,6 +1,4 @@
 
-import pyglet
-
 import robocute.tool
 
 from robocute.widget.document import *

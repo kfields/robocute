@@ -4,13 +4,6 @@ import copy
 This file is the bottom of the import heirarchy so I'm gonna stick fundamentals in here for now.
 '''
 
-'''
-BLOCK_WIDTH = 101
-BLOCK_HEIGHT = 171
-BLOCK_STACK_HEIGHT = 40
-BLOCK_ROW_HEIGHT = 85
-BLOCK_HOT_HEIGHT = 120
-'''
 BLOCK_WIDTH = 101
 BLOCK_HEIGHT = 171
 BLOCK_STACK_HEIGHT = 40

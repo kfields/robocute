@@ -2,8 +2,8 @@
 import robocute.bot
     
 class RoboVu(robocute.bot.BotVu):
-    def __init__(self, node, imgSrc):
-        super().__init__(node, imgSrc)
+    def __init__(self, imgSrc):
+        super().__init__(imgSrc)
         
 class Robo(robocute.bot.Bot):
     def __init__(self, dna):

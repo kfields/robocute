@@ -65,7 +65,7 @@ def execute_ctors(app, ctors, coord, cell):
     for ctor in ctors:
         thing = ctor()
         if isinstance(thing, Node):
-            cell.push_node(thing)
+            cell.push_node(thing, coord)
         thingCoord = Coord(coord.x, coord.y, cell.height)
         thing.register(app, thingCoord)
     #

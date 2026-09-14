@@ -1,1 +1,0 @@
-#is this necessary?  Just use wx constants!

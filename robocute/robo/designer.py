@@ -5,6 +5,7 @@ from robocute.widget.catalog import *
 from robocute.robo.message import *
 from robocute.robo.avatar import *
 from robocute.tool import *
+from robocute import globe
 
 from robocute.builder import build, build_thing, build_thing_at
 
@@ -116,6 +117,7 @@ class DesignerCloneBrain(AbstractDesignerBrain):
 class DesignerBrain(AbstractDesignerBrain):
     def __init__(self, node):
         super().__init__(node)
+        self.scene = globe.scene
         self.clones = []
         self.drawer = None
         self.keybox = DesignerKeybox(self)

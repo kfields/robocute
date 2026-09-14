@@ -4,7 +4,7 @@ from robocute.catalog import Catalog
 import robocute.persist.catalog.ods
 from robocute.world import *
 from robocute.brain import *
-from robocute.scene import *
+from robocute.game_scene import *
 import robocute.persist.grid.ods
 
 class DefaultWorld(World):
@@ -30,8 +30,9 @@ class DefaultWorld(World):
         #rdr = robocute.ods.grid.Reader(self.filename, self.app, grid)
         #rdr.read()
         grid = self.gridTemplate.clone()
+        grid.enable()
         #
-        #grid.build(self.app, self, x, y)
+        grid.build(self.app, self, x, y)
         #
         #grid.register(self.app)        
         return grid
@@ -45,7 +46,7 @@ class DefaultGame(Game):
         return world
    
     def create_scene(self):
-        scene = Scene(self.world, self.app, self.window)
+        scene = GameScene(self.world, self.app)
         return scene
     
     def create_catalog(self):

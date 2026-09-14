@@ -5,8 +5,8 @@ class Catalog(Bubble):
     def __init__(self, items, catalog):
         super().__init__(items)
         self.catalog = catalog
-        self.vu = BubbleVu(self, 'DashBubble')
-        self.vu.validate() #necessary evil. :)
+        #self.vu = BubbleVu(self, 'DashBubble')
+        #self.vu.validate() #necessary evil. :)
 
     def get_page(self, pageName):
         return self.catalog.get_page(pageName)

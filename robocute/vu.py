@@ -1,4 +1,7 @@
+from loguru import logger
+
 from crunge import skia
+from crunge.engine.renderer import Renderer
 from crunge.engine.resource.resource_manager import ResourceManager
 from crunge.engine.vu import Vu as CrungeVu
 from robocute.base import *
@@ -18,7 +21,7 @@ class HotSpot:
 
 
 class Vu(CrungeVu):
-    def __init__(self, node):
+    def __init__(self):
         super().__init__()
         self.width = None
         self.height = None
@@ -26,9 +29,6 @@ class Vu(CrungeVu):
         #
         # query support
         self.hotHeight = 0
-
-    def draw(self, graphics):
-        pass
 
     def batch(self, g):
         pass
@@ -60,8 +60,8 @@ class Vu(CrungeVu):
 
 
 class TextVu(Vu):
-    def __init__(self, node):
-        super().__init__(node)
+    def __init__(self):
+        super().__init__()
         self.text = pyglet.text.Label(
             self.node.text, font_name="Verdana", font_size=14, color=(0, 0, 0, 255)
         )
@@ -89,36 +89,43 @@ class TextVu(Vu):
 
 
 class ImageVu(Vu):
-    def __init__(self, node, imgSrc):
-        super().__init__(node)
+    def __init__(self, imgSrc):
+        super().__init__()
         self.imgSrc = imgSrc
+        logger.debug(f"ImageVu initialized with imgSrc: {imgSrc}")
 
         path = ResourceManager().resolve_path("${resources}/image/" + imgSrc)
-        info = skia.ImageInfo()
         data = skia.Data.make_from_file_name(str(path))
-        image = skia.deferred_from_encoded_data(data)
+        self.image = skia.deferred_from_encoded_data(data)
 
-        if imgSrc != "":
-            self.image = image
-        else:
-            self.image = None
-        self.add_hotspot(
-            HotSpot(0, 0, self.width, self.hotHeight)
-        )  # fixme:put in base?
+    def _draw(self):
+        #logger.debug(f"Drawing ImageVu with imgSrc: {self.imgSrc}")
+        canvas = Renderer.get_current().canvas
+        #position = self.node.global_position
+        position = self.node.global_position
+        #logger.debug(f"Drawing ImageVu at position: {position}")
+        canvas.draw_image(self.image, position.x, position.y)
+        super()._draw()
 
-    def plug(self):
-        super().plug()
-        if not self.width:
-            self.width = self.image.width
-        if not self.height:
-            self.height = self.image.height
-        # query support
-        self.hotHeight = self.height
-        # hack?
-        self.node.z = self.width
+class BubbleVu(Vu):
+    def __init__(self):
+        super().__init__()
 
-    def draw(self, graphics):
-        if self.image:
-            self.image.blit(graphics.x, graphics.y, graphics.z)
-        if graphics.query:
-            self.query(graphics)
+    def _draw(self):
+        canvas = Renderer.get_current().canvas
+        w, h = self.node.size
+        #w, h = self.node.layout.width, self.node.layout.height
+        rect = skia.Rect.MakeWH(w, h)
+        rrect = skia.RRect.MakeRectXY(rect, 12, 12)
+
+        fill = skia.Paint(Color=skia.ColorWHITE, AntiAlias=True)
+        canvas.draw_r_rect(rrect, fill)
+
+        stroke = skia.Paint(
+            Color=skia.ColorSetARGB(255, 60, 60, 70),
+            Style=skia.Paint.kStroke_Style,
+            StrokeWidth=2,
+            AntiAlias=True,
+        )
+        canvas.draw_r_rect(rrect, stroke)
+        super()._draw()

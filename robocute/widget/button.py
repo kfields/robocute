@@ -40,7 +40,7 @@ class ButtonVu(WidgetVu):
             vu.draw(g)
             g.x += vu.width + self.hspace
                 
-class AbstractButton(Widget):
+class AbstractButton(GameWidget):
     def __init__(self, items):
         super().__init__(items)
 

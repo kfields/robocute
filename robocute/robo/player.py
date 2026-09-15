@@ -139,7 +139,7 @@ class PlayerMousebox(AvatarMousebox):
     def __init__(self, brain):
         super().__init__(brain)
                     
-class PlayerBrain(robocute.robo.brain.Brain):
+class PlayerBrain(robocute.robo.brain.RoboBrain):
     def __init__(self, node):
         super().__init__(node)
         #
@@ -168,11 +168,11 @@ class PlayerBrain(robocute.robo.brain.Brain):
     def show_dash(self):
         if(not self.dash_bubble):
             self.dash_bubble = DashBubble([Image('Mini Chest.png'), self.dash_worth])
-        self.scene.dash.add_node(self.dash_bubble)
+        self.view.dash.add_node(self.dash_bubble)
         self.update_dash()
 
     def hide_dash(self):
-        self.scene.dash.remove_node(self.dash_bubble)
+        self.view.dash.remove_node(self.dash_bubble)
         
     def update_dash(self):
         if not self.dash_bubble:

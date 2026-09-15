@@ -8,15 +8,16 @@ from robocute.node import *
 from robocute.block import GroupBlock
 from robocute.map import *
 from robocute.builder import build
+from .brain import BotBrain
 
 class LandscapeBot(robocute.bot.Bot):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.brain = LandscapeBotBrain(self)
+        self.brain = self.add(LandscapeBotBrain())
 
-class LandscapeBotBrain(robocute.bot.Brain):
-    def __init__(self, node):
-        super().__init__(node)
+class LandscapeBotBrain(BotBrain):
+    def __init__(self):
+        super().__init__()
         
     def start(self):
         map = Map(self.grid.coordX, self.grid.coordY, self.grid.colCount, self.grid.rowCount)

@@ -1,7 +1,7 @@
 
 from robocute.widget.bubble import *
 
-class Catalog(Bubble):
+class CatalogBubble(Bubble):
     def __init__(self, items, catalog):
         super().__init__(items)
         self.catalog = catalog

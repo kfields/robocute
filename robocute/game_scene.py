@@ -74,8 +74,6 @@ class GameScene(Scene2D):
     def __init__(self, world, app):
         super().__init__()
         self.world = world
-        #self.primary_layer.attach(self.world)
-        #
         self.app = app
         globe.scene = self
         #
@@ -344,14 +342,7 @@ class GameScene(Scene2D):
     
     def remove_bubble(self, bubble):
         self.bubbles.remove_node(bubble)
-    '''
-    Widgets:
-    '''
-    def add_widget(self, widget):
-        self.widgets.add_node(widget)
     
-    def remove_widget(self, widget):
-        self.widgets.remove_node(widget)
     '''
     Mouse Support
     '''

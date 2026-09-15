@@ -1,7 +1,7 @@
 
 import robocute.tool
 
-from robocute.widget.document import *
+#from robocute.widget.document import *
 
 class FileTool(robocute.tool.Tool):
     def __init__(self, dna = None):
@@ -25,10 +25,10 @@ class FileTool(robocute.tool.Tool):
     def show_widget(self):
         if not self.widget:
             self.create_widget()
-        self.scene.dash.add_node(self.widget)
+        self.view.dash.add_node(self.widget)
 
     def hide_widget(self):
-        self.scene.dash.remove_node(self.widget)
+        self.view.dash.remove_node(self.widget)
         
     def create_widget(self):
         self.widget = None

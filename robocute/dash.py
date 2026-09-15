@@ -1,52 +1,57 @@
-from crunge.engine.overlay import Overlay
+from loguru import logger
 
-from robocute.layer import *
+from crunge import yoga
+from crunge.engine.overlay import Overlay
+from robocute.widget import GameWidget
+
 from robocute.vu import *
 from robocute.node import *
 
-class DrawerVu(Vu):
-    def __init__(self, node):
-        super().__init__(node)   
-
-    def draw(self, graphics):
-        g = graphics.copy()
-        for node in self.node.nodes:
-            vu = node.vu
-            if(vu != None):
-                vu.draw(g)
-                #g.y += vu.height + 10
-                g.y += vu.height
-    
-class Drawer(Node):
+class Drawer(GameWidget):
     def __init__(self, node = None):
-        super().__init__()
-        self.nodes = []        
-        if node:
-            self.nodes.append(node)
+        self.node = node
+        '''
+        style = yoga.StyleBuilder().size_percent(100, 100).flex_direction(
+            yoga.FlexDirection.COLUMN
+        ).build()
+        '''
+        style = yoga.Style()
+        #style.set_flex_grow(0.25)
+        #style.set_flex_shrink(0)
 
-    def _seat(self):
-        super()._seat()
-        self.add(DrawerVu(self))
-        
-    def add_node(self, node):
-        self.nodes.append(node)
-        
-    def remove_node(self, node):
-        self.nodes.remove(node)
+        super().__init__(style=style)
+
+        #self.add_child(node)
+
+    def _enable(self):
+        super()._enable()
+        self.add_child(self.node)
+
+    def on_layout(self):
+        super().on_layout()
+        logger.debug(f"Drawer layout updated: {self.size}")
 
 class Dash(Overlay):
     def __init__(self, name):
-        super().__init__(name)
-    
+        '''
+        style = yoga.StyleBuilder().size_percent(100, 100).flex_direction(
+            yoga.FlexDirection.COLUMN
+        ).build()
+        '''
+        style = yoga.Style()
+
+        super().__init__(name, style=style)
+
+    def on_layout(self):
+        super().on_layout()
+        logger.debug(f"Dash layout updated: {self.size}")
+        logger.debug(f"drawer yoga children: {self.layout.get_child_count()}")
+
     def create_drawer(self, drawerName, node = None):
         drawer = Drawer(node)
         return drawer
+        
 
-    '''
-    def draw(self, graphics):
-        g = graphics.copy()
-        for node in self.nodes:
-            vu = node.vu
-            vu.draw(g)
-            g.x += vu.width + 10
-    '''
+    def draw_children(self):
+        with Renderer.get_current().canvas_target() as canvas:
+            super().draw_children()

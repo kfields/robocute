@@ -55,9 +55,8 @@ class Transform:
         
     def copy(self):
         return copy.copy(self)
-'''
-'''
-class Base:
+
+class GameBase:
     def __init__(self, dna = None):
         self.invalid = 0
         self.dna = dna
@@ -81,5 +80,3 @@ class Base:
     
     def deep_copy(self):
         return copy.deepcopy(self)
-'''
-'''

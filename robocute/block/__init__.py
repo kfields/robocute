@@ -15,10 +15,10 @@ sprite_loader = SpriteLoader()
 
 class BlockVu(SpriteVu):
     def __init__(self, imgSrc):
-        print(f"Loading sprite from {imgSrc}")
+        #logger.debug(f"Loading sprite from {imgSrc}")
         path = ResourceManager().resolve_path("${resources}/image/" + imgSrc)
         sprite = sprite_loader.load(path)
-        logger.debug(f"Sprite loaded from {sprite}")
+        #logger.debug(f"Sprite loaded from {sprite}")
         super().__init__(sprite)
 
     def validate(self):

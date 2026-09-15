@@ -9,7 +9,7 @@ QUAD_NW = 3
 '''
 Quad
 '''
-class Quad(Base):
+class Quad(GameBase):
     def __init__(self, texture):
         super().__init__()
         self.texture = texture
@@ -109,7 +109,7 @@ class Quad(Base):
 '''
 QuadContainer
 '''
-class QuadContainer(Base):
+class QuadContainer(GameBase):
     def __init__(self):
         super().__init__()
         self.quads = []
@@ -230,7 +230,7 @@ class QuadGrid(QuadContainer):
 '''
 QuadMesh
 '''    
-class QuadMesh(Base):
+class QuadMesh(GameBase):
     def __init__(self, texture):
         super().__init__()
         self.texture = texture

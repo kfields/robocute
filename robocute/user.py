@@ -85,8 +85,8 @@ class User():
         self.push_tool(tool)
         #
         #win.set_mouse_visible(False)
-        self.mouse = Mouse()
-        self.scene.add_mouse(self.mouse)
+        #self.mouse = Mouse()
+        #self.scene.add_mouse(self.mouse)
         #
         self.coord = Coord(0,0)
     
@@ -133,7 +133,7 @@ class User():
     def remove_mousebox(self, box):
         self.mousebox.remove_box(box)
         
-    def create_avatar(self, text):
+    def create_avatar(self, text: str):
         homes = self.app.homes
         if len(homes) != 0:
             home = homes[0] #fixme:multiple homes?

@@ -12,9 +12,9 @@ class Entity(Node):
         #self.vacancy = False
         self.vacancy = True
                             
-class Brain(robocute.brain.Brain):
-    def __init__(self, node):
-        super().__init__(node)
+class EntityBrain(robocute.brain.BaseBrain):
+    def __init__(self):
+        super().__init__()
         self.grid = None
         #
         self.__coord = Coord(0,0) #brain knows where node is at roughly

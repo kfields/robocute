@@ -84,9 +84,9 @@ class Cell(list):
     def add_node(self, node: Node, coord: Coord):
         t = self.get_node_transform(node, coord)
         node.position = glm.vec2(t.x, t.y)
-        logger.debug("Coord.x: {}", coord.x)
-        logger.debug("Coord.y: {}", coord.y)
-        logger.debug("Node position set to: {}", node.position)
+        #logger.debug("Coord.x: {}", coord.x)
+        #logger.debug("Coord.y: {}", coord.y)
+        #logger.debug("Node position set to: {}", node.position)
         if node.parent is None:
             self.row.grid.add_child(node)
 

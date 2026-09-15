@@ -15,12 +15,12 @@ class AbstractDesigner(Robo):
 class DesignerClone(AbstractDesigner):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.brain = DesignerCloneBrain(self)
+        self.brain = self.add(DesignerCloneBrain())
         
 class Designer(AbstractDesigner):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.brain = DesignerBrain(self)
+        self.brain = self.add(DesignerBrain())
         
     def clone(self, app, coord):
         clone = DesignerClone()
@@ -30,31 +30,35 @@ class Designer(AbstractDesigner):
 class RoboCute(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.brain = PlayerBrain(self)
+        self.brain = self.add(PlayerBrain(self))
         self.vu = RoboVu('robocute.png')
         
 class RoboBoy(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.brain = PlayerBrain(self)
+        self.brain = self.add(PlayerBrain(self))
         self.vu = RoboVu('Character Boy.png')
         
 class RoboCatGirl(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
+        self.brain = self.add(PlayerBrain(self))
         self.vu = RoboVu('Character Cat Girl.png')
         
 class RoboHornGirl(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
+        self.brain = self.add(PlayerBrain(self))
         self.vu = RoboVu('Character Horn Girl.png')
         
 class RoboPinkGirl(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
+        self.brain = self.add(PlayerBrain(self))
         self.vu = RoboVu('Character Pink Girl.png')
         
 class RoboPrincessGirl(Robo):
     def __init__(self, dna = None):
         super().__init__(dna)
+        self.brain = self.add(PlayerBrain(self))
         self.vu = RoboVu('Character Princess Girl.png')

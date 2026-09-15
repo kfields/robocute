@@ -5,9 +5,9 @@ from robocute.widget.bubble import *
 from robocute.message import *
 from robocute.robo.message import *
 
-class Brain(robocute.bot.brain.Brain):
-    def __init__(self, node):
-        super().__init__(node)
+class RoboBrain(robocute.bot.brain.BotBrain):
+    def __init__(self):
+        super().__init__()
         self.bubble = None
         self.on_move = None #callback for camera
 

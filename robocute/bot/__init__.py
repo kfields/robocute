@@ -1,3 +1,5 @@
+from loguru import logger
+
 import glm
 
 from crunge.engine.d2.sprite import SpriteVu
@@ -5,10 +7,11 @@ from crunge.engine.loader.sprite.sprite_loader import SpriteLoader
 from crunge.engine.resource.resource_manager import ResourceManager
 
 from robocute.entity import *
+from .brain import BotBrain
 
 class BotVu(SpriteVu):
     def __init__(self, imgSrc):
-        print(f"Loading sprite from {imgSrc}")
+        #logger.debug(f"Loading sprite from {imgSrc}")
         path = ResourceManager().resolve_path("${resources}/image/" + imgSrc)
         sprite = SpriteLoader().load(path)
 

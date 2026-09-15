@@ -2,7 +2,7 @@
 from robocute.base import *
 from ..world import World
 
-class Game(Base):
+class Game(GameBase):
     def __init__(self, app, name):
         super().__init__()
         self.app = app

@@ -1,10 +1,10 @@
 import robocute.entity
 from robocute.base import Coord
 
-class Brain(robocute.entity.Brain):
+class BotBrain(robocute.entity.EntityBrain):
 
-    def __init__(self, node):
-        super().__init__(node)
+    def __init__(self):
+        super().__init__()
 
     def can_transfer(self, node, srcCoord, dstCoord):
         #boundary check

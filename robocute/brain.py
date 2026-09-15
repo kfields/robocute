@@ -1,18 +1,18 @@
+from crunge.engine.ai import Brain
 
 from robocute.base import *
 from robocute import globe
 
-class Brain(Base):
-    def __init__(self, node):
+class BaseBrain(Brain):
+    def __init__(self):
         super().__init__()
-        self.node = node
         self.app = globe.app
-        self.scene = None
+        self.view = None
         self.user = None
 
     def register(self, app, coord = None):
         super().register(app, coord)
-        self.scene = app.scene
+        self.view = app.scene
         
     def bind(self, user):
         self.user = user

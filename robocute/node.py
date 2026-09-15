@@ -44,27 +44,4 @@ class Node(AbstractNode):
         self.y = transform.y
 
     def get_transform(self):
-        return Transform(self.x, self.y)        
-'''
-Text Node
-'''
-class Text(Node):
-    def __init__(self, text, fn = None):
-        super().__init__(fn)
-        self.text = text
-        self.fn = fn
-        self.add(TextVu(self))
-    def process(self, event):
-        if(self.fn):
-            fn()
-
-sprite_loader = SpriteLoader()
-
-'''
-Image Node
-'''
-class Image(Node2D):
-    def __init__(self, imgSrc, fn = None):
-        super().__init__()
-        self.model = sprite_loader.load("${resources}/image/" + imgSrc)
-        self.fn = fn
+        return Transform(self.x, self.y)

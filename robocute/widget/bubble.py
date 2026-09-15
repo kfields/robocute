@@ -1,56 +1,21 @@
-
 from robocute.node import *
 from robocute.widget import *
-from robocute.skin import *
+from robocute.vu import BubbleVu
    
-'''
-Bubble
-'''
-class BubbleVu(WidgetVu):
-    def __init__(self, node, slicesName):
-        super().__init__(node)        
-        self.skin = HorizontalSkin(FileSkinData(slicesName, 3))
-
-    def validate(self):
-        self.content.height = self.skin.content.height
-        self.content.width = 0
-        for item in self.node.items:
-            vu = item.vu
-            vu.validate()
-            self.content.width += vu.width
-        
-        super().validate()
-
-    def draw(self, graphics):
-        super().draw(graphics)
-        self.draw_items(graphics)
-            
-    def draw_items(self, graphics):
-        g = graphics.copy()
-        g.x += self.margin_left
-        g.y += self.margin_bottom
-        gY = g.y
-        
-        for item in self.node.items:
-            vu = item.vu
-            g.y = gY + (self.content.height * .5) - (vu.height * .5) #just center everything for now
-            vu.draw(g)
-            g.x += vu.width + self.hspace
-                
-class Bubble(Widget):
+class Bubble(GameWidget):
     def __init__(self, items):
-        super().__init__(items)
+        #super().__init__(items)
+        #style=yoga.StyleBuilder().size_percent(100, 100).margin(yoga.Edge.ALL, 5).build()
+        style=yoga.Style()
+        super().__init__(items, style=style)
+        #self.add(BubbleVu())
 
 class DashBubble(Bubble):
     def __init__(self, items):
         super().__init__(items)
-        self.vu = BubbleVu(self, 'DashBubble')
-        self.vu.validate() #necessary evil. :)
 
 class SpeechBubble(Bubble):
     def __init__(self, items):
         super().__init__(items)
-        self.vu = BubbleVu(self, 'SpeechBubble')
-        self.vu.validate()
 
 

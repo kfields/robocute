@@ -3,7 +3,7 @@ from random import random
 
 import robocute
 from robocute.node import *
-from robocute.bot import *
+from robocute.bot import BotBrain
 from robocute.block import GroupBlock
 from robocute.map import *
 
@@ -12,11 +12,11 @@ from robocute.builder import build
 class TreasureBot(robocute.bot.Bot):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.brain = TreasureBotBrain(self)
+        self.brain = self.add(TreasureBotBrain())
 
-class TreasureBotBrain(robocute.bot.Brain):
-    def __init__(self, node):
-        super().__init__(node)
+class TreasureBotBrain(BotBrain):
+    def __init__(self):
+        super().__init__()
         
     def start(self):
         map = Map(self.grid.coordX, self.grid.coordY, self.grid.colCount, self.grid.rowCount)

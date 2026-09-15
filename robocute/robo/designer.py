@@ -9,6 +9,10 @@ from robocute import globe
 
 from robocute.builder import build, build_thing, build_thing_at
 
+from ..game_view import GameView
+
+from .brain import RoboBrain
+
 class DesignerMouseQuery(MouseQuery):
     def __init__(self, box, event):
         super().__init__(event)
@@ -65,9 +69,9 @@ class DesignerMousebox(AvatarMousebox):
         super().on_mouse_press(x, y, button, modifiers)
         self.brain.scene.query = DesignerMouseQuery(self, MousePressed(x, y, button, modifiers))
                     
-class AbstractDesignerBrain(robocute.robo.brain.Brain):
-    def __init__(self, node):
-        super().__init__(node)
+class AbstractDesignerBrain(RoboBrain):
+    def __init__(self):
+        super().__init__()
     def build(self, dna):
         cell = self.grid.get_cell_at(self.coord)
         cell.remove_node(self.node)
@@ -111,13 +115,13 @@ class AbstractDesignerBrain(robocute.robo.brain.Brain):
        
        
 class DesignerCloneBrain(AbstractDesignerBrain):
-    def __init__(self, node):
-        super().__init__(node)
+    def __init__(self):
+        super().__init__()
 
 class DesignerBrain(AbstractDesignerBrain):
-    def __init__(self, node):
-        super().__init__(node)
-        self.scene = globe.scene
+    def __init__(self):
+        super().__init__()
+        self.view: GameView = globe.view
         self.clones = []
         self.drawer = None
         self.keybox = DesignerKeybox(self)
@@ -125,8 +129,11 @@ class DesignerBrain(AbstractDesignerBrain):
         #
         self.avatar = None #avatar that we passed control to.
 
+    @property
+    def dash(self):
+        return self.view.dash
+
     def exit(self):
-        #sys.exit() #bad choice
         self.clear_clones()        
         self.hide_node()
         self.app.exit()
@@ -153,39 +160,42 @@ class DesignerBrain(AbstractDesignerBrain):
     def show_dash(self):
         if not self.drawer:
             self.create_drawer()
-        self.scene.dash.add_node(self.drawer)
+        self.dash.add_child(self.page)
+        self.dash.add_child(self.drawer)
+        #self.dash.add_child(self.page)
 
     def hide_dash(self):
-        self.scene.dash.remove_node(self.drawer)
+        self.dash.remove_child(self.drawer)
         
     def update_dash(self):
         pass
     
     def create_drawer(self):
-        def nextPage(node):
-            self.drawer.remove_node(self.page)
-            self.page = self.catalog.get_next_page(self.page.name)
-            self.drawer.add_node(self.page)
-        def prevPage(node):
-            self.drawer.remove_node(self.page)
-            self.page = self.catalog.get_prev_page(self.page.name)
-            self.drawer.add_node(self.page)            
+        def next_page(node):
+            self.dash.remove_child(self.page)
+            self.page = self.catalog_bubble.get_next_page(self.page.name)
+            self.dash.add_child(self.page)
+        def prev_page(node):
+            self.dash.remove_child(self.page)
+            self.page = self.catalog_bubble.get_prev_page(self.page.name)
+            self.dash.add_child(self.page)
 
-        items = [Image('icon/actions/1leftarrow.png', prevPage), Image('icon/actions/1rightarrow.png', nextPage)]
+        items = [Image('icon/actions/1leftarrow.png', prev_page), Image('icon/actions/1rightarrow.png', next_page)]
         
-        def onItem(item):
+        def on_item(item):
             if item.dna.type == 'tool':
                 self.build_tool(item.dna)
             else:
                 self.do(DoBuild(item.dna))
 
-        self.app.catalog.on_item = onItem
+        self.app.catalog.on_item = on_item
                 
-        self.catalog = Catalog(items, self.app.catalog)
+        self.catalog_bubble = CatalogBubble(items, self.app.catalog)
         
-        self.drawer = self.scene.dash.create_drawer('Catalog', self.catalog)
-        self.page = self.catalog.get_page('Main')
-        self.drawer.add_node(self.page)
+        self.drawer = self.dash.create_drawer('Catalog', self.catalog_bubble)
+        self.page = self.catalog_bubble.get_page('Main')
+        #self.drawer.add_child(self.page)
+        #self.dash.add_child(self.page)
         
     def take_control(self):
         #self.hide_node()
@@ -270,9 +280,6 @@ class DesignerBrain(AbstractDesignerBrain):
             clone.do(msg)
     
     def build_tool(self, dna):
-        cell = self.grid.get_cell_at(self.coord)
-        #cell.remove_node(self.node)
         tool = build_thing(dna, self.app)
-        #cell.push_node(self.node)
         self.user.push_tool(tool)
         

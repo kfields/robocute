@@ -52,9 +52,9 @@ class Grid(Node):
             for cell in row:
                 for node in cell:
                     vu = node.vu
-                    logger.debug(f"node class: {type(node)}: {node.is_enabled}")
+                    #logger.debug(f"node class: {type(node)}: {node.is_enabled}")
                     if vu is not None:
-                        logger.debug(f"vu class: {type(vu)}: {vu}")
+                        #logger.debug(f"vu class: {type(vu)}: {vu}")
                         if not isinstance(vu, SpriteVu):
                             continue
                         if not vu.is_enabled:

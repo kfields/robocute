@@ -1,82 +1,48 @@
+from crunge import yoga
+
 from robocute.builder import Dna
 from robocute.widget import *
 from robocute.skin import *
 from robocute.widget.bubble import *
 
 class ItemVu(ImageVu):
-    def __init__(self, node, imgSrc):
+    def __init__(self, imgSrc):
         self.width = 0
         self.height = 0
-        super().__init__(node, imgSrc)
+        super().__init__(imgSrc)
         self.scaleX = .25
         self.scaleY = .25                
         #self.width = int( self.image.width * self.scaleX ) 
         #self.height = int ( self.image.height * self.scaleY)
-    
-    def draw(self, graphics):
-        g = graphics.copy()
-        glPushMatrix()
-        glTranslatef(graphics.x, graphics.y, graphics.z)        
-        glScalef(self.scaleX, self.scaleY, 1.)
-        g.x = 0
-        g.y = 0
-        super().draw(g)
-        glPopMatrix()
 
 class ToolVu(ImageVu):
-    def __init__(self, node, imgSrc):
-        super().__init__(node, imgSrc)
+    def __init__(self, imgSrc):
+        super().__init__(imgSrc)
         
 class Item(Image):
     def __init__(self, dna, useFn):
         super().__init__(dna.imgSrc, useFn)
         self.dna = dna
+        '''
         if dna.type == 'tool':
-            self.add(ToolVu(self, dna.imgSrc))
+            self.add(ToolVu(dna.imgSrc))
         else:
-            self.add(ItemVu(self, dna.imgSrc))
-
-class PageVu(WidgetVu):
-    def __init__(self, node, slicesName):
-        super().__init__(node)   
-        self.skin = VerticalSkin(FileSkinData(slicesName, 3))
-        
-    def validate(self):
-        self.content.width = self.skin.content.width
-        self.content.height = 0
-        for item in self.node.items:
-            vu = item.vu
-            vu.validate()
-            self.content.height += vu.height + self.vspace
-        #
-        super().validate()
-     
-    def draw(self, graphics):
-        super().draw(graphics) #call to get skin drawn.
-        self.draw_items(graphics)
-        
-    def draw_items(self, graphics):        
-        g = graphics.copy()
-        #g.y += self.margin_bottom
-        g.y += self.content.height - self.margin_top - self.vspace
-        #
-        #g.x += self.margin_left
-        gX = g.x
-        
-        for item in self.node.items:
-            vu = item.vu            
-            #center horizontally
-            g.x = gX + (self.content.width * .5) - (vu.width * .5)
-            #
-            vu.draw(g)
-            #
-            g.y -= (vu.height + self.vspace)                        
-        
-class Page(Widget):
+            self.add(ItemVu(dna.imgSrc))
+        '''
+class Page(GameWidget):
     def __init__(self, name, items = None):
-        super().__init__(items)
+        logger.debug(f"Page items: {items}")
+        #style=yoga.StyleBuilder().size_percent(100, 100).margin(yoga.Edge.ALL, 5).build()
+        style = yoga.Style()
+        #style.set_flex_grow(0.75)
+        #style.set_flex_grow(1)
+        super().__init__(items, style=style)
         self.name = name
         #self.add(PageVu(self, 'CatalogBubble'))
+
+    def on_layout(self):
+        super().on_layout()
+        logger.debug(f"Page layout updated: {self.size}")
 
 class Catalog:
     def __init__(self):        

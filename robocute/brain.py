@@ -7,13 +7,13 @@ class BaseBrain(Brain):
     def __init__(self):
         super().__init__()
         self.app = globe.app
-        self.view = None
+        self.view = globe.view
         self.user = None
 
-    def register(self, app, coord = None):
-        super().register(app, coord)
-        self.view = app.scene
-        
+    @property
+    def grid(self):
+        return self.node.grid
+
     def bind(self, user):
         self.user = user
     

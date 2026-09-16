@@ -1,5 +1,5 @@
 
-from robocute.node import Node, Coord
+from robocute.node import GameNode, Coord
 from robocute.vu import ImageVu
 from robocute.message import Message
 from robocute.mailbox import Mailbox
@@ -28,7 +28,7 @@ class MouseQuery:
         result.node.process(event)
         print(result.node, event)
         
-class Mouse(Node):
+class Mouse(GameNode):
     def __init__(self):
         super().__init__()
         self.add(ImageVu(self, 'Pointer-Standard.png'))

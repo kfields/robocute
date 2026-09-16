@@ -140,8 +140,8 @@ class PlayerMousebox(AvatarMousebox):
         super().__init__(brain)
                     
 class PlayerBrain(robocute.robo.brain.RoboBrain):
-    def __init__(self, node):
-        super().__init__(node)
+    def __init__(self):
+        super().__init__()
         #
         self.keybox = PlayerKeybox(self)
         self.mousebox = PlayerMousebox(self)
@@ -150,7 +150,7 @@ class PlayerBrain(robocute.robo.brain.RoboBrain):
         self.die = 0
         self.worth = 0 #heh ... total treasure value
         self.dash_bubble = None
-        self.dash_worth = Text(str(self.worth))
+        #self.dash_worth = Text(str(self.worth))
     
     def bind(self, user):
         super().bind(user)

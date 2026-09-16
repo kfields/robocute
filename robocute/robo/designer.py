@@ -1,6 +1,4 @@
 
-import robocute.robo
-import robocute.robo.brain
 from robocute.widget.catalog import *
 from robocute.robo.message import *
 from robocute.robo.avatar import *
@@ -44,9 +42,6 @@ class DesignerMouseQuery(MouseQuery):
             brain.transfer_to(result)
         
 class DesignerKeybox(AvatarKeybox):    
-    def __init__(self, brain):
-        super().__init__(brain)
-                
     def on_key_press(self, symbol, modifiers):
         brain = self.brain
         if symbol == key.ESCAPE:
@@ -62,21 +57,16 @@ class DesignerKeybox(AvatarKeybox):
             super().on_key_press(symbol, modifiers)
 
 class DesignerMousebox(AvatarMousebox):    
-    def __init__(self, brain):
-        super().__init__(brain)
-
     def on_mouse_press(self, x, y, button, modifiers):
         super().on_mouse_press(x, y, button, modifiers)
         self.brain.scene.query = DesignerMouseQuery(self, MousePressed(x, y, button, modifiers))
                     
 class AbstractDesignerBrain(RoboBrain):
-    def __init__(self):
-        super().__init__()
     def build(self, dna):
-        cell = self.grid.get_cell_at(self.coord)
+        cell = self.node.grid.get_cell_at(self.coord)
         cell.remove_node(self.node)
         build_thing_at(self.app, dna, self.coord, cell)
-        cell.push_node(self.node)
+        cell.push_node(self.node, self.coord)
         
     def delete(self):
         cell = self.grid.get_cell_at(self.coord)
@@ -85,7 +75,7 @@ class AbstractDesignerBrain(RoboBrain):
         cell.remove_node(self.node)        
         node = cell.pop_node()
         node.delete()
-        cell.push_node(self.node)
+        cell.push_node(self.node, self.coord)
         
     def can_transfer(self, node, srcCoord, dstCoord):
         #boundary check
@@ -101,7 +91,7 @@ class AbstractDesignerBrain(RoboBrain):
        srcCell.remove_node(node)
        #
        dstCell = self.grid.get_cell_at(dstCoord) 
-       dstCell.push_node(node)
+       dstCell.push_node(node, dstCoord)
        #
        self.coord = dstCoord
 

@@ -43,6 +43,9 @@ class Coord:
         t = Transform(self.x * BLOCK_WIDTH, self.y * BLOCK_ROW_HEIGHT)
         t.y += self.z * BLOCK_STACK_HEIGHT
         return t
+
+    def __repr__(self):
+        return f"Coord(x={self.x}, y={self.y}, z={self.z})"
         
 '''
 2D position and rotation
@@ -53,6 +56,9 @@ class Transform:
         self.y = y
         self.r = r
         
+    def __repr__(self):
+        return f"Transform(x={self.x}, y={self.y}, r={self.r})"
+
     def copy(self):
         return copy.copy(self)
 

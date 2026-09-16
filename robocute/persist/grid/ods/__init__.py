@@ -1,7 +1,7 @@
 import xml.dom.minidom
 
 from robocute import resources
-from robocute.world import *
+from robocute.world import Grid
 
 from robocute.builder import compile_ctors
 
@@ -18,11 +18,10 @@ def get_text(node):
     return text
 
 class Reader:
-    def __init__(self, filename, app, grid):
+    def __init__(self, filename, app, grid: Grid):
         self.filename = filename
         self.app = app        
         self.grid = grid
-        #self.m_odf = zipfile.ZipFile(filename)
         self.m_odf = resources.load_zip(filename)
         self.filelist = self.m_odf.infolist()
         #
@@ -45,8 +44,8 @@ class Reader:
         
     def read_rows(self, sheet):
         rows = sheet.getElementsByTagNameNS(OD_TABLE_NS, 'table-row')
-        self.rowCount = len(rows)
-        rowMax = self.grid.rowCount - 1        
+        self.rowount = len(rows)
+        rowMax = self.grid.row_count - 1        
         rowNdx = 0
         for row in rows:
             rowNdx = self.read_row(row, rowNdx, rowMax)
@@ -78,7 +77,7 @@ class Reader:
         gridRow = self.grid.create_row()
         cells = row.getElementsByTagNameNS(OD_TABLE_NS, 'table-cell')
         colNdx = 0
-        colMax = self.grid.colCount - 1        
+        colMax = self.grid.col_count - 1        
         for cell in cells:
             colNdx = self.read_cell(cell, gridRow, colNdx, colMax)
             if colNdx > colMax:

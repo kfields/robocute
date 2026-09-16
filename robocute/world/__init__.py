@@ -1,5 +1,6 @@
-
 import os
+
+from loguru import logger
 
 from crunge.engine.d2 import Node2D
 
@@ -43,6 +44,7 @@ class World(Node2D):
         writer.write()
         
     def load_or_generate_grid(self, x, y) -> Grid:
+        logger.debug("Loading or generating grid at ({}, {})", x, y)
         grid = self.load_grid(x, y)
         if not grid:
             grid = self.generate_grid(x, y)
@@ -50,11 +52,12 @@ class World(Node2D):
         grid.build(self.app, self, x, y)
         self.add_child(grid)
         #
-        #grid.register(self.app)        
+        grid.register(self.app)        
             
         return grid
 
     def load_grid(self, x, y) -> Grid:
+        logger.debug("Loading grid at ({}, {})", x, y)
         grid = None
         path = self.get_grid_filepath(x, y)
         print(path)
@@ -66,13 +69,16 @@ class World(Node2D):
         return grid
     
     def generate_grid(self, x, y) -> Grid:
-        return self.create_grid(self, x, y)
+        logger.debug("Generating grid at ({}, {})", x, y)
+        return self.create_grid(x, y)
     
     def create_grid(self, x, y) -> Grid:
+        logger.debug(f"Creating grid at ({x}, {y}) with row_count: {self.gridRowMax}, col_count: {self.gridColMax}")
         grid = Grid(self.gridRowMax, self.gridColMax)
         return grid
         
     def add_grid(self, grid):
+        logger.debug(f"Adding grid: {grid}")
         x = grid.gridX
         y = grid.gridY
         c1 = self.gridcache

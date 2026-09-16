@@ -14,9 +14,9 @@ from robocute.builder import find_dna, add_class, add_classes
 sprite_loader = SpriteLoader()
 
 class BlockVu(SpriteVu):
-    def __init__(self, imgSrc):
-        #logger.debug(f"Loading sprite from {imgSrc}")
-        path = ResourceManager().resolve_path("${resources}/image/" + imgSrc)
+    def __init__(self, img_src):
+        #logger.debug(f"Loading sprite from {img_src}")
+        path = ResourceManager().resolve_path("${resources}/image/" + img_src)
         sprite = sprite_loader.load(path)
         #logger.debug(f"Sprite loaded from {sprite}")
         super().__init__(sprite)
@@ -31,8 +31,8 @@ class Block(Entity):
         super().__init__(dna)
 
 class GroupBlockVu(InstancedSpriteVuGroup):
-    def __init__(self, node):
-        super().__init__(node)
+    def __init__(self):
+        super().__init__()
 
     def validate(self):
         super().validate()
@@ -86,25 +86,27 @@ class GroupBlock(Block):
             dna = find_dna('GroupBlock')
         super().__init__(dna)
         self.nodes = []
-        self.add(GroupBlockVu(self))
+        #self.add(GroupBlockVu())
         self.vacancy = True
+        self.dirty = True
 
-    def update(self):
+    def update(self, delta_time: float):
         height = 0
         for node in self.nodes:
-            nodeHeight = node.height
-            if nodeHeight > height:
-                height = nodeHeight
-        self.height = height
+            node_block_height = node.block_height
+            if node_block_height > height:
+                height = node_block_height
+        self.block_height = height
+        super().update(delta_time)
         
     def push_node(self, node):
         self.nodes.append(node)
-        self.nodes.sort(key=operator.attrgetter('z')) #fixme:hack to sort by width ... just use width!
-        self.update()
+        #self.nodes.sort(key=operator.attrgetter('z')) #fixme:hack to sort by width ... just use width!
+        self.update(0.)
         
     def remove_node(self, node):
         self.nodes.remove(node)
-        self.update()
+        self.update(0.)
         
     def empty(self):
         return len(self.nodes) == 0

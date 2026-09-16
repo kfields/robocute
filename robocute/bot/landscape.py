@@ -20,17 +20,18 @@ class LandscapeBotBrain(BotBrain):
         super().__init__()
         
     def start(self):
-        map = Map(self.grid.coordX, self.grid.coordY, self.grid.colCount, self.grid.rowCount)
+        map = Map(self.grid.coordX, self.grid.coordY, self.grid.col_count, self.grid.row_count)
         def callback(coord):
             return self.explore(coord)
         explorer = Explorer(map, callback)
-        coord = self.coord
+        coord = self.node.coord
+        logger.debug(f"Starting exploration at coord: {coord}")
         cell = self.grid.get_cell_at( coord )
         cell.remove_node(self.node)
         explorer.explore(coord.x - map.coordX, coord.y - map.coordY)
         
     def explore(self, coord):
-        cell = Cell()
+        cell = MapCell()
         node = self.grid.get_top_at(coord)
         if not node:
             return cell

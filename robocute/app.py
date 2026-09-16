@@ -52,7 +52,10 @@ class App(CrungeApp):
         self.world = game.world
         self.scene = game.scene
         logger.debug("Scene: {}", self.scene)
-        grid =self.world.get_grid(0, 0)
+
+        # Temporary until we can fix camera
+        #grid =self.world.get_grid(0, 0)
+        #self.world.add_grid(grid)
 
 
         self.create_view()
@@ -60,7 +63,7 @@ class App(CrungeApp):
     def create_view(self):
         self.display = GameView(self.scene)
         self.camera = self.display.camera
-        self.center_camera()
+        #self.center_camera()
 
     def center_camera(self):
         if self.camera:
@@ -71,7 +74,7 @@ class App(CrungeApp):
 
     def on_size(self):
         super().on_size()
-        self.center_camera()
+        #self.center_camera()
 
 
     def load_or_create_game(self, game_name):
@@ -119,11 +122,13 @@ class App(CrungeApp):
     Callbacks
     """
 
+    '''
     def add_callback(self, callback):
         self.callbacks.append(callback)
 
     def remove_callback(self, callback):
         self.callbacks.remove(callback)
+    '''
 
     """
     Avatar Support

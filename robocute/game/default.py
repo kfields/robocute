@@ -11,7 +11,7 @@ class DefaultWorld(World):
     def __init__(self, app, name, gridRowMax = WORLD_GRID_ROW_MAX, gridColMax = WORLD_GRID_COL_MAX):
         super().__init__(app, name, 12, 12)
         #
-        grid = Grid(self.gridRowMax, self.gridColMax)
+        grid = Grid(self.gridRowMax, self.gridColMax, is_template=True)
         #filename = "Default.ods"
         #filename = "Fountain.ods"
         #filename = "Debug.ods"
@@ -23,18 +23,10 @@ class DefaultWorld(World):
         
         rdr = robocute.persist.grid.ods.Reader(filename, self.app, grid)
         rdr.read()
-        self.gridTemplate = grid
+        self.grid_template = grid
         
     def generate_grid(self, x, y):
-        #grid = Grid(self.gridRowMax, self.gridColMax)
-        #rdr = robocute.ods.grid.Reader(self.filename, self.app, grid)
-        #rdr.read()
-        grid = self.gridTemplate.clone()
-        grid.enable()
-        #
-        grid.build(self.app, self, x, y)
-        #
-        #grid.register(self.app)        
+        grid = self.grid_template.clone()
         return grid
 
 class DefaultGame(Game):

@@ -9,25 +9,26 @@ from .cell import *
 from .row import *
 
 from crunge.engine.vu_group import VuGroup
-from crunge.engine.d2.sprite import SpriteVu
 from crunge.engine.d2.sprite.dynamic import DynamicSpriteGroup
 from crunge.engine.d2.sprite.instanced.instanced_sprite_vu_group import (
     InstancedSpriteVuGroup,
 )
 
 
-class Grid(Node):
-    def __init__(self, colCount=WORLD_GRID_COL_MAX, rowCount=WORLD_GRID_ROW_MAX):
+class Grid(GameNode):
+    def __init__(self, col_count=WORLD_GRID_COL_MAX, row_count=WORLD_GRID_ROW_MAX, is_template: bool = False):
         super().__init__()
+        logger.debug(f"Initializing Grid with col_count: {col_count}, row_count: {row_count}, is_template: {is_template}")
         #
-        self.colCount = colCount
-        self.rowCount = rowCount
+        self.col_count = col_count
+        self.row_count = row_count
         self.rows = []
 
         self.sprite_group = DynamicSpriteGroup(1024).enable()
         # self.vu_group = self.add(InstancedSpriteVuGroup(1024, self.sprite_group))
         #self.dirty = True
         self.dirty = False
+        self.is_template = is_template
 
     def _seat(self):
         super()._seat()
@@ -55,10 +56,12 @@ class Grid(Node):
                     #logger.debug(f"node class: {type(node)}: {node.is_enabled}")
                     if vu is not None:
                         #logger.debug(f"vu class: {type(vu)}: {vu}")
+                        #logger.debug(f"vu class: {type(vu)}: {vu}, position: {vu.node.position}")
                         if not isinstance(vu, SpriteVu):
                             continue
                         if not vu.is_enabled:
                             raise ValueError(f"Vu is not enabled: {vu}")
+
                         self.vu_group.append(vu)
 
     def _update(self, delta_time: float):
@@ -113,9 +116,9 @@ class Grid(Node):
         super().validate()
         # prevent underage
         rows = self.rows
-        if len(rows) < self.rowCount:
+        if len(rows) < self.row_count:
             i = 0
-            while i < self.rowCount:
+            while i < self.row_count:
                 row = self.create_row()
                 row.validate()
                 rows.append(row)
@@ -132,20 +135,26 @@ class Grid(Node):
         self.world = world
         self.gridX = x
         self.gridY = y
-        self.coordX = x * self.colCount
-        self.coordY = y * self.rowCount
+        self.coordX = x * self.col_count
+        self.coordY = y * self.row_count
         # do this last!!!
-        # world.add_grid(self)
+        if not self.is_template:
+            world.add_grid(self)
+
         # prevent underage
         self.validate()
+        
         #
         rowNdx = 0
         for row in self.rows:
             row.build(app, self, rowNdx)
             rowNdx += 1
-
+        '''
+        if not self.is_template:
+            world.add_grid(self)
+        '''
     def clone(self):
-        clone = Grid(self.colCount, self.rowCount)
+        clone = Grid(self.col_count, self.row_count)
         for row in self.rows:
             cloneRow = row.clone()
             clone.rows.append(cloneRow)
@@ -163,25 +172,25 @@ class Grid(Node):
 
         return True
 
-    def local_coord(self, coord):
-        if coord.x < self.coordX or coord.x > self.coordX + self.colCount - 1:
+    def is_local_coord(self, coord) -> bool:
+        if coord.x < self.coordX or coord.x > self.coordX + self.col_count - 1:
             return False
-        if coord.y < self.coordY or coord.y > self.coordY + self.rowCount - 1:
+        if coord.y < self.coordY or coord.y > self.coordY + self.row_count - 1:
             return False
         return True
 
-    def to_local_coord(self, coord):
-        return Coord(coord.x % self.colCount, coord.y % self.rowCount)
+    def to_local_coord(self, coord) -> Coord:
+        return Coord(coord.x % self.col_count, coord.y % self.row_count)
 
-    def get_cell_at(self, coord):
+    def get_cell_at(self, coord) -> Cell:
         """
         if(not self.valid_coord(coord)):
             raise Exception('Invalid Coordinates: x: ', coord.x, ' y: ', coord.y)
         """
-        if not self.local_coord(coord):
+        if not self.is_local_coord(coord):
             return self.world.get_cell_at(coord)
         # else
-        return self.rows[coord.y % self.rowCount][coord.x % self.colCount]
+        return self.rows[coord.y % self.row_count][coord.x % self.col_count]
 
     """
     Cell Access Helpers

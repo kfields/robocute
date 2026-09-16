@@ -1,7 +1,7 @@
-import robocute.entity
+from robocute.entity import EntityBrain
 from robocute.base import Coord
 
-class BotBrain(robocute.entity.EntityBrain):
+class BotBrain(EntityBrain):
 
     def __init__(self):
         super().__init__()

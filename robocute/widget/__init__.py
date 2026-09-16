@@ -23,14 +23,14 @@ Text Node
 
 class Text(GameWidget):
     def __init__(self, text, fn=None):
-        super().__init__(fn)
+        super().__init__()
         self.text = text
         self.fn = fn
-        self.add(TextVu(self))
+        self.add(TextVu())
 
     def process(self, event):
         if self.fn:
-            fn()
+            self.fn()
 
 """
 Image Node
@@ -38,11 +38,11 @@ Image Node
 
 
 class Image(GameWidget):
-    def __init__(self, imgSrc, fn=None):
+    def __init__(self, img_src, fn=None):
         style = yoga.StyleBuilder().height(50).margin(yoga.Edge.ALL, 5).build()
         super().__init__(style=style)
         self.fn = fn
-        self.add(ImageVu(imgSrc))
+        self.add(ImageVu(img_src))
 
     def on_layout(self):
         super().on_layout()

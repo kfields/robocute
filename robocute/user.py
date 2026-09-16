@@ -1,9 +1,10 @@
-#lib
+import sys
+
+from loguru import logger
+
 from robocute.camera import *
 from robocute.keyboard import *
 from robocute.mouse import *
-#system
-import sys
 
 from robocute.robo.message import *
 from robocute.node import *
@@ -96,7 +97,6 @@ class User():
         if isinstance(tool, Tool):
             return
         #else
-        # self.move_to(tool.coord)
         def on_tool_move():
             self.move_to(self.tool.coord)                        
         self.tool.on_move = on_tool_move
@@ -142,6 +142,7 @@ class User():
 
         cell = self.world.get_cell_at(home)
         node = build(self.app, text, home, cell)
+        logger.debug(f"Created avatar node: {node} at {home}")
         if(not node):
             raise Exception('No Avatar found in scene!!!')
         brain = node.brain

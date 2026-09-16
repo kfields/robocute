@@ -1,11 +1,11 @@
-
-import robocute.bot.brain
 from robocute.widget.bubble import *
 
 from robocute.message import *
 from robocute.robo.message import *
 
-class RoboBrain(robocute.bot.brain.BotBrain):
+from ..bot import BotBrain
+
+class RoboBrain(BotBrain):
     def __init__(self):
         super().__init__()
         self.bubble = None

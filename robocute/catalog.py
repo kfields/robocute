@@ -6,28 +6,28 @@ from robocute.skin import *
 from robocute.widget.bubble import *
 
 class ItemVu(ImageVu):
-    def __init__(self, imgSrc):
+    def __init__(self, img_src):
         self.width = 0
         self.height = 0
-        super().__init__(imgSrc)
+        super().__init__(img_src)
         self.scaleX = .25
         self.scaleY = .25                
         #self.width = int( self.image.width * self.scaleX ) 
         #self.height = int ( self.image.height * self.scaleY)
 
 class ToolVu(ImageVu):
-    def __init__(self, imgSrc):
-        super().__init__(imgSrc)
+    def __init__(self, img_src):
+        super().__init__(img_src)
         
 class Item(Image):
-    def __init__(self, dna, useFn):
-        super().__init__(dna.imgSrc, useFn)
+    def __init__(self, dna: Dna, useFn):
+        super().__init__(dna.img_src, useFn)
         self.dna = dna
         '''
         if dna.type == 'tool':
-            self.add(ToolVu(dna.imgSrc))
+            self.add(ToolVu(dna.img_src))
         else:
-            self.add(ItemVu(dna.imgSrc))
+            self.add(ItemVu(dna.img_src))
         '''
 class Page(GameWidget):
     def __init__(self, name, items = None):
@@ -54,10 +54,10 @@ class Catalog:
         #
         self.on_item = None
 
-    def create_item(self, dnaType, name, title, imgSrc, body, assignments):
+    def create_item(self, dnaType, name, title, img_src, body, assignments):
         def onItem(item):
             self.on_item(item)
-        dna = Dna(dnaType, name, title, imgSrc, body, assignments)
+        dna = Dna(dnaType, name, title, img_src, body, assignments)
         item = Item(dna, onItem)
         return item
         

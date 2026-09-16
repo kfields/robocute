@@ -1,7 +1,7 @@
 
 from robocute.node import *
 
-class Cell:
+class MapCell:
     def __init__(self):
         self.vacancy = False
         

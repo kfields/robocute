@@ -62,10 +62,12 @@ class Vu(CrungeVu):
 class TextVu(Vu):
     def __init__(self):
         super().__init__()
+        '''
         self.text = pyglet.text.Label(
             self.node.text, font_name="Verdana", font_size=14, color=(0, 0, 0, 255)
         )
-        self.validate()
+        '''
+        #self.validate()
         self.add_hotspot(HotSpot(0, 0, self.width, self.height))  # fixme:put in base?
 
     def validate(self):
@@ -75,6 +77,7 @@ class TextVu(Vu):
         # self.height = self.text.height
         self.height = self.text.content_height
 
+    '''
     def draw(self, graphics):
         # super().draw(graphics)
         # either way works...
@@ -86,20 +89,20 @@ class TextVu(Vu):
         # glPopMatrix()
         if graphics.query:
             self.query(graphics)
-
+    '''
 
 class ImageVu(Vu):
-    def __init__(self, imgSrc):
+    def __init__(self, img_src):
         super().__init__()
-        self.imgSrc = imgSrc
-        logger.debug(f"ImageVu initialized with imgSrc: {imgSrc}")
+        self.img_src = img_src
+        logger.debug(f"ImageVu initialized with img_src: {img_src}")
 
-        path = ResourceManager().resolve_path("${resources}/image/" + imgSrc)
+        path = ResourceManager().resolve_path("${resources}/image/" + img_src)
         data = skia.Data.make_from_file_name(str(path))
         self.image = skia.deferred_from_encoded_data(data)
 
     def _draw(self):
-        #logger.debug(f"Drawing ImageVu with imgSrc: {self.imgSrc}")
+        #logger.debug(f"Drawing ImageVu with img_src: {self.img_src}")
         canvas = Renderer.get_current().canvas
         #position = self.node.global_position
         position = self.node.global_position

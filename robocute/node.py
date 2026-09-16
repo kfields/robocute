@@ -1,45 +1,38 @@
-
 from crunge.engine.d2 import Node2D
-from crunge.engine.d2.sprite import SpriteVu
-from crunge.engine.loader.sprite.sprite_loader import SpriteLoader
 
-from robocute.base import *
-from robocute.vu import *
+from .base import Transform, Coord
 
-class AbstractNode(Node2D):
-    def __init__(self, dna = None, fn = None):
+
+class GameNode(Node2D):
+    def __init__(self, dna=None, fn=None):
         super().__init__()
         self.dna = dna
-        self.name = 'Unknown'
-        self.fn = fn #not sure about this...
+        self.fn = fn  # not sure about this...
 
-    def invalidate(self, flag = 1):
-        pass
-        
-    def validate(self):
-        pass
-    
-    #events
-    def process(self, event):
-        if(self.fn):
-            self.fn(self)
-        
-class Node(AbstractNode):
-    def __init__(self, dna = None, fn = None):
-        super().__init__(dna, fn)
-        #self.x = 0
-        #self.y = 0
-        #self.z = 0
+        self.name = "Unknown"
         self.brain = None
+        self.coord: Coord = None
 
-    def register(self, app, coord = None):
-        #pass
+    def register(self, app, coord=None):
+        # pass
+        self.coord = coord
         self.validate()
- 
+
+    def invalidate(self, flag=1):
+        pass
+
     def validate(self):
-        super().validate()
-        
+        pass
+
+    # events
+    def process(self, event):
+        if self.fn:
+            self.fn(self)
+
     def set_transform(self, transform):
+        raise NotImplementedError(
+            "set_transform method must be implemented by subclass"
+        )
         self.x = transform.x
         self.y = transform.y
 

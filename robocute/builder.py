@@ -1,6 +1,7 @@
+from loguru import logger
 
 from robocute.base import *
-from robocute.node import Node
+from robocute.node import GameNode
 
 from robocute import dna_dict
 from robocute import class_dict
@@ -14,7 +15,8 @@ def add_dna(dna):
 def add_class(cls):
     name = cls.__name__
     class_dict[name] = cls
-    dna = Dna('class', name, 'No Title', 'No Image Source', name, [])
+    #dna = Dna('class', name, 'No Title', 'No Image Source', name, [])
+    dna = Dna('class', name, 'No Title', None, name, [])
     dna.cls = cls
     dna_dict[name] = dna
     #
@@ -41,8 +43,8 @@ def build_thing(dna, app = None):
 
 def build_thing_at(app, dna, coord, cell):
     thing = build_thing(dna)
-    if isinstance(thing, Node):
-        cell.push_node(thing)
+    if isinstance(thing, GameNode):
+        cell.push_node(thing, coord)
     thingCoord = Coord(coord.x, coord.y, cell.height)
     thing.register(app, thingCoord)
 
@@ -64,7 +66,7 @@ def execute_ctors(app, ctors, coord, cell):
        ctors = [ctors]
     for ctor in ctors:
         thing = ctor()
-        if isinstance(thing, Node):
+        if isinstance(thing, GameNode):
             cell.push_node(thing, coord)
         thingCoord = Coord(coord.x, coord.y, cell.height)
         thing.register(app, thingCoord)
@@ -85,19 +87,22 @@ class Constructor:
 '''
 '''
 class Dna:
-    def __init__(self, type, name, title, imgSrc, clsName, assignments):
+    def __init__(self, type, name, title, img_src, cls_name, assignments):
         self.type = type
         self.name = name
         self.title = title
-        self.imgSrc = imgSrc
-        self.clsName = clsName
+        self.img_src = img_src
+        self.cls_name = cls_name
         self.assignments = assignments #list of property value tuples
-        self.cls = eval(clsName, class_dict)
+        self.cls = eval(cls_name, class_dict)
         dna_dict[name] = self
 
     def __call__(self, *args, **kargs):
         return Constructor(self, args, kargs)
-        
+
+    def __repr__(self):
+        return f"Dna(type={self.type}, name={self.name}, title={self.title}, img_src={self.img_src}, cls_name={self.cls_name}, assignments={self.assignments})"
+
     def add_assignment(self, prop, val):
         self.assignments.append( (prop, val) )
         

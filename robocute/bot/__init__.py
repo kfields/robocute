@@ -2,6 +2,7 @@ from loguru import logger
 
 import glm
 
+from crunge.engine.scheduler import Scheduler
 from crunge.engine.d2.sprite import SpriteVu
 from crunge.engine.loader.sprite.sprite_loader import SpriteLoader
 from crunge.engine.resource.resource_manager import ResourceManager
@@ -10,9 +11,9 @@ from robocute.entity import *
 from .brain import BotBrain
 
 class BotVu(SpriteVu):
-    def __init__(self, imgSrc):
-        #logger.debug(f"Loading sprite from {imgSrc}")
-        path = ResourceManager().resolve_path("${resources}/image/" + imgSrc)
+    def __init__(self, img_src):
+        #logger.debug(f"Loading sprite from {img_src}")
+        path = ResourceManager().resolve_path("${resources}/image/" + img_src)
         sprite = SpriteLoader().load(path)
 
         super().__init__(sprite)
@@ -22,27 +23,36 @@ class Bot(Entity):
     def __init__(self, dna = None):
         super().__init__(dna)
         self.vacancy = False
-        #self.height = 2
-        #self.size = glm.vec2(1, 1, 1)
-        self.add(BotVu('robocute.png'))
+        self.block_height = 2
 
-    '''
-    def _seat(self):
-        super()._seat()
-        self.add(BotVu('robocute.png'))
-    '''
+    def construct_vu(self):
+        self.vu = self.add(BotVu('robocute.png'))
     
     '''
     This is that post constructor we need.
     Idea is to add ourselves to Scene list of spreaders, fillers, mappers, etc.
     '''
-    def register(self, app, coord):
-        super().register(app, coord)
-        def start():
+
+    def _ready(self):
+        super()._ready()
+        def start(delta_time: float):
             brain = self.brain
             if(brain):
-                brain.start()            
-        app.add_callback(start)
+                brain.start()
+        #app.add_callback(start)
+        Scheduler().schedule_once(start)
+
+    '''
+    def register(self, app, coord):
+        super().register(app, coord)
+        def start(delta_time: float):
+            brain = self.brain
+            if(brain):
+                brain.start()
+        #app.add_callback(start)
+        Scheduler().schedule_once(start)
+    '''
+
     '''
     def start(self):
         pass

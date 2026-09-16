@@ -10,7 +10,7 @@ class Row(list):
     def __init__(self, grid: "Grid"):
         super().__init__()
         self.grid = grid
-        self.colCount = grid.colCount
+        self.colCount = grid.col_count
         self.invalid = 0
 
     def invalidate(self, flag=1):

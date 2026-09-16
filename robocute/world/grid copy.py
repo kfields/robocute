@@ -16,32 +16,18 @@ from crunge.engine.d2.sprite.instanced.instanced_sprite_vu_group import (
 
 
 class Grid(GameNode):
-    def __init__(
-        self,
-        col_count: int = WORLD_GRID_COL_MAX,
-        row_count: int = WORLD_GRID_ROW_MAX,
-        is_template: bool = False,
-    ):
+    def __init__(self, col_count=WORLD_GRID_COL_MAX, row_count=WORLD_GRID_ROW_MAX, is_template: bool = False):
         super().__init__()
-        logger.debug(
-            f"Initializing Grid with col_count: {col_count}, row_count: {row_count}, is_template: {is_template}"
-        )
+        logger.debug(f"Initializing Grid with col_count: {col_count}, row_count: {row_count}, is_template: {is_template}")
         #
         self.col_count = col_count
         self.row_count = row_count
-        self.rows: list[Row] = []
+        self.rows = []
 
         self.sprite_group = DynamicSpriteGroup(1024).enable()
         self.vu_group = self.add(InstancedSpriteVuGroup(1024, self.sprite_group))
         self.dirty = True
         self.is_template = is_template
-
-    def clone(self):
-        clone = Grid(self.col_count, self.row_count)
-        for row in self.rows:
-            clone_row = row.clone(clone)
-            clone.rows.append(clone_row)
-        return clone
 
     def mark_dirty(self) -> None:
         self.dirty = True
@@ -52,7 +38,7 @@ class Grid(GameNode):
     def on_child_added(self, child):
         super().on_child_added(child)
         self.mark_dirty()
-        Scheduler().schedule_once(self.rebuild)
+        #Scheduler().schedule_once(self.rebuild)
 
     def rebuild(self, delta_time: float):
         self.vu_group.clear()
@@ -60,10 +46,10 @@ class Grid(GameNode):
             for cell in row:
                 for node in cell:
                     vu = node.vu
-                    # logger.debug(f"node class: {type(node)}: {node.is_enabled}")
+                    #logger.debug(f"node class: {type(node)}: {node.is_enabled}")
                     if vu is not None:
-                        # logger.debug(f"vu class: {type(vu)}: {vu}")
-                        # logger.debug(f"vu class: {type(vu)}: {vu}, position: {vu.node.position}")
+                        #logger.debug(f"vu class: {type(vu)}: {vu}")
+                        #logger.debug(f"vu class: {type(vu)}: {vu}, position: {vu.node.position}")
                         if not isinstance(vu, SpriteVu):
                             continue
                         if not vu.is_enabled:
@@ -71,21 +57,9 @@ class Grid(GameNode):
 
                         self.vu_group.append(vu)
 
-    def _ready(self):
-        super()._ready()
-        if self.dirty:
-            self.rebuild(0.0)
-            self.dirty = False
-
-
-    def _draw(self):
-        if self.dirty:
-            self.rebuild(0.0)
-            self.dirty = False
-        super()._draw()
-
     def _update(self, delta_time: float):
-        if self.dirty:
+        if self.dirty and self.is_ready:
+        #if self.dirty:
             self.rebuild(delta_time)
             self.dirty = False
         super()._update(delta_time)
@@ -121,12 +95,19 @@ class Grid(GameNode):
 
         # prevent underage
         self.validate()
-
+        
         #
         rowNdx = 0
         for row in self.rows:
             row.build(app, self, rowNdx)
             rowNdx += 1
+
+    def clone(self):
+        clone = Grid(self.col_count, self.row_count)
+        for row in self.rows:
+            cloneRow = row.clone()
+            clone.rows.append(cloneRow)
+        return clone
 
     def valid_coord(self, coord):
         """

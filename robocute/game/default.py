@@ -26,6 +26,7 @@ class DefaultWorld(World):
         self.grid_template = grid
         
     def generate_grid(self, x, y):
+        #raise Exception()
         grid = self.grid_template.clone()
         return grid
 

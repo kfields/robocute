@@ -9,7 +9,6 @@ class Game(GameBase):
         self.name = name
 
         self.catalog = self.create_catalog()
-
         self.world = self.load_or_create_world()
         self.scene = self.create_scene()
         

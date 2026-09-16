@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class Cell(list):
-    def __init__(self, row: "Row" = None):
+    def __init__(self, row: "Row"):
         super().__init__()
         self.row = row
         self.invalid = 0
@@ -31,6 +31,11 @@ class Cell(list):
     @property
     def grid(self):
         return self.row.grid if self.row else None
+
+    def clone(self, row: "Row"):
+        clone = Cell(row)
+        clone.ctors = self.ctors
+        return clone
 
     def invalidate(self, flag=1):
         if self.invalid == 0:
@@ -80,11 +85,6 @@ class Cell(list):
         if self.ctors:
             execute_ctors(app, self.ctors, coord, self)
 
-    def clone(self):
-        clone = Cell()
-        clone.ctors = self.ctors
-        return clone
-
     def find_group(self):
         for node in self:
             if isinstance(node, GroupBlock):
@@ -115,75 +115,18 @@ class Cell(list):
             self.append(node)
         self.update(coord)
 
-    '''
-    def push_node(self, node: GameNode, coord: Coord):
-        logger.debug(f"Pushing node: {node.__class__.__name__} at coord: {coord}")
-        #self.invalidate()
-        if len(self) == 0:
-            self.add_node(node, coord)
-            return
-        # else
-        top = self[-1]
-
-        if node.groupable:
-            group = self.find_group()
-            if group:
-                logger.debug(f"Found group: {group}")
-                group.push_node(node)
-                #self.update_node(node, coord)
-            elif top.groupable:
-                logger.debug(f"Top node is groupable: {top.groupable}")
-                oldTop = self.pop()
-                top = GroupBlock()
-                top.push_node(oldTop)
-                top.push_node(node)
-                self.append(top)
-                self.update_node(top, coord)
-            else:
-                logger.debug(f"Top node is not groupable: {top.groupable}")
-                self.append(node)
-                self.update_node(node, coord)
-        else:
-            self.add_node(node, coord)
-
-        self.update()
-
-    def add_node(self, node: GameNode, coord: Coord):
-        self.update()
-        self.append(node)
-        self.update_node(node, coord)
-        #self.append(node)
-        #self.update()
-
-    def update_node(self, node: GameNode, coord: Coord):
-        logger.debug(f"Adding node: {node} at coord: {coord}")
-        t = self.get_node_transform(node, coord)
-        node.coord = coord
-        node.grid = self.grid
-        node.position = glm.vec2(t.x, t.y)
-        """
-        if node.position.y > 1028:
-            raise ValueError(f"Node position y exceeds limit: {node.position.y}")
-        """
-        # logger.debug("Coord.x: {}", coord.x)
-        # logger.debug("Coord.y: {}", coord.y)
-        # logger.debug("Node position set to: {}", node.position)
-
-        if node.parent is None and not self.grid.is_template:
-            self.grid.add_child(node)
-    '''
-
     def pop_node(self):
-        exit()
         node = self[-1]
         self.remove(node)
-        self.update()
+        self.update(node.coord)
         return node
 
     def remove_node(self, node: GameNode):
         logger.debug(f"Removing node: {node}")
         logger.debug(f"Cell before removing node: {self}")
         if not node in self:
+            logger.warning(f"Node not found in cell: {node}")
+            self.update(node.coord)
             return
         #self.invalidate()
         if node.groupable:
@@ -196,7 +139,7 @@ class Cell(list):
                     member = group.nodes[0]
                     self.remove_node(group)  # watchme:recursive
                     self.push_node(member)
-                self.update()
+                self.update(node.coord)
                 return
         # else
         self.remove(node)

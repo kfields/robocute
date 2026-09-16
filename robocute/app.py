@@ -23,18 +23,6 @@ class App(CrungeApp):
         ResourceManager().add_path_variable("resources", resource_root)
 
         #
-        '''
-        game = self.load_or_create_game(game_name)
-        self.game = game
-        self.catalog = game.catalog
-        self.world = game.world
-        self.scene = game.scene
-        logger.debug("Scene: {}", self.scene)
-        '''
-        #
-        self.callbacks = []
-        #
-        self.user = None
         self.homes = []
         #
         self.isRunning = False
@@ -50,7 +38,7 @@ class App(CrungeApp):
         logger.debug("Scene: {}", self.scene)
 
         # Temporary until we can fix camera
-        #grid =self.world.get_grid(0, 0)
+        #grid = self.world.get_grid(0, 0)
         #self.world.add_grid(grid)
 
 
@@ -60,6 +48,7 @@ class App(CrungeApp):
         self.display = GameView(self.scene)
         self.camera = self.display.camera
         #self.center_camera()
+        #grid = self.world.get_grid(0, 0)
 
     def center_camera(self):
         if self.camera:
@@ -108,18 +97,6 @@ class App(CrungeApp):
 
     def on_exit(self):
         self.game.save()
-
-    """
-    Callbacks
-    """
-
-    '''
-    def add_callback(self, callback):
-        self.callbacks.append(callback)
-
-    def remove_callback(self, callback):
-        self.callbacks.remove(callback)
-    '''
 
     """
     Avatar Support

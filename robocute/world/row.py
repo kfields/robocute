@@ -13,6 +13,13 @@ class Row(list):
         self.col_count = grid.col_count
         self.invalid = 0
 
+    def clone(self, grid: "Grid"):
+        clone = Row(grid)
+        for cell in self:
+            clone_cell = cell.clone(clone)
+            clone.append(clone_cell)
+        return clone
+
     def invalidate(self, flag=1):
         if self.invalid == 0:
             self.grid.invalidate()
@@ -42,10 +49,3 @@ class Row(list):
             coord = Coord(self.grid.coordX + colNdx, self.grid.coordY + rowNdx)
             cell.build(app, self, coord)
             colNdx += 1
-
-    def clone(self):
-        clone = Row(self.grid)
-        for cell in self:
-            cloneCell = cell.clone()
-            clone.append(cloneCell)
-        return clone

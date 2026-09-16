@@ -58,6 +58,8 @@ class GameView(SceneView2D):
         #
         self.query = None
 
+    def _enable(self):
+        super()._enable()
         tool = self.create_avatar("Designer()")
         self.push_tool(tool)
 

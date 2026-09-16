@@ -83,7 +83,7 @@ class Reader:
             if colNdx > colMax:
                 break            
         #prevent underage
-        gridRow.validate()
+        #gridRow.validate()
         return gridRow
         
     def read_cell(self, cell, gridRow, colNdx, colMax):

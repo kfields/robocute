@@ -9,11 +9,7 @@ from crunge.engine.app import App as CrungeApp
 from crunge.engine.resource.resource_manager import ResourceManager
 
 from robocute.game.default import DefaultGame
-from robocute.world import World
-from robocute.game_scene import GameScene
-from robocute.graphics import Graphics
 
-from robocute.user import *
 from robocute import globe
 
 class App(CrungeApp):
@@ -97,7 +93,6 @@ class App(CrungeApp):
     def _ready(self):
         super()._ready()
         seed()
-        self.user = self.create_user()
         #self.isRunning = True
         #
         # Create our FPS clock
@@ -113,10 +108,6 @@ class App(CrungeApp):
 
     def on_exit(self):
         self.game.save()
-
-    def create_user(self):
-        user = User(self)
-        return user
 
     """
     Callbacks

@@ -10,7 +10,7 @@ class Row(list):
     def __init__(self, grid: "Grid"):
         super().__init__()
         self.grid = grid
-        self.colCount = grid.col_count
+        self.col_count = grid.col_count
         self.invalid = 0
 
     def invalidate(self, flag=1):
@@ -22,9 +22,9 @@ class Row(list):
         self.invalid = 0
         # prevent underage
         data = self
-        if len(data) < self.colCount:
+        if len(data) < self.col_count:
             i = 0
-            while i < self.colCount:
+            while i < self.col_count:
                 data.append(self.create_cell())
                 i += 1
         for cell in self:

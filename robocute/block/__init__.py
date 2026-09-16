@@ -37,11 +37,12 @@ class GroupBlockVu(InstancedSpriteVuGroup):
     def validate(self):
         super().validate()
 
+    '''
     def draw(self, graphics):
         def draw(vu, graphics):
             vu.draw(graphics)
         self.walk(graphics, draw)
-
+    '''
     def batch(self, graphics):
         def batch(vu, graphics):
             vu.batch(graphics)
@@ -74,19 +75,12 @@ class GroupBlockVu(InstancedSpriteVuGroup):
         return t
         
 class GroupBlock(Block):
-    '''
-    def __new__(cls, *args, **kargs):
-        obj = object.__new__(cls)
-        dna = cls.dna
-        obj.__init__(dna, *args, **kargs)
-        return obj
-    '''
     def __init__(self, dna = None):
         if not dna:
             dna = find_dna('GroupBlock')
         super().__init__(dna)
         self.nodes = []
-        #self.add(GroupBlockVu())
+        self.add(GroupBlockVu())
         self.vacancy = True
         self.dirty = True
 

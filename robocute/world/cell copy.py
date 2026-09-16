@@ -40,40 +40,11 @@ class Cell(list):
     def validate(self):
         self.invalid = 0
 
-    def update(self, coord: Coord):
-        height = 0
-        for node in self:
-            height += node.block_height
-            self.update_node(node, coord)
-        self.height = height
-
-        self.grid.mark_dirty()
-
-    def update_node(self, node: GameNode, coord: Coord):
-        logger.debug(f"Adding node: {node} at coord: {coord}")
-        t = self.get_block_transform(node, coord)
-        node.coord = coord
-        node.grid = self.grid
-        node.position = glm.vec2(t.x, t.y)
-        """
-        if node.position.y > 1028:
-            raise ValueError(f"Node position y exceeds limit: {node.position.y}")
-        """
-        # logger.debug("Coord.x: {}", coord.x)
-        # logger.debug("Coord.y: {}", coord.y)
-        # logger.debug("Node position set to: {}", node.position)
-
-        if node.parent is None and not self.grid.is_template:
-            self.grid.add_child(node)
-
-    '''
     def update(self):
         height = 0
         for node in self:
-            height += node.block_height
+            height += node.height
         self.height = height
-        self.grid.mark_dirty()
-    '''
 
     def build(self, app, row, coord):
         self.row = row
@@ -91,31 +62,6 @@ class Cell(list):
                 return node
         return None
 
-    def push_node(self, node, coord: Coord):
-        self.invalidate()
-        if len(self) ==0:
-            self.append(node)
-            self.update(coord)
-            return
-        #else
-        top = self[-1]
-        if node.groupable:
-            group = self.find_group()        
-            if group:
-                group.push_node(node)
-            elif top.groupable:
-                oldTop = self.pop()
-                top = GroupBlock()
-                top.push_node(oldTop)
-                top.push_node(node)
-                self.append(top)
-            else:
-                self.append(node)
-        else:
-            self.append(node)
-        self.update(coord)
-
-    '''
     def push_node(self, node: GameNode, coord: Coord):
         logger.debug(f"Pushing node: {node.__class__.__name__} at coord: {coord}")
         #self.invalidate()
@@ -171,7 +117,6 @@ class Cell(list):
 
         if node.parent is None and not self.grid.is_template:
             self.grid.add_child(node)
-    '''
 
     def pop_node(self):
         exit()
@@ -200,7 +145,7 @@ class Cell(list):
                 return
         # else
         self.remove(node)
-        self.update(node.coord)
+        self.update()
 
     def get_top(self):
         length = len(self)

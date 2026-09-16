@@ -26,9 +26,11 @@ class Grid(GameNode):
 
         self.sprite_group = DynamicSpriteGroup(1024).enable()
         # self.vu_group = self.add(InstancedSpriteVuGroup(1024, self.sprite_group))
-        #self.dirty = True
-        self.dirty = False
+        self.dirty = True
         self.is_template = is_template
+
+    def mark_dirty(self) -> None:
+        self.dirty = True
 
     def _seat(self):
         super()._seat()
@@ -39,13 +41,8 @@ class Grid(GameNode):
 
     def on_child_added(self, child):
         super().on_child_added(child)
-        vu = child.vu
-        '''
-        if vu is not None:
-            self.vu_group.append(vu)
-        '''
-        self.dirty = True
-        # Scheduler().schedule_once(self.rebuild)
+        self.mark_dirty()
+        Scheduler().schedule_once(self.rebuild)
 
     def rebuild(self, delta_time: float):
         self.vu_group.clear()
@@ -66,6 +63,7 @@ class Grid(GameNode):
 
     def _update(self, delta_time: float):
         if self.dirty and self.is_ready:
+        #if self.dirty:
             self.rebuild(delta_time)
             self.dirty = False
         super()._update(delta_time)

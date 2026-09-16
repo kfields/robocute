@@ -49,6 +49,7 @@ class RoboBrain(BotBrain):
                      
     def do(self, msg):
         success = True
+        return
         if isinstance(msg, Say):
             self.say(msg.text)
         elif isinstance(msg, GoMessage):

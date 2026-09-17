@@ -55,6 +55,7 @@ class RoboBrain(BotBrain):
         if isinstance(msg, GoMessage):
             self.go(msg)
 
+        # TODO: Say not working yet ...
         '''
         if isinstance(msg, Say):
             self.say(msg.text)

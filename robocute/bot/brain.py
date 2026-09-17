@@ -31,5 +31,4 @@ class BotBrain(EntityBrain):
        dstCell.push_node(node)
        #
        _dstCoord = Coord(dstCoord.x, dstCoord.y, dstCell.height)
-       #self.set_coord(dstCoord)
-       self.coord = _dstCoord
+       #self.coord = _dstCoord

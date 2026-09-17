@@ -80,7 +80,7 @@ class GroupBlock(Block):
             dna = find_dna('GroupBlock')
         super().__init__(dna)
         self.nodes = []
-        self.add(GroupBlockVu())
+        #self.add(GroupBlockVu())
         self.vacancy = True
         self.dirty = True
 
@@ -107,6 +107,22 @@ class GroupBlock(Block):
 
     def redundant(self):
         return len(self.nodes) == 1
+
+    def get_member_transform(self, transform, memberNode):
+        t = transform.copy()
+        for node in self.nodes:
+            t.x += 10
+            t.y -= 10
+            if node == memberNode:
+                break
+        t.y += node.height * BLOCK_STACK_HEIGHT
+        return t
+
+    def yield_visuals(self):
+        """Yield the group's own visual, then its members', bottom to top."""
+        yield from super().yield_visuals()
+        for node in self.nodes:
+            yield from node.yield_visuals()
 
 class HomeBlock(GroupBlock):
     def __init__(self):

@@ -95,7 +95,7 @@ class AbstractDesignerBrain(RoboBrain):
         dstCell = self.grid.get_cell_at(dstCoord)
         dstCell.push_node(node, dstCoord)
         #
-        self.coord = dstCoord
+        #self.coord = dstCoord
 
     def do(self, msg):
         if isinstance(msg, DoBuild):

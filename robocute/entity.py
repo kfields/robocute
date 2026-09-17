@@ -37,15 +37,19 @@ class EntityBrain(BaseBrain):
         super().__init__()
         #self.grid = None
         #
-        self.__coord = Coord(0,0) #brain knows where node is at roughly
-        self.old_coord = self.coord
+        #self.__coord = Coord(0,0) #brain knows where node is at roughly
+        #self.old_coord = self.coord
         #
         self.on_move = None #need callback for camera!!!
 
+    @property
+    def coord(self):
+        return self.node.coord if self.node is not None else None
+    
     def register(self, app, coord):
         self.grid = self.app.world.get_grid_at(coord)
         self.coord = coord
-            
+    '''
     def set_coord(self, coord):
         self.old_coord = self.coord
         self.__coord = coord
@@ -54,3 +58,4 @@ class EntityBrain(BaseBrain):
         return self.__coord
     
     coord = property(get_coord, set_coord)
+    '''

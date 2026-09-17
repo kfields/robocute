@@ -1,24 +1,53 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 
 from robocute.base import *
+
 if TYPE_CHECKING:
     from .grid import Grid
+
 from .cell import *
 
 
 class Row(list):
+    """One row of cells, left to right.
+
+    Cells are filled in by `validate`, so a freshly constructed Row is empty
+    and a cloned one is filled by the clone loop instead.
+    """
+
     def __init__(self, grid: "Grid"):
         super().__init__()
         self.grid = grid
         self.col_count = grid.col_count
         self.invalid = 0
 
-    def clone(self, grid: "Grid"):
+    def __repr__(self) -> str:
+        return f"Row({len(self)} cells)"
+
+    def clone(self, grid: "Grid") -> "Row":
+        """Copy this row's cells onto a new grid.
+
+        The target grid is passed explicitly: cells resolve `cell.grid` through
+        `cell.row.grid`, so a clone bound to the source grid would register its
+        nodes on the template.
+        """
         clone = Row(grid)
         for cell in self:
-            clone_cell = cell.clone(clone)
-            clone.append(clone_cell)
+            clone.append(cell.clone(clone))
         return clone
+
+    # ------------------------------------------------------------------
+    # Visuals
+    # ------------------------------------------------------------------
+
+    def yield_visuals(self) -> Iterator:
+        """Yield the vus of this row, left to right, each cell bottom to top."""
+        for cell in self:
+            yield from cell.yield_visuals()
+
+    # ------------------------------------------------------------------
+    # Validation
+    # ------------------------------------------------------------------
 
     def invalidate(self, flag=1):
         if self.invalid == 0:
@@ -28,24 +57,25 @@ class Row(list):
     def validate(self):
         self.invalid = 0
         # prevent underage
-        data = self
-        if len(data) < self.col_count:
-            i = 0
-            while i < self.col_count:
-                data.append(self.create_cell())
-                i += 1
+        while len(self) < self.col_count:
+            self.append(self.create_cell())
+
         for cell in self:
             if cell.invalid != 0:
                 cell.validate()
 
-    def create_cell(self):
-        cell = Cell(self)
-        return cell
+    def create_cell(self) -> Cell:
+        return Cell(self)
 
-    def build(self, app, grid, rowNdx):
+    # ------------------------------------------------------------------
+    # Build
+    # ------------------------------------------------------------------
+
+    def build(self, app, grid: "Grid", row_ndx: int):
         self.grid = grid
-        colNdx = 0
-        for cell in self:
-            coord = Coord(self.grid.coordX + colNdx, self.grid.coordY + rowNdx)
-            cell.build(app, self, coord)
-            colNdx += 1
+        for col_ndx, cell in enumerate(self):
+            coord = Coord(
+                self.grid.coordX + col_ndx,
+                self.grid.coordY + row_ndx,
+            )
+            cell.build(app, coord)

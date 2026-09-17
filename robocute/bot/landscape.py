@@ -24,7 +24,7 @@ class LandscapeBotBrain(BotBrain):
         def callback(coord):
             return self.explore(coord)
         explorer = Explorer(map, callback)
-        coord = self.node.coord
+        coord = self.coord
         logger.debug(f"Starting exploration at coord: {coord}")
         cell = self.grid.get_cell_at( coord )
         cell.remove_node(self.node)

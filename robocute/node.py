@@ -38,3 +38,13 @@ class GameNode(Node2D):
 
     def get_transform(self):
         return Transform(self.x, self.y)
+
+    def yield_visuals(self):
+        """Yield this node's visuals in draw order.
+
+        A plain node contributes its own vu, if it has one. Container nodes
+        override this to yield what they hold instead.
+        """
+        vu = self.vu
+        if vu is not None:
+            yield vu

@@ -4,7 +4,7 @@ from random import seed
 from loguru import logger
 import glm
 
-from robocute.game_view import GameView
+from robocute.view import GameView
 from crunge.engine.app import App as CrungeApp
 from crunge.engine.resource.resource_manager import ResourceManager
 

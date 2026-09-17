@@ -1,3 +1,15 @@
+import glm
+
+from crunge.engine.d2.camera_2d import Camera2D
+
+class GameCamera(Camera2D):
+    def __init__(self):
+        super().__init__()
+
+    def look_at(self, x, y, z = 0):
+        self.position = glm.vec2(x, y)
+
+'''
 from robocute.graphics import *
 
 class Camera(Clip):
@@ -57,3 +69,4 @@ class Camera(Clip):
         clip.bottom = self.bottom        
         clip.top = self.top
         clip.right = self.right        
+'''

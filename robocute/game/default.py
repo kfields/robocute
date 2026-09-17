@@ -4,7 +4,7 @@ from robocute.catalog import Catalog
 import robocute.persist.catalog.ods
 from robocute.world import *
 from robocute.brain import *
-from robocute.game_scene import *
+from robocute.scene import *
 import robocute.persist.grid.ods
 
 class DefaultWorld(World):

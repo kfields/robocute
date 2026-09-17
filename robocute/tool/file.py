@@ -17,8 +17,8 @@ class FileTool(robocute.tool.Tool):
         user.add_mousebox(self.mousebox)
         
     def unbind(self):
-        self.user.remove_keybox(self.keybox)
-        self.user.remove_mousebox(self.mousebox)
+        self.view.remove_keybox(self.keybox)
+        self.view.remove_mousebox(self.mousebox)
         self.hide_widget()
         super().unbind()        
 

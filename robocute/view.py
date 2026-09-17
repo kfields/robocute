@@ -1,4 +1,7 @@
+
 from loguru import logger
+
+from crunge import sdl
 
 from crunge.engine.d2.view import SceneView2D
 from crunge.engine.d2.scene import Scene2D
@@ -12,6 +15,7 @@ from .base import Coord
 from .tool import Tool
 from .builder import build
 from .block import BLOCK_WIDTH, BLOCK_ROW_HEIGHT
+from .camera import GameCamera
 
 fudge = (BLOCK_WIDTH * 0.5, BLOCK_ROW_HEIGHT * 0.5)  # fixme:hack for camera
 
@@ -46,7 +50,7 @@ class GameView(SceneView2D):
         self.coord = Coord(0, 0)
 
     def create_camera(self):
-        self.camera = Camera2D()
+        self.camera = GameCamera()
 
     def _create(self):
         super()._create()
@@ -76,6 +80,10 @@ class GameView(SceneView2D):
         )
         # logger.debug(f"Event dispatch result: {result}")
         return result
+
+    def on_mouse_wheel(self, event: sdl.MouseWheelEvent):
+        # logger.debug(f"{self.title}:on_mouse_wheel")
+        self.camera.zoom_pct = self.camera.zoom_pct + event.y * 10
 
     def bind_tool(self, tool: Tool):
         self.tool = tool

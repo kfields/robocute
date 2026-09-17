@@ -1,3 +1,5 @@
+from crunge import sdl
+
 from robocute.widget.bubble import *
 
 from robocute.message import *
@@ -49,8 +51,30 @@ class RoboBrain(BotBrain):
                      
     def do(self, msg):
         success = True
-        return
+
+        if isinstance(msg, GoMessage):
+            self.go(msg)
+
+        '''
         if isinstance(msg, Say):
             self.say(msg.text)
         elif isinstance(msg, GoMessage):
             self.go(msg)
+        '''
+
+    def on_key(self, event: sdl.KeyboardEvent):
+        super().on_key(event)
+        key = event.key
+        down = event.down
+        repeat = event.repeat
+
+        if down and not repeat:
+            match key:
+                case sdl.SDLK_w:
+                    self.do(GoNorth())
+                case sdl.SDLK_s:
+                    self.do(GoSouth())
+                case sdl.SDLK_a:
+                    self.do(GoWest())
+                case sdl.SDLK_d:
+                    self.do(GoEast())

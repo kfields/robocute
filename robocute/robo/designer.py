@@ -2,11 +2,8 @@ from robocute.widget.catalog import *
 from robocute.robo.message import *
 from robocute.robo.avatar import *
 from robocute.tool import *
-from robocute import globe
 
 from robocute.builder import build, build_thing, build_thing_at
-
-from ..game_view import GameView
 
 from .brain import RoboBrain
 
@@ -117,7 +114,6 @@ class DesignerCloneBrain(AbstractDesignerBrain):
 class DesignerBrain(AbstractDesignerBrain):
     def __init__(self):
         super().__init__()
-        self.view: GameView = globe.view
         self.clones = []
         self.drawer = None
         self.keybox = DesignerKeybox(self)
@@ -134,8 +130,8 @@ class DesignerBrain(AbstractDesignerBrain):
         self.hide_node()
         self.app.exit()
 
-    def bind(self, user):
-        super().bind(user)
+    def bind(self, view):
+        super().bind(view)
         self.show_dash()
         #
         if self.avatar:
@@ -198,7 +194,7 @@ class DesignerBrain(AbstractDesignerBrain):
         node = cell[-2]
         # node = cell[-1]
         self.avatar = node.brain
-        self.user.push_tool(self.avatar)
+        self.view.push_tool(self.avatar)
 
     def release_control(self):
         self.coord = self.avatar.coord
@@ -275,4 +271,4 @@ class DesignerBrain(AbstractDesignerBrain):
 
     def build_tool(self, dna):
         tool = build_thing(dna, self.app)
-        self.user.push_tool(tool)
+        self.view.push_tool(tool)

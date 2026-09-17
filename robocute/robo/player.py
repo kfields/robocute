@@ -160,7 +160,7 @@ class PlayerBrain(robocute.robo.brain.RoboBrain):
 
     def unbind(self):
         self.hide_dash()        
-        user = self.user
+        user = self.view
         user.remove_keybox(self.keybox)
         user.remove_mousebox(self.mousebox)
         super().unbind()

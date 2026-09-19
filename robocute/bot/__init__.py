@@ -26,7 +26,7 @@ class Bot(Entity):
         self.block_height = 2
 
     def construct_vu(self):
-        self.vu = self.add(BotVu('robocute.png'))
+        self.vu = self.add_chip(BotVu('robocute.png'))
     
     '''
     This is that post constructor we need.

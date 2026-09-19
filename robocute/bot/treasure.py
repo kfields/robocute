@@ -12,7 +12,7 @@ from robocute.builder import build
 class TreasureBot(robocute.bot.Bot):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.brain = self.add(TreasureBotBrain())
+        self.brain = self.add_chip(TreasureBotBrain())
 
 class TreasureBotBrain(BotBrain):
     def __init__(self):

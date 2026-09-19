@@ -13,7 +13,7 @@ from .brain import BotBrain
 class LandscapeBot(robocute.bot.Bot):
     def __init__(self, dna = None):
         super().__init__(dna)
-        self.brain = self.add(LandscapeBotBrain())
+        self.brain = self.add_chip(LandscapeBotBrain())
 
 class LandscapeBotBrain(BotBrain):
     def __init__(self):

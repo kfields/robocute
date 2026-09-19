@@ -12,6 +12,7 @@ from robocute.game.default import DefaultGame
 
 from robocute import globe
 
+
 class App(CrungeApp):
 
     def __init__(self, game_name="Default"):
@@ -37,30 +38,11 @@ class App(CrungeApp):
         self.scene = game.scene
         logger.debug("Scene: {}", self.scene)
 
-        # Temporary until we can fix camera
-        #grid = self.world.get_grid(0, 0)
-        #self.world.add_grid(grid)
-
-
         self.create_view()
 
     def create_view(self):
         self.display = GameView(self.scene)
         self.camera = self.display.camera
-        #self.center_camera()
-        #grid = self.world.get_grid(0, 0)
-
-    def center_camera(self):
-        if self.camera:
-            ppu = self.camera.ppu
-            view_width_units = self.viewport.width / ppu
-            view_height_units = self.viewport.height / ppu
-            self.camera.position = glm.vec2(view_width_units / 2, view_height_units / 2)
-
-    def on_size(self):
-        super().on_size()
-        #self.center_camera()
-
 
     def load_or_create_game(self, game_name):
         game = self.load_game(game_name)
@@ -82,14 +64,14 @@ class App(CrungeApp):
     def _ready(self):
         super()._ready()
         seed()
-        #self.isRunning = True
+        # self.isRunning = True
         #
         # Create our FPS clock
-        '''
+        """
         self.fps_text = pyglet.text.Label(
             "0", font_name="Verdana", font_size=28, x=self.window.width - 200, y=10
         )
-        '''
+        """
 
     def exit(self):
         self.isRunning = False
@@ -117,7 +99,7 @@ class App(CrungeApp):
         pyglet.app.run()
     '''
 
-    '''
+    """
     def update(self, dt):
         scene = self.scene
         user = self.user
@@ -143,4 +125,4 @@ class App(CrungeApp):
             for callback in self.callbacks:
                 callback()
             self.callbacks = []
-    '''
+    """

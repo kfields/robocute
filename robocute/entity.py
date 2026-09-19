@@ -30,7 +30,7 @@ class Entity(GameNode):
 
     def construct_vu(self):
         if self.dna.img_src:
-            self.vu = self.add(EntityVu(self.dna.img_src))
+            self.vu = self.add_chip(EntityVu(self.dna.img_src))
 
 class EntityBrain(BaseBrain):
     def __init__(self):

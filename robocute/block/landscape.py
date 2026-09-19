@@ -9,4 +9,4 @@ class LandscapeBlock(Block):
         self.vacancy = False
 
     def construct_vu(self):
-        self.vu = self.add(BlockVu(self.dna.img_src))
+        self.vu = self.add_chip(BlockVu(self.dna.img_src))

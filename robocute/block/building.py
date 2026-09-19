@@ -18,5 +18,5 @@ class BuildingBlock(Block):
         
     def __init__(self, dna):
         super().__init__(dna)
-        self.add(BlockVu(self.dna.img_src))
+        self.add_chip(BlockVu(self.dna.img_src))
         self.vacancy = False

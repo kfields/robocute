@@ -13,4 +13,4 @@ class Robo(robocute.bot.Bot):
 
     def construct_vu(self):
         if self.dna.img_src:
-            self.vu = self.add(RoboVu(self.dna.img_src))
+            self.vu = self.add_chip(RoboVu(self.dna.img_src))

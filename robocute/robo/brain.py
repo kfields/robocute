@@ -6,6 +6,7 @@ from robocute.message import *
 from robocute.robo.message import *
 
 from ..bot import BotBrain
+from ..base import Coord
 
 class RoboBrain(BotBrain):
     def __init__(self):

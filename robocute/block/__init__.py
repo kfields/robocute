@@ -1,9 +1,6 @@
-import operator #needed for sorting
-
 from loguru import logger
 
 from crunge.engine.d2.sprite import SpriteVu
-from crunge.engine.d2.sprite.instanced import InstancedSpriteVuGroup
 from crunge.engine.loader.sprite.sprite_loader import SpriteLoader
 from crunge.engine.resource.resource_manager import ResourceManager
 
@@ -30,57 +27,13 @@ class Block(Entity):
     def __init__(self, dna):
         super().__init__(dna)
 
-class GroupBlockVu(InstancedSpriteVuGroup):
-    def __init__(self):
-        super().__init__()
 
-    def validate(self):
-        super().validate()
-
-    '''
-    def draw(self, graphics):
-        def draw(vu, graphics):
-            vu.draw(graphics)
-        self.walk(graphics, draw)
-    '''
-    def batch(self, graphics):
-        def batch(vu, graphics):
-            vu.batch(graphics)
-        self.walk(graphics, batch)
-
-    def query(self, graphics):
-        def query(vu, graphics):
-            vu.query(graphics)
-        self.walk(graphics, query)
-    
-    def walk(self, graphics, callback):
-        g = graphics.copy()
-        for node in self.node.nodes:
-            vu = node.vu
-            if vu != None:
-                callback(vu, g)
-                g.x += 10
-                g.y -= 10
-    
-    def get_member_transform(self, transform, memberNode):
-        t = transform.copy()
-        for node in self.node.nodes:
-            vu = node.vu
-            if vu != None:
-                t.x += 10
-                t.y -= 10
-            if node == memberNode:
-                break
-        t.y += node.height * BLOCK_STACK_HEIGHT
-        return t
-        
 class GroupBlock(Block):
     def __init__(self, dna = None):
         if not dna:
             dna = find_dna('GroupBlock')
         super().__init__(dna)
         self.nodes = []
-        #self.add(GroupBlockVu())
         self.vacancy = True
         self.dirty = True
 

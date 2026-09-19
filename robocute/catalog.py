@@ -1,5 +1,7 @@
 from crunge import yoga
 
+from crunge.engine.widget import Widget
+
 from robocute.builder import Dna
 from robocute.widget import *
 from robocute.skin import *
@@ -28,26 +30,22 @@ class Item(Image):
         self.dna = dna
         """
         if dna.type == 'tool':
-            self.add(ToolVu(dna.img_src))
+            self.add_chip(ToolVu(dna.img_src))
         else:
-            self.add(ItemVu(dna.img_src))
+            self.add_chip(ItemVu(dna.img_src))
         """
 
 
-class Page(GameWidget):
-    def __init__(self, name, items=None):
-        logger.debug(f"Page items: {items}")
+class Page(Widget):
+    def __init__(self, name, children=None):
+        logger.debug(f"Page items: {children}")
         # style=yoga.StyleBuilder().size_percent(100, 100).margin(yoga.Edge.ALL, 5).build()
-        style = yoga.Style()
+        #style = yoga.Style()
         # style.set_flex_grow(0.75)
         # style.set_flex_grow(1)
-        super().__init__(items, style=style)
+        super().__init__(children=children)
         self.name = name
-        # self.add(PageVu(self, 'CatalogBubble'))
-
-    def on_layout(self):
-        super().on_layout()
-        logger.debug(f"Page layout updated: {self.size}")
+        # self.add_chip(PageVu(self, 'CatalogBubble'))
 
 
 class Catalog:

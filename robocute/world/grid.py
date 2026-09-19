@@ -3,17 +3,18 @@ from typing import Iterator
 from loguru import logger
 
 from crunge.engine.d2 import Node2D
-from crunge.engine.vu_group import VuGroup
+from crunge.engine.render_group import RenderGroup
+from crunge.engine.d2.sprite import SpriteVu, SpriteVuGroup
 from crunge.engine.d2.sprite.dynamic import DynamicSpriteGroup
-from crunge.engine.d2.sprite.instanced.instanced_sprite_vu_group import (
-    InstancedSpriteVuGroup,
-)
+from crunge.engine.d2.sprite.instanced.instanced_sprite_program import InstancedSpriteProgram
 
 from robocute.node import *
 from robocute.block import *
 
 from .cell import *
 from .row import *
+
+CAPACITY = 1024
 
 
 class Grid(GameNode):
@@ -29,8 +30,12 @@ class Grid(GameNode):
       bottoming out in `GameNode.yield_visuals`, so a container node such as
       GroupBlock can substitute its members' visuals for its own.
     * A vu appears exactly once in that stream. A node in two cells yields
-      twice and the vu group rejects the duplicate, which is the intended
+      twice and the render group rejects the duplicate, which is the intended
       signal that something moved without being removed from its old cell.
+    * Append order is draw order. The sprite group's default sort key is
+      (depth, append sequence), and a block's depth is flat, so the stable
+      sort carries `yield_visuals`'s ordering through untouched. Nothing here
+      needs to supply a depth unless the traversal stops being authoritative.
     """
 
     def __init__(
@@ -48,8 +53,22 @@ class Grid(GameNode):
         self.row_count = row_count
         self.rows: list[Row] = []
 
-        self.sprite_group = DynamicSpriteGroup(1024).enable()
-        self.vu_group = self.add(InstancedSpriteVuGroup(1024, self.sprite_group, is_managed=True))
+        self.sprite_group = DynamicSpriteGroup(CAPACITY).enable()
+
+        # is_managed: rebuild() is the only way in. A block's vu finds this
+        # group by walking up from its node, which is what stops it from
+        # self-appending and competing with the ordered rebuild.
+        self.my_render_group = self.add_chip(RenderGroup(is_managed=True))
+
+        # Bound to a local rather than reached through self: a lambda closing
+        # over self would make grid -> render_group -> factories -> closure
+        # -> grid, which survives gen-0-only collection under gc.disable().
+        sprite_group = self.sprite_group
+        self.my_render_group.register(
+            SpriteVu,
+            lambda: SpriteVuGroup(CAPACITY, sprite_group, InstancedSpriteProgram()),
+        )
+
         self.dirty = True
         self.is_template = is_template
 
@@ -60,16 +79,12 @@ class Grid(GameNode):
         return clone
 
     # ------------------------------------------------------------------
-    # Vu group
+    # Render group
     # ------------------------------------------------------------------
-
-    def get_vu_group(self, vu_type: type = None) -> VuGroup | None:
-        """Claim vus created by descendants.
-
-        A node walks up looking for this, so a block's vu is created against
-        this grid's layout from the start rather than the per-model one.
-        """
-        return self.vu_group
+    #
+    # get_vu_group is gone. The RenderGroup is a chip seated on this node,
+    # so Node.get_render_group already finds it through the chip map and a
+    # descendant's find_render_group walks up to it. Nothing to override.
 
     # ------------------------------------------------------------------
     # Visuals
@@ -91,20 +106,8 @@ class Grid(GameNode):
     def mark_dirty(self) -> None:
         self.dirty = True
 
-    '''
-    def on_child_added(self, child):
-        super().on_child_added(child)
-        if not self.dirty:
-            # Coalesce: a world build adds hundreds of children and only needs
-            # one scheduled rebuild, not one per child.
-            self.mark_dirty()
-            Scheduler().schedule_once(self.rebuild)
-        else:
-            self.mark_dirty()
-    '''
-
     def rebuild(self, delta_time: float = 0.0):
-        group = self.vu_group
+        group = self.my_render_group
         group.clear()
 
         count = 0
@@ -127,13 +130,22 @@ class Grid(GameNode):
         super()._ready()
         self.rebuild_if_dirty()
 
-    def _draw(self):
-        self.rebuild_if_dirty()
-        super()._draw()
-
     def _update(self, delta_time: float):
+        # Head call, so the appends land before the RenderGroup's own update
+        # runs the replan that assigns their slots, and before each vu's
+        # flush writes its uniform into the slot it was given.
         self.rebuild_if_dirty(delta_time)
         super()._update(delta_time)
+
+    def _draw(self):
+        # No rebuild here. A rebuild at draw time cannot work: it assigns
+        # slots that mark GPU dirt, but the flush that would write them ran
+        # back in update, so the instances draw from slots nothing has
+        # written yet. That is the "rebuild at draw time was insufficient"
+        # failure, and it half-works, which is worse than a clean one-frame
+        # latency. Anything that marks dirty after update waits for the next
+        # frame, deliberately.
+        super()._draw()
 
     # ------------------------------------------------------------------
     # Validation

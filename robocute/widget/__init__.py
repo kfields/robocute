@@ -10,6 +10,7 @@ from robocute.vu import *
 from robocute.shape import Rect
 
 
-from .bubble import Bubble, DashBubble, SpeechBubble
+from .bubble import Bubble, DashBubble
 from .text import Text
 from .image import Image
+from .item_image import ItemImage

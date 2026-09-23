@@ -11,7 +11,25 @@ class GameNode(Node2D):
 
         self.name = "Unknown"
         self.brain = None
-        self.coord: Coord = None
+        self._coord: Coord = None
+        self._old_coord: Coord = None
+
+    @property
+    def coord(self):
+        return self._coord
+
+    @coord.setter
+    def coord(self, value):
+        self._coord = value
+        #self._old_coord = self._coord
+
+    @property
+    def old_coord(self):
+        return self._old_coord
+
+    @old_coord.setter
+    def old_coord(self, value):
+        self._old_coord = value
 
     def register(self, app, coord=None):
         # pass

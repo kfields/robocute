@@ -5,7 +5,6 @@ from crunge import sdl
 
 from crunge.engine.d2.view import SceneView2D
 from crunge.engine.d2.scene import Scene2D
-from crunge.engine.d2.camera_2d import Camera2D
 from crunge.engine.overlay import Overlay
 from crunge.core.dispatch import DispatchResult, EVENT_HANDLED
 
@@ -20,12 +19,12 @@ from .camera import GameCamera
 fudge = (BLOCK_WIDTH * 0.5, BLOCK_ROW_HEIGHT * 0.5)  # fixme:hack for camera
 
 
-class BubbleLayer(Overlay):
+class BubbleOverlay(Overlay):
     def __init__(self, name):
         super().__init__(name)
 
 
-class MouseLayer(Overlay):
+class MouseOverlay(Overlay):
     def __init__(self, name):
         super().__init__(name)
 
@@ -34,9 +33,9 @@ class GameView(SceneView2D):
     def __init__(self, scene: Scene2D) -> None:
         super().__init__(scene)
         globe.view = self
-        self.bubbles: BubbleLayer = None
+        self.bubbles: BubbleOverlay = None
         self.dash: Dash = None
-        self.mice: MouseLayer = None
+        self.mice: MouseOverlay = None
         self.app = globe.app
         self.world = self.app.world
         #
@@ -54,11 +53,11 @@ class GameView(SceneView2D):
 
     def _create(self):
         super()._create()
-        self.bubbles = self.add_overlay(BubbleLayer("bubbles"))
+        #self.bubbles = self.add_overlay(BubbleOverlay("bubbles"))
         #
         self.dash = self.add_overlay(Dash("dash"))
         #
-        #self.mice = self.add_overlay(MouseLayer("mice"))
+        #self.mice = self.add_overlay(MouseOverlay("mice"))
         #
         self.query = None
 

@@ -38,6 +38,8 @@ class DashBubble(Bubble):
     def __init__(self, children):
         super().__init__(children)
 
+'''
 class SpeechBubble(Bubble):
     def __init__(self, children):
         super().__init__(children)
+'''

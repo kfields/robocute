@@ -1,14 +1,13 @@
-from crunge.engine.widget import Widget
-from robocute.vu import TextVu
+from crunge.engine.ui import Text as CrungeText
+#from robocute.vu import TextVu
 
-class Text(Widget):
+
+class Text(CrungeText):
     def __init__(self, text, fn=None):
-        super().__init__()
+        super().__init__(text)
         self.text = text
         self.fn = fn
-        self.add_chip(TextVu())
 
     def process(self, event):
         if self.fn:
             self.fn()
-

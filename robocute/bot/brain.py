@@ -1,34 +1,33 @@
 from robocute.entity import EntityBrain
 from robocute.base import Coord
 
+
 class BotBrain(EntityBrain):
-
-    def __init__(self):
-        super().__init__()
-
-    def can_transfer(self, node, srcCoord, dstCoord):
-        #boundary check
-        if(not self.grid.valid_coord(dstCoord)):
+    def can_transfer(self, node, src_coord, dst_coord):
+        if not self.grid.valid_coord(dst_coord):
             return False
-        #destination check
-        top = self.grid.get_top_block_at(dstCoord)
+        top = self.grid.get_top_block_at(dst_coord)
         if not top or not top.vacancy:
-           return False
-       #good to go
+            return False
         return True
-    
-    def transfer_to(self, dstCoord):
-        self.transfer(self.node, self.coord, dstCoord)
-        
-    def transfer(self, node, srcCoord, dstCoord):
-       if(not self.can_transfer(node, srcCoord, dstCoord)):
-           return False
-       #else
-       srcCell = self.grid.get_cell_at(srcCoord)
-       srcCell.remove_node(node)
-       #
-       dstCell = self.grid.get_cell_at(dstCoord)
-       dstCell.push_node(node)
-       #
-       _dstCoord = Coord(dstCoord.x, dstCoord.y, dstCell.height)
-       #self.coord = _dstCoord
+
+    def transfer_to(self, dst_coord):
+        return self.transfer(self.node, self.coord, dst_coord)
+
+    def transfer(self, node, src_coord, dst_coord):
+        """Move `node` from `src_coord` to `dst_coord`. Returns True if it moved."""
+        if not self.can_transfer(node, src_coord, dst_coord):
+            return False
+
+        src_cell = self.grid.get_cell_at(src_coord)
+        src_cell.remove_node(node)
+
+        dst_cell = self.grid.get_cell_at(dst_coord)
+        dst_cell.push_node(node, dst_coord)
+
+        # In the pyglet version this was `self.coord = ...`. Position now lives
+        # on the node, and with that line commented out nothing updated it,
+        # so the brain kept pathing from its starting cell every step.
+        node.old_coord = src_coord
+        node.coord = Coord(dst_coord.x, dst_coord.y, dst_cell.height)
+        return True

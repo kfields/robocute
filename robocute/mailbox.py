@@ -1,4 +1,4 @@
-from crunge.engine.sdl.event_handler import EventHandler, DispatchResult
+from crunge.engine.event.event_handler import EventHandler, DispatchResult
 
 
 class Mailbox(EventHandler):

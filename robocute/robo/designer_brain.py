@@ -158,12 +158,12 @@ class DesignerBrain(BaseDesignerBrain):
     def create_drawer(self):
         def next_page(node):
             self.dash.remove_child(self.page)
-            self.page = self.catalog_bubble.get_next_page(self.page.name)
+            self.page = self.catalog_widget.get_next_page(self.page.name)
             self.dash.add_child(self.page)
 
         def prev_page(node):
             self.dash.remove_child(self.page)
-            self.page = self.catalog_bubble.get_prev_page(self.page.name)
+            self.page = self.catalog_widget.get_prev_page(self.page.name)
             self.dash.add_child(self.page)
 
         items = [
@@ -180,13 +180,14 @@ class DesignerBrain(BaseDesignerBrain):
 
         self.app.catalog.on_item = on_item
 
-        self.catalog_bubble = CatalogBubble(items, self.app.catalog)
+        self.catalog_widget = CatalogWidget(items, self.app.catalog)
 
-        self.drawer = self.dash.create_drawer("Catalog", self.catalog_bubble)
-        self.page = self.catalog_bubble.get_page("Main")
+        self.drawer = self.dash.create_drawer("Catalog", self.catalog_widget)
+        self.page = self.catalog_widget.get_page("Main")
 
         self.dash.add_child(self.drawer)
         self.dash.add_child(self.page)
+        
 
     def take_control(self):
         # self.hide_node()

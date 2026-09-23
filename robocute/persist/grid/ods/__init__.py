@@ -1,5 +1,7 @@
 import xml.dom.minidom
 
+from loguru import logger
+
 from robocute import resources
 from robocute.world import Grid
 
@@ -7,103 +9,118 @@ from robocute.builder import compile_ctors
 
 OD_TABLE_NS = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0'
 
-def get_text(node):
-    text = ''
+
+def get_text(node) -> str:
+    """Concatenate all text beneath an XML node, depth first."""
+    parts = []
     for child in node.childNodes:
         if child.nodeType == child.ELEMENT_NODE:
-            text = text+get_text(child)
+            parts.append(get_text(child))
         elif child.nodeType == child.TEXT_NODE:
-            text = text+child.data
+            parts.append(child.data)
+    return ''.join(parts)
 
-    return text
+
+def get_repeat(node, attr: str) -> int:
+    """Read an ODS `number-*-repeated` attribute, defaulting to 1."""
+    value = node.getAttributeNS(OD_TABLE_NS, attr)
+    return int(value) if value else 1
+
 
 class Reader:
+    """Load a level from an OpenDocument spreadsheet into a grid.
+
+    Each spreadsheet cell holds constructor text for one grid cell. The grid's
+    dimensions are the hard bound: rows and cells beyond them are ignored.
+
+    The bound is enforced by the length of the list being filled, checked
+    *before* each append. The previous version threaded a separate index and
+    checked it after appending, so whenever the limit fell inside a repeated
+    element -- which in ODS is always, since trailing empty rows and cells are
+    written as a single element repeated up to about a million times -- it
+    appended one extra. For rows that was fatal: the extra empty row was last,
+    `reverse()` moved it to index 0, every real row shifted up by one, and the
+    spreadsheet's first row landed at index `row_count`, outside the grid.
+
+    Expects `grid.rows` to be empty on entry; existing rows count against the
+    limit.
+    """
+
     def __init__(self, filename, app, grid: Grid):
         self.filename = filename
-        self.app = app        
+        self.app = app
         self.grid = grid
         self.m_odf = resources.load_zip(filename)
         self.filelist = self.m_odf.infolist()
-        #
-        ostr = self.m_odf.read('content.xml')
-        self.content = xml.dom.minidom.parseString(ostr)
-            
+        self.content = xml.dom.minidom.parseString(self.m_odf.read('content.xml'))
+
+    # ------------------------------------------------------------------
+    # Limits
+    # ------------------------------------------------------------------
+
+    def rows_full(self) -> bool:
+        return len(self.grid.rows) >= self.grid.row_count
+
+    def row_full(self, grid_row) -> bool:
+        return len(grid_row) >= self.grid.col_count
+
+    # ------------------------------------------------------------------
+    # Reading
+    # ------------------------------------------------------------------
+
     def read(self):
+        if self.grid.rows:
+            logger.warning(
+                f"Reader: grid already has {len(self.grid.rows)} rows; "
+                f"they count against row_count"
+            )
         self.read_sheets()
-        self.grid.rows.reverse() #need to reverse to match OpenGL coordinate system.
-        
+        # Spreadsheet row 0 is the back of the world; grid row 0 is the front.
+        self.grid.rows.reverse()
+        logger.debug(
+            f"Reader: {self.filename} -> {len(self.grid.rows)} rows "
+            f"(grid row_count={self.grid.row_count})"
+        )
+
     def read_sheets(self):
-        doc = self.content
-        sheets = doc.getElementsByTagNameNS(OD_TABLE_NS, 'table')
+        sheets = self.content.getElementsByTagNameNS(OD_TABLE_NS, 'table')
         for sheet in sheets:
+            if self.rows_full():
+                return
             self.read_sheet(sheet)
-            
+
     def read_sheet(self, sheet):
-        sheet_name = sheet.getAttributeNS(OD_TABLE_NS, 'name')
         self.read_rows(sheet)
-        
+
     def read_rows(self, sheet):
-        rows = sheet.getElementsByTagNameNS(OD_TABLE_NS, 'table-row')
-        self.rowount = len(rows)
-        rowMax = self.grid.row_count - 1        
-        rowNdx = 0
-        for row in rows:
-            rowNdx = self.read_row(row, rowNdx, rowMax)
-            if rowNdx > rowMax:
-                break            
+        for row in sheet.getElementsByTagNameNS(OD_TABLE_NS, 'table-row'):
+            if self.rows_full():
+                return
+            self.read_row(row)
 
-    def read_row(self, row, rowNdx, rowMax):
-        grid = self.grid
-        repCountStr = row.getAttributeNS(OD_TABLE_NS, 'number-rows-repeated')
-        if(repCountStr == ''):
-            repCount = 1
-        else:
-            repCount = int(repCountStr)
-        while(repCount > 0):
-            gridRow = self.read_cells(row, rowNdx)
-            grid.rows.append(gridRow)
-            repCount = repCount - 1
-            #
-            if rowNdx > rowMax:
-                break            
-            rowNdx += 1
-            
-        return rowNdx            
-            
-    #WORLD_GRID_ROW_MAX = 64
-    #WORLD_GRID_COL_MAX = 64
+    def read_row(self, row):
+        # Must return, not merely skip, once full: a repeat count of about a
+        # million is normal for the trailing empty rows.
+        for _ in range(get_repeat(row, 'number-rows-repeated')):
+            if self.rows_full():
+                return
+            self.grid.rows.append(self.read_cells(row))
 
-    def read_cells(self, row, rowNdx):
-        gridRow = self.grid.create_row()
-        cells = row.getElementsByTagNameNS(OD_TABLE_NS, 'table-cell')
-        colNdx = 0
-        colMax = self.grid.col_count - 1        
-        for cell in cells:
-            colNdx = self.read_cell(cell, gridRow, colNdx, colMax)
-            if colNdx > colMax:
-                break            
-        #prevent underage
-        #gridRow.validate()
-        return gridRow
-        
-    def read_cell(self, cell, gridRow, colNdx, colMax):
-        grid = self.grid
-        repCountStr = cell.getAttributeNS(OD_TABLE_NS, 'number-columns-repeated')
-        if(repCountStr == ''):
-            repCount = 1
-        else:
-            repCount = int(repCountStr)
-        cellTxt = get_text(cell)
-                
-        while(repCount > 0):
-            cell = gridRow.create_cell()
-            cell.ctors = compile_ctors(cellTxt)
-            gridRow.append(cell)
-            repCount = repCount - 1
-            #
-            if colNdx > colMax:
-                break            
-            colNdx += 1
-            
-        return colNdx
-            
+    def read_cells(self, row):
+        grid_row = self.grid.create_row()
+        for cell in row.getElementsByTagNameNS(OD_TABLE_NS, 'table-cell'):
+            if self.row_full(grid_row):
+                break
+            self.read_cell(cell, grid_row)
+        return grid_row
+
+    def read_cell(self, cell, grid_row):
+        # Every repeat of a cell has identical text, so compile once and share.
+        # Sharing is safe: Cell.clone already shares ctors between cells.
+        ctors = compile_ctors(get_text(cell))
+        for _ in range(get_repeat(cell, 'number-columns-repeated')):
+            if self.row_full(grid_row):
+                return
+            grid_cell = grid_row.create_cell()
+            grid_cell.ctors = ctors
+            grid_row.append(grid_cell)

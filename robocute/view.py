@@ -58,7 +58,7 @@ class GameView(SceneView2D):
         #
         self.dash = self.add_overlay(Dash("dash"))
         #
-        self.mice = self.add_overlay(MouseLayer("mice"))
+        #self.mice = self.add_overlay(MouseLayer("mice"))
         #
         self.query = None
 

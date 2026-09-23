@@ -1,19 +1,18 @@
-from crunge.engine.widget import Widget
+from functools import partial
+
 from crunge import yoga
 from crunge import sdl
-from robocute.vu import ImageVu
 
-class Image(Widget):
-    def __init__(self, img_src, fn=None):
-        style = yoga.StyleBuilder().height(50).margin(yoga.Edge.ALL, 5).build()
-        super().__init__(style=style)
-        self.fn = fn
-        self.add_chip(ImageVu(img_src))
+from crunge.engine.ui import Image as CrungeImage
+from crunge.engine.ui.chips import GestureChip
 
-    def on_mouse_button(self, event: sdl.MouseButtonEvent):
-        super().on_mouse_button(event)
-        if event.button == 1 and event.down: # Left mouse button
-            x, y = event.x, event.y
-            if self.hit_test(x, y):
-                self.fn(self)
-                return True # Indicate that the event was handled
+
+class Image(CrungeImage):
+    def __init__(self, img_src, fn=None, style=None, crop=None):
+        src = "${resources}/image/" + img_src
+        #style = yoga.StyleBuilder().size(64, 64).margin(yoga.Edge.ALL, 5).build()
+        #style = yoga.StyleBuilder().size(64, 64).build()
+        #super().__init__(src=src, style=style)
+        super().__init__(src=src, style=style, crop=crop)
+        on_tap = partial(fn, self) if fn else None
+        self.add_chip(GestureChip(on_tap))

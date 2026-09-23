@@ -1,16 +1,19 @@
 
-from robocute.widget.bubble import *
+#from crunge.engine.widget import Widget
+from crunge.engine.ui.flex import Row, Column
 
-class CatalogBubble(Bubble):
-    def __init__(self, items, catalog):
-        super().__init__(items)
+from ..catalog import Catalog
+
+class CatalogWidget(Row):
+    def __init__(self, children, catalog: Catalog):
+        super().__init__(children=children)
         self.catalog = catalog
 
-    def get_page(self, pageName):
-        return self.catalog.get_page(pageName)
+    def get_page(self, page_name):
+        return self.catalog.get_page(page_name)
 
-    def get_next_page(self, pageName):
-        return self.catalog.get_next_page(pageName)
+    def get_next_page(self, page_name):
+        return self.catalog.get_next_page(page_name)
 
-    def get_prev_page(self, pageName):
-        return self.catalog.get_prev_page(pageName)
+    def get_prev_page(self, page_name):
+        return self.catalog.get_prev_page(page_name)

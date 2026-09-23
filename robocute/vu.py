@@ -77,20 +77,6 @@ class TextVu(Vu):
         # self.height = self.text.height
         self.height = self.text.content_height
 
-    '''
-    def draw(self, graphics):
-        # super().draw(graphics)
-        # either way works...
-        # glPushMatrix()
-        # glTranslatef(graphics.x, graphics.y, graphics.z)
-        self.text.x = graphics.x
-        self.text.y = graphics.y
-        self.text.draw()
-        # glPopMatrix()
-        if graphics.query:
-            self.query(graphics)
-    '''
-
 class ImageVu(Vu):
     def __init__(self, img_src):
         super().__init__()

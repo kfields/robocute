@@ -83,10 +83,6 @@ def execute_ctors(app, ctors, coord, cell):
     return thing
 
 
-"""
-"""
-
-
 class Constructor:
     def __init__(self, dna, *args, **kargs):
         self.dna = dna
@@ -114,7 +110,6 @@ class Dna:
         if self.has_assignments():
             for assign in self.assignments:
                 self.__setattr__(assign[0], assign[1])
-
 
     def __call__(self, *args, **kargs):
         return Constructor(self, args, kargs)

@@ -8,7 +8,7 @@ from crunge.engine.loader.sprite.sprite_loader import SpriteLoader
 from crunge.engine.resource.resource_manager import ResourceManager
 
 from robocute.entity import *
-from .brain import BotBrain
+from .bot_brain import BotBrain
 
 class BotVu(SpriteVu):
     def __init__(self, img_src):

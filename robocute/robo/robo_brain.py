@@ -84,9 +84,8 @@ class RoboBrain(BotBrain):
         else:
             logger.debug(f"{type(self).__name__} ignored message {msg!r}")
 
-    def on_key(self, event: sdl.KeyboardEvent):
-        super().on_key(event)
-        if event.down and not event.repeat:
-            msg_cls = _KEY_MESSAGES.get(event.key)
-            if msg_cls is not None:
-                self.do(msg_cls())
+    def on_key_press(self, event: sdl.KeyboardEvent):
+        super().on_key_press(event)
+        msg_cls = _KEY_MESSAGES.get(event.key)
+        if msg_cls is not None:
+            self.do(msg_cls())

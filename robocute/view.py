@@ -9,7 +9,7 @@ from crunge.engine.overlay import Overlay
 from crunge.core.dispatch import DispatchResult, EVENT_HANDLED
 
 from robocute import globe
-from robocute.dash import Dash
+from robocute.ui import Ui
 from .base import Coord
 from .tool import Tool
 from .builder import build
@@ -34,7 +34,7 @@ class GameView(SceneView2D):
         super().__init__(scene)
         globe.view = self
         self.bubbles: BubbleOverlay = None
-        self.dash: Dash = None
+        self.ui: Ui = None
         self.mice: MouseOverlay = None
         self.app = globe.app
         self.world = self.app.world
@@ -55,7 +55,7 @@ class GameView(SceneView2D):
         super()._create()
         #self.bubbles = self.add_overlay(BubbleOverlay("bubbles"))
         #
-        self.dash = self.add_overlay(Dash("dash"))
+        self.ui = self.add_overlay(Ui("Ui"))
         #
         #self.mice = self.add_overlay(MouseOverlay("mice"))
         #

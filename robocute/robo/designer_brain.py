@@ -1,14 +1,17 @@
+from crunge import sdl
+
 from robocute.widget.catalog import *
 from robocute.robo.message import *
-from robocute.robo.avatar import *
 from robocute.tool import *
 
 from robocute.builder import build, build_thing, build_thing_at
 
 from ..widget import Image
+from ..ui import Ui
 
-from .brain import RoboBrain
+from .robo_brain import RoboBrain
 
+'''
 class DesignerMouseQuery(MouseQuery):
     def __init__(self, box, event):
         super().__init__(event)
@@ -38,31 +41,7 @@ class DesignerMouseQuery(MouseQuery):
         else:
             brain.clear_clones()
             brain.transfer_to(result)
-
-
-class DesignerKeybox(AvatarKeybox):
-    def on_key_press(self, symbol, modifiers):
-        brain = self.brain
-        if symbol == key.ESCAPE:
-            if brain.has_clones():
-                brain.clear_clones()
-            else:
-                brain.exit()
-        elif symbol == key.T:
-            self.brain.take_control()
-        elif symbol == key.DELETE:
-            brain.do(DoDelete())
-        else:
-            super().on_key_press(symbol, modifiers)
-
-
-class DesignerMousebox(AvatarMousebox):
-    def on_mouse_press(self, x, y, button, modifiers):
-        super().on_mouse_press(x, y, button, modifiers)
-        self.brain.scene.query = DesignerMouseQuery(
-            self, MousePressed(x, y, button, modifiers)
-        )
-
+'''
 
 class BaseDesignerBrain(RoboBrain):
     def build(self, dna):
@@ -77,7 +56,7 @@ class BaseDesignerBrain(RoboBrain):
             return
         cell.remove_node(self.node)
         node = cell.pop_node()
-        node.delete()
+        node.destroy()
         cell.push_node(self.node, self.coord)
 
     def can_transfer(self, node, srcCoord, dstCoord):
@@ -89,14 +68,12 @@ class BaseDesignerBrain(RoboBrain):
     def transfer(self, node, srcCoord, dstCoord):
         if not self.can_transfer(node, srcCoord, dstCoord):
             return False
-        # else
+
         srcCell = self.grid.get_cell_at(srcCoord)
         srcCell.remove_node(node)
-        #
+
         dstCell = self.grid.get_cell_at(dstCoord)
         dstCell.push_node(node, dstCoord)
-        #
-        #self.coord = dstCoord
 
     def do(self, msg):
         if isinstance(msg, DoBuild):
@@ -117,14 +94,27 @@ class DesignerBrain(BaseDesignerBrain):
         super().__init__()
         self.clones = []
         self.drawer = None
-        self.keybox = DesignerKeybox(self)
-        self.mousebox = DesignerMousebox(self)
         #
         self.avatar = None  # avatar that we passed control to.
 
     @property
-    def dash(self):
-        return self.view.dash
+    def ui(self) -> Ui:
+        return self.view.ui
+
+    def on_key_press(self, event: sdl.KeyboardEvent):
+        super().on_key_press(event)
+        key = event.key
+
+        match key:
+            case sdl.SDLK_t: self.take_control()
+
+            case sdl.SDLK_ESCAPE:
+                if self.has_clones():
+                    self.clear_clones()
+                else:
+                    self.exit()
+        
+            case sdl.SDLK_DELETE: self.do(DoDelete())
 
     def exit(self):
         self.clear_clones()
@@ -150,21 +140,21 @@ class DesignerBrain(BaseDesignerBrain):
             self.create_drawer()
 
     def hide_dash(self):
-        self.dash.remove_child(self.drawer)
+        self.ui.remove_child(self.drawer)
 
     def update_dash(self):
         pass
 
     def create_drawer(self):
         def next_page(node):
-            self.dash.remove_child(self.page)
+            self.ui.remove_child(self.page)
             self.page = self.catalog_widget.get_next_page(self.page.name)
-            self.dash.add_child(self.page)
+            self.ui.add_child(self.page)
 
         def prev_page(node):
-            self.dash.remove_child(self.page)
+            self.ui.remove_child(self.page)
             self.page = self.catalog_widget.get_prev_page(self.page.name)
-            self.dash.add_child(self.page)
+            self.ui.add_child(self.page)
 
         items = [
             Image("icon/actions/1leftarrow.png", prev_page),
@@ -182,11 +172,11 @@ class DesignerBrain(BaseDesignerBrain):
 
         self.catalog_widget = CatalogWidget(items, self.app.catalog)
 
-        self.drawer = self.dash.create_drawer("Catalog", self.catalog_widget)
+        self.drawer = self.ui.create_drawer("Catalog", self.catalog_widget)
         self.page = self.catalog_widget.get_page("Main")
 
-        self.dash.add_child(self.drawer)
-        self.dash.add_child(self.page)
+        self.ui.add_child(self.drawer)
+        self.ui.add_child(self.page)
         
 
     def take_control(self):

@@ -11,14 +11,9 @@ from robocute.widget.bubble import *
 class Page(Column):
     def __init__(self, name, children=None):
         logger.debug(f"Page items: {children}")
-        # style=yoga.StyleBuilder().size_percent(100, 100).margin(yoga.Edge.ALL, 5).build()
-        # style = yoga.Style()
-        # style.set_flex_grow(0.75)
-        # style.set_flex_grow(1)
         style = yoga.StyleBuilder().width(64).margin(yoga.Edge.ALL, 5).build()
         super().__init__(children=children, style=style)
         self.name = name
-        # self.add_chip(PageVu(self, 'CatalogBubble'))
 
 
 BLOCK_FACE = 40  # one block step, in source pixels
@@ -55,28 +50,6 @@ class Catalog:
         item = ItemImage(dna, onItem, style=style, crop=crop)
 
         return item
-
-    """
-    def create_item(self, dnaType, name, title, img_src, body, assignments):
-        def onItem(item):
-            self.on_item(item)
-
-        dna = Dna(dnaType, name, title, img_src, body, assignments)
-
-
-        crop = None
-        if dna.type == 'tool':
-            style = yoga.StyleBuilder().size(32, 32).build()
-        else:
-            #crop = (0, 0, 64, 64)
-            #crop=(0, 40, 100, 131)
-            crop = (0, dna.block_height * BLOCK_HEIGHT, 100, 131)
-            style = yoga.StyleBuilder().size(64, 64).build()
-    
-        item = Item(dna, onItem, style=style, crop=crop)
-
-        return item
-    """
 
     def add_page(self, pageName, page):
         self.pages[pageName] = page

@@ -3,12 +3,11 @@ import random
 from loguru import logger
 
 from crunge.engine.scheduler import Scheduler
-import robocute.robo.brain
-from robocute.robo.avatar import *
+import robocute.robo.robo_brain
 from robocute.widget import DashBubble, Text, Image, ItemImage
 from robocute.item import *
 from robocute.block import *
-
+from .message import Phase, Say, Transition
 
 class State:
     """
@@ -162,15 +161,8 @@ class LandState(State):
         self.brain.update_dash()
 
 
-class PlayerKeybox(AvatarKeybox):
-    pass
 
-
-class PlayerMousebox(AvatarMousebox):
-    pass
-
-
-class PlayerBrain(robocute.robo.brain.RoboBrain):
+class PlayerBrain(robocute.robo.robo_brain.RoboBrain):
     states = {
         "start": StartState,
         "main": MainState,
@@ -180,8 +172,6 @@ class PlayerBrain(robocute.robo.brain.RoboBrain):
 
     def __init__(self):
         super().__init__()
-        self.keybox = PlayerKeybox(self)
-        self.mousebox = PlayerMousebox(self)
         self.die = 0
         self.worth = 0  # Total treasure value
         self.dash_bubble = None
@@ -194,16 +184,11 @@ class PlayerBrain(robocute.robo.brain.RoboBrain):
     def bind(self, user):
         super().bind(user)
         self.show_dash()
-        user.add_keybox(self.keybox)
-        user.add_mousebox(self.mousebox)
 
     def unbind(self):
         if self.state:
             self.state.cancel_tasks()
         self.hide_dash()
-        user = self.view
-        user.remove_keybox(self.keybox)
-        user.remove_mousebox(self.mousebox)
         super().unbind()
 
     # ------------------------------------------------------------------- dash
@@ -211,18 +196,18 @@ class PlayerBrain(robocute.robo.brain.RoboBrain):
     def show_dash(self):
         if not self.dash_bubble:
             self.dash_bubble = DashBubble([Image("Mini Chest.png"), self.dash_worth])
-        self.view.dash.add_node(self.dash_bubble)
+        self.view.ui.add_child(self.dash_bubble)
         self.update_dash()
 
     def hide_dash(self):
         if self.dash_bubble:
-            self.view.dash.remove_node(self.dash_bubble)
+            self.view.ui.remove_child(self.dash_bubble)
 
     def update_dash(self):
         if not self.dash_bubble:
             return
-        self.dash_worth.vu.text.text = str(self.worth)
-        self.dash_bubble.vu.validate()
+        #self.dash_worth.vu.text.text = str(self.worth)
+        #self.dash_bubble.vu.validate()
 
     # ------------------------------------------------------------- messaging
 

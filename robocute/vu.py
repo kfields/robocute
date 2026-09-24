@@ -5,7 +5,6 @@ from crunge.engine.renderer import Renderer
 from crunge.engine.resource.resource_manager import ResourceManager
 from crunge.engine.vu import Vu as CrungeVu
 from robocute.base import *
-from robocute.graphics import Graphics
 
 """
 HotSpot : Just a way to clip events right now.  More in the future.

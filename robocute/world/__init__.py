@@ -5,6 +5,7 @@ from loguru import logger
 from crunge.engine.d2 import Node2D
 
 from .grid import Grid, WORLD_GRID_ROW_MAX, WORLD_GRID_COL_MAX
+
 import robocute.persist.grid.native
 
 class World(Node2D):

@@ -8,7 +8,7 @@ from robocute.node import *
 from robocute.block import GroupBlock
 from robocute.map import *
 from robocute.builder import build
-from .brain import BotBrain
+from .bot_brain import BotBrain
 
 class LandscapeBot(robocute.bot.Bot):
     def __init__(self, dna = None):

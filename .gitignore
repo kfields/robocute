@@ -13,3 +13,6 @@ _build
 imgui.ini
 
 .envrc
+
+# Robocute
+/storage/

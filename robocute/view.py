@@ -6,7 +6,7 @@ from crunge import sdl
 from crunge.engine.d2.view import SceneView2D
 from crunge.engine.d2.scene import Scene2D
 from crunge.engine.overlay import Overlay
-from crunge.core.dispatch import DispatchResult, EVENT_HANDLED
+from crunge.core import DispatchResult, EVENT_HANDLED
 
 from robocute import globe
 from robocute.ui import Ui
